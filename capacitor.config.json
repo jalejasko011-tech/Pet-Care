@@ -1,0 +1,11 @@
+{
+  "appId": "com.petcare.companion",
+  "appName": "Pet Care",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
