@@ -1,0 +1,20 @@
+{
+  "name": "Pet Care — Care for your pet",
+  "short_name": "Pet Care",
+  "description": "Track your pets' health, weight, nutrition, reminders and expenses.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f8f6",
+  "theme_color": "#176b57",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
