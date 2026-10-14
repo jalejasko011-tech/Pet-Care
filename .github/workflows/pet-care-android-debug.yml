@@ -24,6 +24,8 @@ jobs:
         run: npm install
       - name: Check web assets
         run: npm run check:web
+      - name: Check JavaScript dependencies
+        run: npm audit --omit=dev --audit-level=high
       - name: Generate Android project
         run: npx cap add android
       - name: Sync Android assets
