@@ -2,6 +2,12 @@ name: Build Pet Care Android APK
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'www/**'
+      - 'capacitor.config.json'
+      - '.github/workflows/android.yml'
 
 jobs:
   build:
