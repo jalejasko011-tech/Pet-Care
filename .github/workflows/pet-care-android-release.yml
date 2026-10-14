@@ -75,14 +75,11 @@ jobs:
               }
           """
           s = s.replace(marker, config, 1)
-          release_marker = 'buildTypes {'
-          if release_marker not in s:
-              raise SystemExit('buildTypes block missing')
-          s = s.replace(release_marker, """buildTypes {
-              release {
-                  signingConfig signingConfigs.release
-              }
-          """, 1)
+          import re
+          pattern = r'(buildTypes\\s*\\{\\s*release\\s*\\{)'
+          if not re.search(pattern, s):
+              raise SystemExit('Existing release buildType missing')
+          s = re.sub(pattern, r'\\1\\n            signingConfig signingConfigs.release', s, count=1)
           p.write_text(s)
           PY
       - name: Build signed release AAB
