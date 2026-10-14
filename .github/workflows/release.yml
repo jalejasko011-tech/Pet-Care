@@ -31,7 +31,7 @@ jobs:
           fi
       - name: Install and prepare Android
         run: |
-          npm ci
+          npm install
           npx cap add android
           npx cap sync android
       - name: Build unsigned release
