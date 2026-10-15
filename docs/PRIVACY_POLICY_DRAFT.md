@@ -27,7 +27,7 @@ This app is intended for general pet care and is not specifically designed for c
 This policy will be updated when cloud accounts, advertising, analytics, purchases, AI or other data-handling features are added.
 
 ## Developer / privacy contact — REQUIRED BEFORE PUBLICATION
-Developer name: **to be confirmed by account owner**.
+Developer display name: **Jale** (legal identity verified separately during Play Console registration).
 Privacy contact email: **jalejasko011@gmail.com**.
 Do not submit this draft until those fields are completed and a public, accessible, non-editable web version is published.
 
