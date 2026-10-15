@@ -44,9 +44,12 @@ try {
   return when.getTime();
  });
  await device.shell('input keyevent KEYCODE_HOME');
- await device.shell('am kill com.petcare.companion');
+ const pid=(await device.shell('pidof com.petcare.companion')).toString().trim();
+ assert.match(pid,/^\d+$/,'Expected a single Android app process');
+ // run-as is available only for this debuggable test APK; SIGKILL models OS process eviction without package force-stop.
+ await device.shell('run-as com.petcare.companion kill -9 '+pid);
  await new Promise(r=>setTimeout(r,1000));
- assert.equal((await device.shell('pidof com.petcare.companion')).toString().trim(),'','App process remained alive after am kill');
+ assert.equal((await device.shell('pidof com.petcare.companion')).toString().trim(),'','App process remained alive after process termination');
  let delivered=false;
  const deadline=scheduled+180000;
  while(Date.now()<deadline){
@@ -57,6 +60,6 @@ try {
   await new Promise(r=>setTimeout(r,5000));
  }
  assert.equal(delivered,true,'Reminder was not delivered after app moved to background and its process was killed');
- console.log('PASS: Android posted the scheduled app reminder after HOME and am kill (not force-stop).');
+ console.log('PASS: Android posted the scheduled app reminder after HOME and confirmed process termination (not force-stop).');
  console.log('Physical phone, OEM battery restrictions, force-stop and Play Protect remain outside this emulator test.');
 } finally {await device.close();}
