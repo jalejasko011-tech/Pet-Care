@@ -28,7 +28,7 @@ This policy will be updated when cloud accounts, advertising, analytics, purchas
 
 ## Developer / privacy contact — REQUIRED BEFORE PUBLICATION
 Developer name: **to be confirmed by account owner**.
-Private contact email or privacy request channel: **to be provided by account owner**.
+Privacy contact email: **jalejasko011@gmail.com**.
 Do not submit this draft until those fields are completed and a public, accessible, non-editable web version is published.
 
 ---
