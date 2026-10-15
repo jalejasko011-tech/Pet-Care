@@ -2,6 +2,10 @@ name: Build signed Pet Care Android AAB
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pet-care-android-release.yml'
 
 jobs:
   release:
