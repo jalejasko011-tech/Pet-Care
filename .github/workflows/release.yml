@@ -34,6 +34,10 @@ jobs:
           npm install
           npx cap add android
           npx cap sync android
+      - name: Validate web application
+        run: npm run check:web
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
       - name: Build unsigned release
         run: |
           cd android
