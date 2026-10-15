@@ -57,10 +57,10 @@ jobs:
           from pathlib import Path
           p = Path('android/app/build.gradle')
           s = p.read_text()
-          s += "\\napply plugin: 'com.google.gms.google-services'\\n"
+          s += "\napply plugin: 'com.google.gms.google-services'\n"
           p.write_text(s)
           p = Path('android/build.gradle')
-          s = p.read_text().replace('dependencies {', "dependencies {\\n        classpath 'com.google.gms:google-services:4.4.4'", 1)
+          s = p.read_text().replace('dependencies {', "dependencies {\n        classpath 'com.google.gms:google-services:4.4.4'", 1)
           p.write_text(s)
           PY
           else
@@ -106,7 +106,7 @@ jobs:
           pattern = r'(buildTypes\\s*\\{\\s*release\\s*\\{)'
           if not re.search(pattern, s):
               raise SystemExit('Existing release buildType missing')
-          s = re.sub(pattern, r'\\1\\n            signingConfig signingConfigs.release', s, count=1)
+          s = re.sub(pattern, r'\\1\n            signingConfig signingConfigs.release', s, count=1)
           p.write_text(s)
           PY
       - name: Build signed release AAB
