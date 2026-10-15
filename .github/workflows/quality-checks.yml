@@ -24,3 +24,9 @@ jobs:
         run: npm run check:web
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test user flows in mobile browser
+        run: node tools/test-browser.mjs
