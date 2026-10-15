@@ -34,5 +34,27 @@ try {
  assert.equal(result,true,'Native reminder was not scheduled');
  assert.deepEqual(errors,[]);
  console.log(`PASS: Android WebView create/edit/persist, ${tabs.length} tabs, privacy link, native notification schedule/query/cancel.`);
- console.log('Notification delivery in background and physical-device Play Protect acceptance remain outside this test.');
+ // Exercise the app's reminder bridge, then terminate its background process.
+ const scheduled=await page.evaluate(async()=>{
+  const when=new Date(Date.now()+90000);when.setSeconds(0,0);
+  const date=[when.getFullYear(),String(when.getMonth()+1).padStart(2,'0'),String(when.getDate()).padStart(2,'0')].join('-');
+  const time=[when.getHours(),when.getMinutes()].map(x=>String(x).padStart(2,'0')).join(':');
+  const outcome=await window.petCareNative.sync([{id:'closed-app-delivery',petId:data.pets[0].id,title:'PETCARE_CLOSED_APP_DELIVERY',nextDate:date,time}],data.pets);
+  if(!outcome.permission||outcome.count!==1)throw Error('App reminder sync did not schedule');
+  return when.getTime();
+ });
+ await device.shell('input keyevent KEYCODE_HOME');
+ await device.shell('am kill com.petcare.companion');
+ let delivered=false;
+ const deadline=scheduled+180000;
+ while(Date.now()<deadline){
+  const output=(await device.shell('dumpsys notification --noredact')).toString();
+  // NotificationRecord is an active system notification, not a queued alarm.
+  const active=output.split('NotificationRecord(').slice(1).some(x=>x.includes('pkg=com.petcare.companion')&&x.includes('PETCARE_CLOSED_APP_DELIVERY'));
+  if(active){delivered=true;break;}
+  await new Promise(r=>setTimeout(r,5000));
+ }
+ assert.equal(delivered,true,'Reminder was not delivered after app moved to background and its process was killed');
+ console.log('PASS: Android posted the scheduled app reminder after HOME and am kill (not force-stop).');
+ console.log('Physical phone, OEM battery restrictions, force-stop and Play Protect remain outside this emulator test.');
 } finally {await device.close();}
