@@ -1,0 +1,22 @@
+# Firebase local configuration and private credentials
+**/google-services.json
+**/GoogleService-Info.plist
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+service-account*.json
+*serviceAccountKey*.json
+
+# Generated files
+node_modules/
+android/
+ios/
+dist/
+build/
+.gradle/
+.DS_Store
