@@ -63,7 +63,10 @@ try {
   await galleryRemove('test-media');
   if((await galleryAll()).length!==0)throw Error('Gallery deletion failed');
  });
+ await page.evaluate(async()=>{await galleryPut({id:'delete-with-pet',petId:data.pets[0].id,type:'image/png',blob:new Blob(['test'],{type:'image/png'})});worldSave([{id:'draft',petId:data.pets[0].id}]);});
  await page.evaluate(()=>deletePet(data.pets[0].id));
+ assert.equal(await page.evaluate(async()=>(await galleryAll()).length),0);
+ assert.equal(await page.evaluate(()=>worldDrafts().length),0);
  assert.equal(await page.evaluate(()=>data.pets.length),1);
  assert.equal(await page.evaluate(()=>data.health.length),0);
  await page.reload();assert.equal(await page.evaluate(()=>data.pets.length),1);
