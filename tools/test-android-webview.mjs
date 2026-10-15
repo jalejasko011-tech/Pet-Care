@@ -1,8 +1,10 @@
-import { chromium } from 'playwright';
+import { _android } from 'playwright';
 import assert from 'node:assert/strict';
-const browser=await chromium.connectOverCDP('http://127.0.0.1:9222');
+const [device]=await _android.devices();
+assert.ok(device,'Android emulator missing');
+const webview=await device.webView({pkg:'com.petcare.companion'});
 try {
- const page=browser.contexts()[0].pages().find(p=>p.url().includes('localhost'));
+ const page=await webview.page();
  assert.ok(page,'Android WebView page missing');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.locator('#content').waitFor();
@@ -33,4 +35,4 @@ try {
  assert.deepEqual(errors,[]);
  console.log(`PASS: Android WebView create/edit/persist, ${tabs.length} tabs, privacy link, native notification schedule/query/cancel.`);
  console.log('Notification delivery in background and physical-device Play Protect acceptance remain outside this test.');
-} finally {await browser.close();}
+} finally {await device.close();}
