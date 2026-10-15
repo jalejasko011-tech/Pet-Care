@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
     paths:
+      - 'www/**'
+      - 'capacitor.config.json'
+      - 'package.json'
+      - 'tools/**'
       - '.github/workflows/pet-care-android-release.yml'
 
 jobs:
