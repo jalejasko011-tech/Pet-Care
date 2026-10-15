@@ -1,0 +1,28 @@
+name: Check public privacy policy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/check-privacy-url.yml'
+  schedule:
+    - cron: '23 8 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-public-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify public privacy policy is accessible without login
+        run: |
+          set -euo pipefail
+          URL="https://jalejasko011-tech.github.io/Pet-Care/privacy.html"
+          echo "Checking $URL"
+          curl --fail --location --silent --show-error --retry 3 --retry-delay 5 --max-time 20 "$URL" -o privacy.html
+          grep -qi 'Pet Care World' privacy.html
+          grep -qi 'jalejasko011@gmail.com' privacy.html
+          grep -qi 'Privacy Policy' privacy.html
+          echo "Public privacy policy is reachable and contains expected content."
