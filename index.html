@@ -26,7 +26,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 let data=load(), activePet=data.pets[0]?.id||null, tab='home', formMode=null;
 function seed(){return {pets:[],health:[],weights:[],logs:[],food:[],costs:[],reminders:[]}}
 function load(){try{return {...seed(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return seed()}}
-function save(){localStorage.setItem(KEY,JSON.stringify(data));window.petCareNative?.sync(data.reminders,data.pets).catch(e=>console.warn('Notification sync:',e))}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));window.petCareCloud?.save(data);window.petCareNative?.sync(data.reminders,data.pets).catch(e=>console.warn('Notification sync:',e))}
 function pet(){return data.pets.find(p=>p.id===activePet)}
 function money(n){return new Intl.NumberFormat('sr-RS',{style:'currency',currency:'RSD',maximumFractionDigits:0}).format(Number(n)||0)}
 function date(s){if(!s)return '—';return new Date(s+'T12:00:00').toLocaleDateString('sr-RS')}
@@ -197,4 +197,5 @@ window.petCareNative = {
  }
 };
 </script>
+<script src="firebase-config.js"></script><script src="firebase-sync.js"></script>
 </body></html>
