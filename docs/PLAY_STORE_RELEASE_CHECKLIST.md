@@ -7,7 +7,7 @@
 - App ID: `com.petcare.companion`. Public developer display name requested: **Jale**.
 - Contact: jalejasko011@gmail.com.
 - Privacy page source: `www/privacy.html`. In-app footer links to `privacy.html`.
-- Candidate public URL (verify in a browser before submitting): https://jalejasko011-tech.github.io/Pet-Care/privacy.html
+- Candidate public URL (verify in a browser before submitting): https://jalejasko011-tech.github.io/Pet-Care/www/privacy.html
 - Data safety assessment: `docs/GOOGLE_PLAY_DATA_SAFETY_REVIEW.md`.
 
 ## Not yet verified
