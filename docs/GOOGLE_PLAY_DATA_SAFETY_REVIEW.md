@@ -1,35 +1,54 @@
-# Google Play Data safety — working assessment (not submitted)
+# Pet Care World — Google Play Data safety preparation
 
-App ID: `com.petcare.companion`. App name: Pet Care World.
-Source reviewed: `README.md`, `package.json`, `capacitor.config.json`, `www/index.html` and release workflow, 15 October 2026.
+Prepared 15 October 2026 for package `com.petcare.companion`, release source `869ceab2583a0e6a9b5135ce2db18ff539c08fff` (API 36). This is a submission worksheet, not a submitted declaration or Google approval.
 
-| Question | Preliminary answer | Verification needed |
-|---|---|---|
-| Pet records transmitted to developer backend? | Firebase sync exists but is disabled by an explicit release gate | Inspect all runtime network calls in final build |
-| Pet records stored locally? | Yes | Check WebView storage behavior and delete/export controls |
-| Photos processed? | Yes, user-selected photos may be saved locally | Check photo picker and permission usage |
-| Notifications? | Local reminders | Verify Android permission and behavior on devices |
-| Ads, in-app purchases, analytics? | Not integrated in reviewed version | Audit final merged manifest and dependency graph |
-| External services? | Links to external shop/vet/AI websites | Check whether links open browser or embedded WebView |
-| Data shared with third parties? | Not established as none | Review Capacitor plugins, WebView and any network/SDK behavior |
-| Encryption in transit? | Do not claim until off-device transmissions audited | Network test |
-| Account deletion? | No active account flow in reviewed Android entry point; optional Firebase code gated off | Ensure local deletion/export controls and explain device-only storage |
+Public policy: https://jalejasko011-tech.github.io/Pet-Care/www/privacy.html
+Developer: Jale. Privacy/support contact: jalejasko011@gmail.com.
 
-**Do not copy a blanket “No data collected” declaration into Play Console without validating the final signed AAB and all SDKs.** Google defines collection as data transmitted off device, including via SDKs. Local-only processing generally is not collection for the form. Even an app that collects no user data must complete the form and link a privacy policy.
+## Release behavior and form answers
 
-## Required before submitting
-1. Add actual developer name and private privacy contact to the privacy policy; publish a public, accessible, non-editable policy URL and link it inside the app.
-2. Inspect final AAB's merged manifest, permissions, SDKs and network calls; verify on physical devices.
-3. Complete Play Console Data safety and other App content declarations truthfully (audience, content rating, ads, health-related functionality if applicable).
-4. Register and verify the Play Console developer account and complete applicable testing requirements.
-5. Revisit declarations whenever new ads, affiliate SDKs, AI, accounts, purchases or cloud sync are enabled.
+| Form item | Prepared answer and evidence |
+|---|---|
+| User accounts | No account creation or sign-in in the Android app. Firebase cloud module is gated off before SDK imports; no user-account deletion URL applies to this release. The developer's Play Console login is separate from app users. |
+| Pet records | Pet profiles, health records, weights, costs, diary and reminders stay in WebView localStorage. Local-only processing is not off-device collection for Data safety. |
+| Photos and videos | User-selected media stays on device (profile photos/localStorage, gallery/IndexedDB). No automatic media upload. File selection and device notification permissions support those features. |
+| Contact details and city | Optional SOS/contact/family/community data stays local. Sharing is only through a user action and the chosen recipient app. Do not describe local drafts as a public social feed. |
+| Collection/sharing question | Candidate answer: **No**, only for the reviewed local-only release with cloud disabled, no supplier catalog configured, and no ads/analytics SDK. User-initiated shares and open-web navigation must meet Google's exemptions. Do not submit this answer for another build or enabled cloud/catalog integration without reassessment. |
+| Optional supplier catalog | A user-configured HTTPS feed causes network requests on launch and refresh and exposes connection metadata to that endpoint. No feed is configured by this release. Supplier logging and data practices are not verified; connect no production supplier before reassessing the form and policy. |
+| Analytics / ads | No analytics or advertising SDK in package.json. Contains ads: **No** for this release. Future ads require a new review. |
+| Payments / Premium | No integrated billing or checkout. Premium is planned, not purchasable. External purchases are performed by external merchants. |
+| AI assistant | Opens third-party services; no integrated AI model/API or automatic pet-record upload. Store description must say external AI links, not built-in AI chat. |
+| Location, contacts, SMS, calls | No location/contact/SMS/call-log reader in reviewed dependencies. Searches use terms entered by the user. No automatic GPS lookup. |
+| Data encryption | Do not claim end-to-end encryption or encrypted local storage. HTTPS catalog validation exists. Follow the Console's conditional questions if collection is declared; do not claim a security certification. |
+| Deletion | Individual record controls and deleting a pet remove the pet's linked records, local gallery files and private world drafts. Android Settings → Apps → Pet Care World → Storage → Clear storage removes app storage. Exported/shared copies require separate deletion. |
+| Backup | JSON record export works, but does not include gallery photo/video blobs. OS-level backup/restore may operate according to device settings. Do not market developer-hosted cloud backup. |
 
-Official reference: https://support.google.com/googleplay/android-developer/answer/10787469
+## App-content and listing preparation
 
-## 15 October source correction
-- Firebase module must return before SDK imports unless PETCARE_CLOUD_ENABLED is explicitly true; do not enable until consent, deletion, restore and Data safety review are complete.
-- Logo is bundled locally, avoiding an automatic GitHub image request at startup.
-- Optional catalog fetches expose connection metadata to the configured supplier, including on subsequent launches. Review supplier behavior before answering Data safety.
-- Sharing SOS/contact details, media and world drafts is user-initiated; verify payloads and the applicable user-initiated-sharing exemption.
-- Local gallery media uses IndexedDB and is not included in the JSON record export.
-- Final declarations remain unsubmitted pending final AAB manifest/SDK/network audit and physical-device tests. Do not infer Google approval from a passing build.
+- Audience: owner must confirm the truthful intended age groups; no final audience or content-rating questionnaire has been submitted.
+- No public user feed, messaging system, video-chat backend, verified emergency directory, live shop checkout or live sponsored promotions is provided. These are local drafts, external links or future functions as labeled in the app.
+- Veterinary records are organizational tools, not diagnosis or veterinary treatment. Answer applicable health-content questions using the final Console questionnaire; do not invent a completed rating.
+- App is free; no paid download or in-app subscription is active. Future monetization needs its own billing/ad implementation and disclosures.
+- Store listing wording: “Keep local pet profiles, vaccination and care records, weight, expenses, photos and reminders. Find external veterinary, shopping and AI services. Your pet records stay on your device unless you choose to share them.”
+
+## Verified technical results
+
+- Signed APK and AAB builds passed from `869ceab…`; APK signing and AAB signature verification passed in release workflow 38789690378.
+- Static JavaScript/privacy regression checks and dependency audit passed (no reported vulnerabilities at test time).
+- Mobile Chromium: 23 tabs, two-pet create/edit/delete, record entry, persistence, export, gallery and SR/EN policy access passed.
+- Android 15 and 16 emulators: installation/launch, WebView create/edit/persistence, 23 tabs, policy link, native reminder schedule/query/cancel passed.
+- Public policy returned HTTP 200 with the updated text and developer contact.
+- Actual background reminder delivery has a separate acceptance test; record its result in the PR before treating it as verified.
+
+## Remaining external steps (no payment taken)
+
+1. Confirm physical-phone installation and classify the exact Play Protect message. Emulator installation is not Play Protect acceptance. Do not disable Play Protect or promise a code/signature change will remove a Google warning.
+2. Complete personal developer account registration, legal terms, USD 25 fee and identity/device verification with the account owner. These are not completed.
+3. Enter this worksheet in Play Console, complete audience/content rating and other applicable declarations, upload the reviewed signed AAB and run the available Google pre-launch checks/testing requirements.
+4. Submit for review only after required checks are met. Google determines approval and review timing.
+
+Official references:
+- https://support.google.com/googleplay/android-developer/answer/10787469
+- https://support.google.com/googleplay/android-developer/answer/10144311
+- https://support.google.com/googleplay/android-developer/answer/11926878
+- https://developers.google.com/android/play-protect/warning-dev-guidance
