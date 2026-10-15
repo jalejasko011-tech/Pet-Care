@@ -45,6 +45,8 @@ try {
  });
  await device.shell('input keyevent KEYCODE_HOME');
  await device.shell('am kill com.petcare.companion');
+ await new Promise(r=>setTimeout(r,1000));
+ assert.equal((await device.shell('pidof com.petcare.companion')).toString().trim(),'','App process remained alive after am kill');
  let delivered=false;
  const deadline=scheduled+180000;
  while(Date.now()<deadline){
