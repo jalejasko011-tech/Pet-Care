@@ -25,3 +25,9 @@ if grep -E 'android.permission.(READ_SMS|RECEIVE_SMS|READ_CONTACTS|READ_CALL_LOG
 fi
 echo 'PASS: test APK installed, process running and Pet Care World visible on Android 35 emulator.'
 echo 'This does not verify Play Protect, release signing, physical device behavior or reminder delivery.'
+
+# Connect to the debuggable WebView of this test APK, not a desktop browser.
+adb shell pm grant com.petcare.companion android.permission.POST_NOTIFICATIONS
+PID=$(tr -d '\r\n' < android-test-evidence/pid.txt)
+adb forward tcp:9222 localabstract:webview_devtools_remote_$PID
+node tools/test-android-webview.mjs | tee android-test-evidence/webview-tests.txt
