@@ -39,6 +39,33 @@ jobs:
         run: |
           npx cap add android
           npx cap sync android
+      - name: Configure Firebase Android services (optional)
+        env:
+          FIREBASE_CONFIG_BASE64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          if [ -n "$FIREBASE_CONFIG_BASE64" ]; then
+            echo "$FIREBASE_CONFIG_BASE64" | base64 --decode > android/app/google-services.json
+            python3 - <<'PY'
+          import json
+          from pathlib import Path
+          config = json.loads(Path('android/app/google-services.json').read_text())
+          packages = [c.get('client_info', {}).get('android_client_info', {}).get('package_name') for c in config.get('client', [])]
+          if 'com.petcare.companion' not in packages:
+              raise SystemExit('Firebase Android package must match com.petcare.companion')
+          PY
+            python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle')
+          s = p.read_text()
+          s += "\\napply plugin: 'com.google.gms.google-services'\\n"
+          p.write_text(s)
+          p = Path('android/build.gradle')
+          s = p.read_text().replace('dependencies {', "dependencies {\\n        classpath 'com.google.gms:google-services:4.4.4'", 1)
+          p.write_text(s)
+          PY
+          else
+            echo "Firebase configuration secret is not set; skipping native Firebase setup."
+          fi
       - name: Prepare release signing
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
