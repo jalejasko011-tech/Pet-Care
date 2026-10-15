@@ -40,6 +40,7 @@ jobs:
         run: |
           npm install
           npx cap add android
+          node tools/configure-android.mjs
           npx cap sync android
       - name: Validate web application
         run: npm run check:web

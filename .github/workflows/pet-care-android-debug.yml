@@ -27,7 +27,9 @@ jobs:
       - name: Check JavaScript dependencies
         run: npm audit --omit=dev --audit-level=high
       - name: Generate Android project
-        run: npx cap add android
+        run: |
+          npx cap add android
+          node tools/configure-android.mjs
       - name: Sync Android assets
         run: npx cap sync android
       - name: Build debug APK
