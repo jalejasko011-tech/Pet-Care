@@ -1,5 +1,7 @@
 // Optional Firebase cloud sync. Never stores data in a public collection.
 (async () => {
+  // Cloud release is disabled until consent, deletion and restore are verified.
+  if (window.PETCARE_CLOUD_ENABLED !== true) return;
   const cfg = window.PETCARE_FIREBASE_CONFIG;
   if (!cfg?.apiKey || !cfg?.projectId || !cfg?.appId) return;
   try {

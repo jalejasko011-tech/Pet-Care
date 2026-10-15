@@ -62,7 +62,7 @@ jobs:
               config={'apiKey':key,'projectId':info['project_id'],'appId':client['client_info']['mobilesdk_app_id'],
                       'authDomain':info['project_id']+'.firebaseapp.com'}
               if info.get('storage_bucket'):config['storageBucket']=info['storage_bucket']
-          Path('www/firebase-config.js').write_text('window.PETCARE_FIREBASE_CONFIG = '+json.dumps(config)+';\\n')
+          Path('www/firebase-config.js').write_text('window.PETCARE_FIREBASE_CONFIG = '+json.dumps(config)+';\n')
           print('Firebase config prepared' if config else 'Firebase config missing; cloud sync disabled')
           PY
       - name: Generate Android project

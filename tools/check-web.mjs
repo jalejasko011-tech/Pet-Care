@@ -50,3 +50,15 @@ if (errors) {
 } else {
   console.log('Pet Care web checks passed.');
 }
+
+// Release privacy regressions: local assets and policy survive language rendering.
+const entry = readFileSync('www/index.html', 'utf8');
+if (!existsSync('www/privacy.html') || !entry.includes("a.href='privacy.html'")) throw Error('Missing persistent privacy policy link');
+if (/src="https:\/\/raw\.githubusercontent\.com/.test(entry)) throw Error('Bundle logo locally');
+if (!existsSync('www/pet_care_world_original_logo.png')) throw Error('Missing offline logo');
+if (entry.includes('<script src="firebase-config.js"><\\/script>')) throw Error('Do not inject cloud scripts into passport export');
+for (const path of ['firebase-sync.js','www/firebase-sync.js']) {
+  const cloud = readFileSync(path,'utf8');
+  if (!cloud.includes('if (window.PETCARE_CLOUD_ENABLED !== true) return;')) throw Error('Cloud privacy gate missing');
+}
+console.log('Privacy release regression checks passed.');
