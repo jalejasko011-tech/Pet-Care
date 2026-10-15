@@ -48,6 +48,7 @@ jobs:
           npm install
           npm run check:web
           npx cap add android
+          node tools/configure-android.mjs
           npx cap sync android
           cd android
           bash gradlew assembleDebug --no-daemon
@@ -58,10 +59,10 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Install and launch on Android 35 emulator
+      - name: Install and launch on Android 36 emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          api-level: 36
           arch: x86_64
           profile: pixel_2
           disable-animations: true

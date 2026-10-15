@@ -23,7 +23,7 @@ fi
 if grep -E 'android.permission.(READ_SMS|RECEIVE_SMS|READ_CONTACTS|READ_CALL_LOG|QUERY_ALL_PACKAGES|REQUEST_INSTALL_PACKAGES)' android-test-evidence/package.txt; then
   echo 'Unexpected sensitive permission'; exit 1
 fi
-echo 'PASS: test APK installed, process running and Pet Care World visible on Android 35 emulator.'
+echo 'PASS: test APK installed, process running and Pet Care World visible on Android 36 emulator.'
 echo 'This does not verify Play Protect, release signing, physical device behavior or reminder delivery.'
 
 # Connect to the debuggable WebView of this test APK, not a desktop browser.
