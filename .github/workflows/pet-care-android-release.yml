@@ -39,6 +39,28 @@ jobs:
           npm install
           npm run check:web
           npm audit --omit=dev --audit-level=high
+      - name: Prepare Firebase web configuration from Android JSON
+        env:
+          FIREBASE_CONFIG_BASE64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          python3 - <<'PY'
+          import os,base64,json
+          from pathlib import Path
+          encoded=os.getenv('FIREBASE_CONFIG_BASE64','')
+          config={}
+          if encoded:
+              raw=json.loads(base64.b64decode(encoded))
+              client=next((c for c in raw.get('client',[]) if c.get('client_info',{}).get('android_client_info',{}).get('package_name')=='com.petcare.companion'),None)
+              if not client:
+                  raise SystemExit('Firebase Android client com.petcare.companion not found')
+              key=next((k.get('current_key') for k in client.get('api_key',[]) if k.get('current_key')),None)
+              info=raw['project_info']
+              config={'apiKey':key,'projectId':info['project_id'],'appId':client['client_info']['mobilesdk_app_id'],
+                      'authDomain':info['project_id']+'.firebaseapp.com'}
+              if info.get('storage_bucket'):config['storageBucket']=info['storage_bucket']
+          Path('firebase-config.js').write_text('window.PETCARE_FIREBASE_CONFIG = '+json.dumps(config)+';\\n')
+          print('Firebase config prepared' if config else 'Firebase config missing; cloud sync disabled')
+          PY
       - name: Generate Android project
         run: |
           npx cap add android
