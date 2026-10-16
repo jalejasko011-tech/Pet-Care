@@ -58,6 +58,7 @@ try {
  const reminderPlan=await page.evaluate(async()=>{const captured=[];window.Capacitor={getPlatform:()=>'android',Plugins:{LocalNotifications:{checkPermissions:async()=>({display:'granted'}),createChannel:async c=>captured.push({channel:c}),getPending:async()=>({notifications:[]}),cancel:async()=>{},schedule:async n=>captured.push(n)}}};await window.petCareNative.sync([],data.pets);delete window.Capacitor;return captured;});
  assert.equal(reminderPlan[0].channel.sound,'petcare_chime.wav');assert.equal(reminderPlan[1].notifications.filter(n=>n.schedule.on).length,2);assert.equal(reminderPlan[1].notifications.filter(n=>n.schedule.at).length,1);assert.ok(reminderPlan[1].notifications.every(n=>n.channelId==='petcare_care_v2'));
  await page.evaluate(()=>{activePet=data.pets[1].id;render();});await page.locator('[data-tab="feeding"]').click();assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/No meal recorded/);
+ await page.evaluate(()=>{activePet=data.pets[0].id;render();});
  for(const [tab,mode,form,values,key] of [
   ['health','health','healthForm',{title:'Vaccine',nextDate:'2027-01-15'},'health'],
   ['diary','log','logForm',{note:'Normal appetite'},'logs'],
