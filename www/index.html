@@ -14,6 +14,7 @@
 select#languageSelect option{color:#18352d;background:#fff}a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}button:focus-visible,a:focus-visible{outline:3px solid #f6b44b;outline-offset:2px}
 @media(max-width:560px){.toprow{flex-wrap:wrap;gap:14px}.toprow>div:first-child{flex:1 1 100%}.toprow>div:last-child{width:100%;justify-content:space-between}.brand{font-size:26px;line-height:1.2}.tag{margin-top:6px}.petselect{margin-top:14px}}
 </style>
+<link rel="stylesheet" href="global-chat.css">
 </head>
 <body><div class="app">
 <header class="top"><div class="toprow"><div><div class="brand">Pet Care World</div><div class="tag" id="tagline">One World, All Pets</div></div><div style="display:flex;gap:7px;align-items:center"><select id="languageSelect" aria-label="Choose language by flag" style="width:112px;max-width:28vw;background:#ffffff18;color:white;border-color:#ffffff55;padding:8px"><option value="en">🇬🇧 EN</option><option value="sr">🇷🇸 SR</option><option value="de">🇩🇪 DE</option><option value="fr">🇫🇷 FR</option><option value="es">🇪🇸 ES</option><option value="it">🇮🇹 IT</option><option value="pt">🇵🇹 PT</option><option value="tr">🇹🇷 TR</option><option value="ru">🇷🇺 RU</option><option value="zh">🇨🇳 中文</option><option value="ja">🇯🇵 日本語</option><option value="ar">🇸🇦 العربية</option><option value="hi">🇮🇳 हिन्दी</option><option value="nl">🇳🇱 NL</option><option value="pl">🇵🇱 PL</option><option value="id">🇮🇩 ID</option><option value="th">🇹🇭 TH</option><option value="vi">🇻🇳 VI</option><option value="sv">🇸🇪 SV</option><option value="ko">🇰🇷 한국어</option></select><button class="btn secondary" id="exportBtn">Izvoz podataka</button></div></div><div class="petselect" id="petChips"></div></header>
@@ -357,4 +358,6 @@ render=function(){petCareRender();if(tab==='home'||tab==='pets'){petCareNav.scro
 petCareNav.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b&&['home','pets'].includes(b.dataset.tab))petCareNav.scrollLeft=0;});
 render();
 </script>
+<script src="chat-config.js"></script>
+<script src="global-chat.js"></script>
 </body></html>

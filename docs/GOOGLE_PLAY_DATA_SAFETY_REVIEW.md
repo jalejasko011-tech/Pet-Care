@@ -52,3 +52,6 @@ Official references:
 - https://support.google.com/googleplay/android-developer/answer/10144311
 - https://support.google.com/googleplay/android-developer/answer/11926878
 - https://developers.google.com/android/play-protect/warning-dev-guidance
+
+## 1.4 chat shortcut
+Global chat is disabled in chat-config.js. Opening the shortcut makes no external request and offers no send form. Do not reuse the local-only declarations after enabling chat; see GLOBAL_CHAT_SETUP.md for activation and disclosure requirements.

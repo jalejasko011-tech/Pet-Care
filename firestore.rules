@@ -1,6 +1,55 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function moderator() { return signedIn() && request.auth.token.get('moderator', false) == true; }
+    function active() {
+      return signedIn() && exists(/databases/$(database)/documents/chatProfiles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.banned == false;
+    }
+    match /chatProfiles/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid || moderator();
+      allow list: if moderator();
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['nickname', 'banned', 'lastSent'])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 2 && request.resource.data.nickname.size() <= 30
+        && request.resource.data.banned == false && request.resource.data.lastSent == timestamp.value(0);
+      allow update: if moderator() || signedIn() && request.auth.uid == uid
+        && resource.data.banned == false
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nickname', 'lastSent'])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 2 && request.resource.data.nickname.size() <= 30
+        && (request.resource.data.lastSent == resource.data.lastSent ||
+          request.resource.data.lastSent == request.time && resource.data.lastSent <= request.time - duration.value(5, 's'));
+      allow delete: if moderator() || signedIn() && request.auth.uid == uid && resource.data.banned == false;
+    }
+    match /globalMessages/{messageId} {
+      allow get: if active() || moderator();
+      allow list: if (active() || moderator()) && request.query.limit != null && request.query.limit <= 100;
+      allow create: if active()
+        && request.resource.data.keys().hasOnly(['authorId','nickname','text','createdAt'])
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.nickname == getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.nickname
+        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000
+        && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.lastSent == request.time
+        && get(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.lastSent <= request.time - duration.value(5,'s');
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.authorId == request.auth.uid || moderator();
+    }
+    match /chatReports/{reportId} {
+      allow read, delete: if moderator();
+      allow create: if active()
+        && request.resource.data.keys().hasOnly(['reporterId','messageId','reason','createdAt'])
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.messageId is string
+        && reportId == request.auth.uid + '_' + request.resource.data.messageId
+        && exists(/databases/$(database)/documents/globalMessages/$(request.resource.data.messageId))
+        && request.resource.data.reason is string && request.resource.data.reason.size() > 0 && request.resource.data.reason.size() <= 300
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+    }
     // Private per-user pet care records. The app must write under users/{uid}.
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
