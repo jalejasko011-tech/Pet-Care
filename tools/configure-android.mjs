@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 const vars='android/variables.gradle';
 let text=readFileSync(vars,'utf8');
 for(const key of ['compileSdkVersion','targetSdkVersion']) {
@@ -16,5 +16,8 @@ const { spawnSync } = await import('node:child_process');
 const icons = spawnSync('java', ['-Djava.awt.headless=true', 'tools/GenerateLauncherIcons.java'], {stdio:'inherit'});
 if (icons.status !== 0) throw Error('Android launcher artwork generation failed');
 const appGradle='android/app/build.gradle';
-const app=readFileSync(appGradle,'utf8').replace(/versionCode\s+\d+/, 'versionCode 6').replace(/versionName\s+"[^"]+"/, 'versionName "1.5"');
+const app=readFileSync(appGradle,'utf8').replace(/versionCode\s+\d+/, 'versionCode 7').replace(/versionName\s+"[^"]+"/, 'versionName "1.6"');
 writeFileSync(appGradle,app);
+
+mkdirSync('android/app/src/main/res/raw',{recursive:true});
+copyFileSync('www/petcare_chime.wav','android/app/src/main/res/raw/petcare_chime.wav');

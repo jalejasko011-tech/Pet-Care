@@ -9,7 +9,7 @@ const server=createServer(async(req,res)=>{
   const pathname=new URL(req.url,'http://localhost').pathname;
   if(pathname==='/chat-config.js'){
    res.setHeader('Content-Type','text/javascript');
-   res.end('window.PETCARE_CHAT_CONFIG='+JSON.stringify({enabled:true,emulators:true,firebase:{apiKey:'demo-key',projectId:'demo-petcare-chat',appId:'1:123:web:test'}})+';');return;
+   res.end('window.PETCARE_CHAT_CONFIG='+JSON.stringify({enabled:true,emulators:true,media:{enabled:true,bucket:'demo-petcare-chat.appspot.com'},firebase:{apiKey:'demo-key',projectId:'demo-petcare-chat',appId:'1:123:web:test'}})+';');return;
   }
   const path=resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
   if(!path.startsWith(root+'/')){res.writeHead(403).end();return;}
@@ -27,17 +27,25 @@ try{
  async function join(page,nick){await page.goto(url);await page.selectOption('#languageSelect','en');await page.locator('#globalChatShortcut').click();await page.locator('#chatNickname').fill(nick);await page.locator('#chatConsent').check();await page.locator('#chatJoin button').click();await page.locator('#chatStatus').filter({hasText:'Connected'}).waitFor({timeout:45000});}
  await join(alice,'Chat test A');await join(bob,'Chat test B');
  const text='<img src=x onerror=alert(1)> Emulator greeting';
- await alice.locator('#chatText').fill(text);await alice.locator('#chatSend button').click();
+ await alice.locator('#chatText').fill(text);await alice.locator('#chatSend button[type=submit]').click();
  const received=bob.locator('.chat-message').filter({hasText:text});await received.waitFor({timeout:20000});assert.equal(await received.locator('img').count(),0);
- await alice.locator('#chatText').fill('Rate limit test');await alice.locator('#chatSend button').click();await alice.locator('#chatStatus').filter({hasText:'Message not sent'}).waitFor();
- await bob.locator('#chatText').fill('Hello from B');await bob.locator('#chatSend button').click();await alice.locator('.chat-message').filter({hasText:'Hello from B'}).waitFor();
+ await alice.locator('#chatText').fill('Rate limit test');await alice.locator('#chatSend button[type=submit]').click();await alice.locator('#chatStatus').filter({hasText:'Message not sent'}).waitFor();
+ await bob.locator('#chatText').fill('Hello from B');await bob.locator('#chatSend button[type=submit]').click();await alice.locator('.chat-message').filter({hasText:'Hello from B'}).waitFor();
  await received.getByRole('button',{name:'Report',exact:true}).click();await bob.locator('#chatStatus').filter({hasText:'Report sent'}).waitFor();
  await received.getByRole('button',{name:'Block',exact:true}).click();assert.equal(await received.count(),0);
  await bob.getByRole('button',{name:'Unblock all',exact:true}).click();await received.waitFor();
  await alice.locator('.chat-message').filter({hasText:text}).getByRole('button',{name:'Delete',exact:true}).click();await received.waitFor({state:'detached'});
+ await alice.waitForTimeout(5100);
+ await alice.locator('#chatText').fill('Photo attachment');
+ await alice.locator('#chatFile').setInputFiles({name:'pet.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZ1cAAAAASUVORK5CYII=','base64')});
+ await alice.locator('#chatSend button[type=submit]').click();await alice.locator('#chatStatus').filter({hasText:'Message sent.'}).waitFor();
+ const photo=bob.locator('.chat-message').filter({hasText:'Photo attachment'});await photo.waitFor();await photo.getByRole('button',{name:'Load attachment',exact:true}).click();await photo.locator('img').waitFor();assert.ok(await photo.locator('img').evaluate(i=>i.complete&&i.naturalWidth>0));
+ await alice.waitForTimeout(5100);
+ const video=await alice.evaluate(async()=>{const c=document.createElement('canvas');c.width=32;c.height=32;const ctx=c.getContext('2d');ctx.fillStyle='green';ctx.fillRect(0,0,32,32);const stream=c.captureStream(5),rec=new MediaRecorder(stream,{mimeType:'video/webm'}),chunks=[];return await new Promise(resolve=>{rec.ondataavailable=e=>chunks.push(e.data);rec.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());resolve(Array.from(new Uint8Array(await new Blob(chunks,{type:'video/webm'}).arrayBuffer())));};rec.start();setTimeout(()=>rec.stop(),500);});});
+ await alice.locator('#chatText').fill('Video attachment');await alice.locator('#chatFile').setInputFiles({name:'pet.webm',mimeType:'video/webm',buffer:Buffer.from(video)});await alice.locator('#chatSend button[type=submit]').click();await alice.locator('#chatStatus').filter({hasText:'Message sent.'}).waitFor();const clip=bob.locator('.chat-message').filter({hasText:'Video attachment'});await clip.waitFor();await clip.getByRole('button',{name:'Load attachment',exact:true}).click();await clip.locator('video').waitFor();await clip.locator('video').evaluate(v=>new Promise((resolve,reject)=>{if(v.readyState>=1)return resolve();v.onloadedmetadata=resolve;v.onerror=reject;}));assert.ok(await clip.locator('video').evaluate(v=>v.videoWidth>0));
  await bob.getByRole('button',{name:'Close',exact:true}).click();await bob.locator('#globalChatShortcut').click();await bob.locator('#chatConsent').check();await bob.locator('#chatJoin button').click();await bob.locator('#chatStatus').filter({hasText:'Connected'}).waitFor();
  await bob.getByRole('button',{name:'Delete chat identity and my messages',exact:true}).click();await bob.locator('#chatStatus').filter({hasText:'Chat identity and messages deleted'}).waitFor();
  await alice.getByRole('button',{name:'Delete chat identity and my messages',exact:true}).click();await alice.locator('#chatStatus').filter({hasText:'Chat identity and messages deleted'}).waitFor();
  assert.deepEqual(errors,[]);
- console.log('PASS two isolated chat clients: consent, realtime send/reply, XSS-safe rendering, rate limit, report, block/unblock, own deletion, reconnect and identity deletion. Emulator only.');
+ console.log('PASS two isolated chat clients: consent, realtime send/reply, XSS-safe rendering, rate limit, report, block/unblock, own deletion, reconnect and identity deletion, authenticated photo/video upload and playback. Emulator only.');
 }finally{await browser.close();await new Promise(r=>server.close(r));}

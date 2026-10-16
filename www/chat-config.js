@@ -1,6 +1,7 @@
 // Public Firebase client configuration. No administrator credentials.
 window.PETCARE_CHAT_CONFIG = {
   "enabled": true,
+  "media": {"enabled": false, "bucket": ""},
   "firebase": {
     "apiKey": "AIzaSyDG4ly3BEPk92KmQGhioOREkuNyT1LABjU",
     "authDomain": "pet-care-world.firebaseapp.com",

@@ -35,7 +35,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mobile-appearance-preview
-          path: pet-care-background-preview.png
+          path: |
+            pet-care-background-preview.png
+            chat-wallpaper-preview.png
           retention-days: 7
 
   android-smoke:
@@ -98,4 +100,4 @@ jobs:
       - name: Install chat browser
         run: npx playwright install --with-deps chromium
       - name: Verify global chat access and moderation rules
-        run: npx firebase emulators:exec --only auth,firestore --project demo-petcare-chat 'node tools/test-chat-rules.mjs && node tools/test-chat-browser.mjs'
+        run: npx firebase emulators:exec --only auth,firestore,storage --project demo-petcare-chat 'node tools/test-chat-rules.mjs && node tools/test-chat-browser.mjs'
