@@ -11,17 +11,17 @@ service cloud.firestore {
       allow get: if signedIn() && request.auth.uid == uid || moderator();
       allow list: if moderator();
       allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['nickname', 'banned', 'lastSent'])
+        && request.resource.data.keys().hasOnly(['nickname', 'banned', 'lastSent', 'sequence'])
         && request.resource.data.nickname is string
         && request.resource.data.nickname.size() >= 2 && request.resource.data.nickname.size() <= 30
-        && request.resource.data.banned == false && request.resource.data.lastSent == timestamp.value(0);
+        && request.resource.data.banned == false && request.resource.data.lastSent == timestamp.value(0) && request.resource.data.sequence == 0;
       allow update: if moderator() || signedIn() && request.auth.uid == uid
         && resource.data.banned == false
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nickname', 'lastSent'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nickname', 'lastSent', 'sequence'])
         && request.resource.data.nickname is string
         && request.resource.data.nickname.size() >= 2 && request.resource.data.nickname.size() <= 30
-        && (request.resource.data.lastSent == resource.data.lastSent ||
-          request.resource.data.lastSent == request.time && resource.data.lastSent <= request.time - duration.value(5, 's'));
+        && (request.resource.data.lastSent == resource.data.lastSent && request.resource.data.sequence == resource.data.sequence ||
+          request.resource.data.lastSent == request.time && request.resource.data.sequence == resource.data.sequence + 1 && resource.data.lastSent <= request.time - duration.value(5, 's'));
       allow delete: if moderator() || signedIn() && request.auth.uid == uid && resource.data.banned == false;
     }
     match /globalMessages/{messageId} {
@@ -29,6 +29,7 @@ service cloud.firestore {
       allow list: if (active() || moderator()) && request.query.limit != null && request.query.limit <= 100;
       allow create: if active()
         && request.resource.data.keys().hasOnly(['authorId','nickname','text','createdAt'])
+        && messageId == request.auth.uid + '_' + string(getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.sequence)
         && request.resource.data.authorId == request.auth.uid
         && request.resource.data.nickname == getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.nickname
         && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000

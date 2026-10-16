@@ -54,7 +54,7 @@
       await sdk();await auth.authStateReady();user=auth.currentUser||(await api.signInAnonymously(auth)).user;
       const profile=api.doc(db,'chatProfiles',user.uid),snapshot=await api.getDoc(profile);
       if(snapshot.exists())await api.updateDoc(profile,{nickname});
-      else await api.setDoc(profile,{nickname,banned:false,lastSent:api.Timestamp.fromMillis(0)});
+      else await api.setDoc(profile,{nickname,banned:false,lastSent:api.Timestamp.fromMillis(0),sequence:0});
       if(token!==generation)return;
       localStorage.setItem('petcare_chat_nickname_v1',nickname);el('chatJoin').hidden=true;el('chatConnected').hidden=false;
       stop=api.onSnapshot(api.query(api.collection(db,'globalMessages'),api.orderBy('createdAt','desc'),api.limit(100)),snap=>{rows=snap.docs.map(d=>({id:d.id,...d.data()})).reverse();paint();status(tr('Povezano • javni razgovor','Connected • public conversation'));},()=>{status(tr('Veza je prekinuta ili pristup nije dozvoljen. Pokušajte ponovo.','Connection interrupted or access denied. Try again.'));el('chatSend').querySelector('button').disabled=true;});
@@ -78,7 +78,7 @@
   async function run(fn){try{await fn();}catch{status(tr('Radnja nije uspela. Proverite vezu i pokušajte ponovo.','Action failed. Check your connection and try again.'));}}
   async function sendMessage(e){
     e.preventDefault();if(busy)return;const text=el('chatText').value.trim();if(!text||text.length>1000)return;busy=true;const button=el('chatSend').querySelector('button');button.disabled=true;
-    try{const batch=api.writeBatch(db);batch.update(api.doc(db,'chatProfiles',user.uid),{lastSent:api.serverTimestamp()});batch.set(api.doc(api.collection(db,'globalMessages')),{authorId:user.uid,nickname:localStorage.getItem('petcare_chat_nickname_v1'),text,createdAt:api.serverTimestamp()});await batch.commit();if(el('chatText'))el('chatText').value='';}
+    try{await api.runTransaction(db,async tx=>{const profile=api.doc(db,'chatProfiles',user.uid),snapshot=await tx.get(profile),next=snapshot.data().sequence+1;tx.update(profile,{lastSent:api.serverTimestamp(),sequence:next});tx.set(api.doc(db,'globalMessages',user.uid+'_'+next),{authorId:user.uid,nickname:snapshot.data().nickname,text,createdAt:api.serverTimestamp()});});if(el('chatText'))el('chatText').value='';}
     catch{status(tr('Poruka nije poslata. Sačekajte 5 sekundi i proverite vezu.','Message not sent. Wait 5 seconds and check your connection.'));}
     finally{busy=false;if(button.isConnected)button.disabled=false;}
   }
