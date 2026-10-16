@@ -19,9 +19,27 @@ try{
  await assertSucceeds(setDoc(doc(bob,'chatReports','bob_alice_1'),{reporterId:'bob',messageId:'alice_1',reason:'Spam',createdAt:serverTimestamp()}));
  await assertFails(getDoc(doc(alice,'chatReports','bob_alice_1')));
  await assertSucceeds(getDoc(doc(mod,'chatReports','bob_alice_1')));
+
+ const push={token:'test-token-'.repeat(10),enabled:true,channelId:'petcare_chat_cheerful_v1',sound:'petcare_cheerful.wav',blockedAuthors:['alice'],language:'en',updatedAt:serverTimestamp()};
+ await assertSucceeds(setDoc(doc(bob,'chatPushSubscriptions','bob'),push));
+ await assertFails(getDoc(doc(alice,'chatPushSubscriptions','bob')));
+ await assertFails(getDocs(collection(mod,'chatPushSubscriptions')));
+ await assertFails(setDoc(doc(alice,'chatPushSubscriptions','bob'),push));
+ await assertFails(setDoc(doc(bob,'chatPushSubscriptions','bob'),{...push,channelId:'untrusted'}));
+ await assertFails(setDoc(doc(bob,'chatPushSubscriptions','bob'),{...push,token:'short'}));
+ await assertFails(setDoc(doc(bob,'chatPushSubscriptions','bob'),{...push,blockedAuthors:Array(1001).fill('alice')}));
+ const audit={actorId:'mod',action:'ban',targetId:'bob',createdAt:serverTimestamp()};
+ await assertFails(setDoc(doc(alice,'moderationAudit','forged'),audit));
+ await assertSucceeds(setDoc(doc(mod,'moderationAudit','valid'),audit));
+ await assertFails(getDoc(doc(alice,'moderationAudit','valid')));
+ await assertSucceeds(getDoc(doc(mod,'moderationAudit','valid')));
+ await assertFails(updateDoc(doc(mod,'moderationAudit','valid'),{targetId:'alice'}));
+ await assertFails(deleteDoc(doc(mod,'moderationAudit','valid')));
  await assertSucceeds(updateDoc(doc(mod,'chatProfiles','bob'),{banned:true}));
  await assertFails(updateDoc(doc(bob,'chatProfiles','bob'),{banned:false}));
  await assertFails(send(bob,'bob','bob_1'));
+ await assertFails(setDoc(doc(bob,'chatPushSubscriptions','bob'),push));
+ await assertSucceeds(deleteDoc(doc(bob,'chatPushSubscriptions','bob')));
  await assertSucceeds(deleteDoc(doc(alice,'globalMessages','alice_1')));
  await assertFails(setDoc(doc(bob,'users','alice','backups','current'),{data:'stolen'}));
  // Attachments require a linked message, exact owner, allowed MIME and size.

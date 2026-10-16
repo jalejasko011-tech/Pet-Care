@@ -51,6 +51,20 @@ try {
  assert.equal(await page.evaluate(()=>petCarePreferences.get().app),'lavender');
  console.log('PASS Android private memory and appearance survive WebView reload.');
 
+
+ await device.shell('svc wifi disable');await device.shell('svc data disable');
+ try{
+  await page.reload();await page.locator('#content').waitFor();
+  assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
+  const backup=await page.evaluate(async()=>{await petCareBackup.ready;const built=await petCareBackup.build(),fs=window.Capacitor.Plugins.Filesystem;const base64=await new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.readAsDataURL(new Blob([built.bytes]));});await fs.writeFile({path:'petcare-backup-test.zip',data:base64,directory:'CACHE'});const file=await fs.readFile({path:'petcare-backup-test.zip',directory:'CACHE'}),bytes=Uint8Array.from(atob(file.data),c=>c.charCodeAt(0));const parsed=petCareBackup.parse(bytes);await fs.deleteFile({path:'petcare-backup-test.zip',directory:'CACHE'});return {same:bytes.length===built.bytes.length,pets:parsed.data.pets.length,memories:parsed.memories.length};});
+  assert.deepEqual(backup,{same:true,pets:1,memories:1});
+  console.log('PASS offline Android reload, native Filesystem complete-backup roundtrip and private-memory persistence.');
+ }finally{await device.shell('svc wifi enable');await device.shell('svc data enable');}
+ // Capture only synthetic test records for store review, not real user content.
+ await openSection('home');await page.screenshot({path:'android-test-evidence/store-home.png'});
+ await openSection('feeding');await page.screenshot({path:'android-test-evidence/store-feeding.png'});
+ await openSection('memories');await page.screenshot({path:'android-test-evidence/store-memories.png'});
+ await page.locator('#settingsShortcut').click();await page.screenshot({path:'android-test-evidence/store-settings.png'});
  const result=await page.evaluate(async()=>{
   const api=window.Capacitor?.Plugins?.LocalNotifications;
   if(!api)throw Error('Native notifications plugin missing');

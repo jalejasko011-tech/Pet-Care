@@ -13,5 +13,5 @@
  const labels={home:['🏠','Pregled','Home'],pets:['🐾','Ljubimci','Pets'],health:['🩺','Zdravlje','Health'],memories:['📖','Uspomene','Memories']};
  function local(sr,en){return window.petCareI18n?.phrase(sr,en)||(currentLang()==='sr'?sr:en);}
  function update(){for(const [id,[icon,sr,en]]of Object.entries(labels)){const b=nav.querySelector(`[data-tab="${id}"]`);if(b)b.innerHTML=`<span aria-hidden="true" class="nav-icon">${icon}</span>${esc(local(sr,en))}`;}more.innerHTML=`<span aria-hidden="true" class="nav-icon">☰</span>${esc(local('Više','More'))}`;more.classList.toggle('active',!primary.has(tab));document.getElementById('sectionsTitle').textContent=local('Sve opcije','All sections');document.getElementById('closeSections').textContent=local('Zatvori','Close');for(const {title,sr,en}of sections)title.textContent=local(sr,en);}
- const previous=render;render=function(){previous();update();};window.petCareUI={open(id){dialog.close();tab=id;formMode=null;render();}};update();
+ const previous=render;render=function(){previous();translateUI();update();};window.petCareUI={open(id){dialog.close();tab=id;formMode=null;render();}};update();
 })();

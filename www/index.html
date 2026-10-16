@@ -361,13 +361,16 @@ render=function(){petCareRender();if(tab==='home'||tab==='pets'){petCareNav.scro
 petCareNav.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b&&['home','pets'].includes(b.dataset.tab))petCareNav.scrollLeft=0;});
 render();
 </script>
+<script src="ui-language.js"></script>
 <script src="preferences.js"></script>
 <script src="feeding.js"></script>
 <script src="chat-config.js"></script>
 <script src="global-chat.js"></script>
+<script src="chat-push.js"></script>
 <script src="settings-memories.js"></script>
 <script src="backup-zip.js"></script>
 <script src="complete-backup.js"></script>
+<script src="diagnostics.js"></script>
 <script src="simple-navigation.js"></script>
 <script src="navigation.js"></script>
 </body></html>

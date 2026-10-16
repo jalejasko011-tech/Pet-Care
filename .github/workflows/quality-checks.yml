@@ -21,9 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Check web app
-        run: npm run check:web && node tools/test-backup-codec.mjs
+        run: npm run check:web && node tools/test-backup-codec.mjs && node tools/test-push-policy.mjs
       - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+        run: npm audit --omit=dev --audit-level=high && npm --prefix functions ci && npm --prefix functions audit --omit=dev --audit-level=high
       - name: Install browser test runtime
         run: |
           npm install --no-save playwright
@@ -98,7 +98,7 @@ jobs:
           distribution: temurin
           java-version: '21'
       - name: Install Firebase test tools
-        run: npm install --no-save firebase@12.4.0 @firebase/rules-unit-testing@5 firebase-tools@14 playwright
+        run: npm install --no-save firebase@12.4.0 firebase-admin@13 @firebase/rules-unit-testing@5 firebase-tools@14 playwright
       - name: Install chat browser
         run: npx playwright install --with-deps chromium
       - name: Verify global chat access and moderation rules

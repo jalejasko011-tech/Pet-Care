@@ -1,4 +1,7 @@
 import {chromium} from 'playwright';
+import {initializeApp} from 'firebase-admin/app';
+import {getAuth} from 'firebase-admin/auth';
+import {getFirestore} from 'firebase-admin/firestore';
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -43,6 +46,35 @@ try{
  await alice.waitForTimeout(5100);
  const video=await alice.evaluate(async()=>{const c=document.createElement('canvas');c.width=32;c.height=32;const ctx=c.getContext('2d');ctx.fillStyle='green';ctx.fillRect(0,0,32,32);const stream=c.captureStream(5),rec=new MediaRecorder(stream,{mimeType:'video/webm'}),chunks=[];return await new Promise(resolve=>{rec.ondataavailable=e=>chunks.push(e.data);rec.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());resolve(Array.from(new Uint8Array(await new Blob(chunks,{type:'video/webm'}).arrayBuffer())));};rec.start();setTimeout(()=>rec.stop(),500);});});
  await alice.locator('#chatText').fill('Video attachment');await alice.locator('#chatFile').setInputFiles({name:'pet.webm',mimeType:'video/webm',buffer:Buffer.from(video)});await alice.locator('#chatSend button[type=submit]').click();await alice.locator('#chatStatus').filter({hasText:'Message sent.'}).waitFor();const clip=bob.locator('.chat-message').filter({hasText:'Video attachment'});await clip.waitFor();await clip.getByRole('button',{name:'Load attachment',exact:true}).click();await clip.locator('video').waitFor();await clip.locator('video').evaluate(v=>new Promise((resolve,reject)=>{if(v.readyState>=1)return resolve();v.onloadedmetadata=resolve;v.onerror=reject;}));assert.ok(await clip.locator('video').evaluate(v=>v.videoWidth>0));
+
+ // Moderator console: real emulator-issued claims; regular sign-in cannot read the queue.
+ const admin=initializeApp({projectId:'demo-petcare-chat'}),adminAuth=getAuth(admin),adminDb=getFirestore(admin);
+ const normal=await adminAuth.createUser({email:'viewer@example.test',password:'EmulatorOnlyPassword42',emailVerified:true});
+ const mod=await adminAuth.createUser({email:'moderator@example.test',password:'EmulatorOnlyPassword42',emailVerified:true});
+ await adminAuth.setCustomUserClaims(mod.uid,{moderator:true});
+ const moderation=await browser.newPage();moderation.on('pageerror',e=>errors.push(e.message));moderation.on('dialog',d=>d.accept());
+ await moderation.goto(url+'moderator.html');
+ async function login(email){await moderation.locator('#moderatorEmail').fill(email);await moderation.locator('#moderatorPassword').fill('EmulatorOnlyPassword42');await moderation.locator('#moderatorLoginForm button[type=submit]').click();}
+ await login(normal.email);await moderation.locator('#moderatorApproval').waitFor();assert.equal(await moderation.locator('#moderatorWorkspace').isVisible(),false);
+ await moderation.locator('#moderatorSignOut').click();await moderation.locator('#moderatorLogin').waitFor();
+ await login(mod.email);await moderation.locator('#moderatorWorkspace').waitFor();
+ await moderation.getByRole('button',{name:'Mark reviewed',exact:true}).first().click();
+ await moderation.getByText('No reports to review.',{exact:true}).waitFor();
+ // Report the uploaded photo, ban its author, unban, then remove message and media.
+ await photo.getByRole('button',{name:'Report',exact:true}).click();await bob.locator('#chatStatus').filter({hasText:'Report sent'}).waitFor();
+ await moderation.locator('#refreshReports').click();await moderation.getByRole('button',{name:'Ban author',exact:true}).waitFor();
+ await moderation.getByRole('button',{name:'Ban author',exact:true}).click();
+ const author=await alice.evaluate(()=>petCareChat.getSession().user.uid);
+ await moderation.waitForFunction(()=>document.getElementById('moderationStatus').textContent.includes('banned'));
+ assert.equal((await adminDb.doc('chatProfiles/'+author).get()).data().banned,true);
+ await moderation.locator('#unbanUid').fill(author);await moderation.locator('#unbanForm button').click();
+ await moderation.waitForFunction(()=>document.getElementById('moderationStatus').textContent==='Ban removed.');
+ assert.equal((await adminDb.doc('chatProfiles/'+author).get()).data().banned,false);
+ await moderation.getByRole('button',{name:'Remove message',exact:true}).click();await moderation.getByText('No reports to review.',{exact:true}).waitFor();
+ await photo.waitFor({state:'detached'});await moderation.locator('#refreshAudit').click();await moderation.locator('#moderatorAudit').getByText(/remove-message/).waitFor();
+ assert.ok((await adminDb.collection('moderationAudit').get()).size>=5);
+ await moderation.close();
+ console.log('PASS moderator login/role denial, report review, ban/unban, attachment removal and immutable action history.');
  await bob.getByRole('button',{name:'Close',exact:true}).click();await bob.locator('#globalChatShortcut').click();await bob.locator('#chatConsent').check();await bob.locator('#chatJoin button').click();await bob.locator('#chatStatus').filter({hasText:'Connected'}).waitFor();
  await bob.getByRole('button',{name:'Delete chat identity and my messages',exact:true}).click();await bob.locator('#chatStatus').filter({hasText:'Chat identity and messages deleted'}).waitFor();
  await alice.getByRole('button',{name:'Delete chat identity and my messages',exact:true}).click();await alice.locator('#chatStatus').filter({hasText:'Chat identity and messages deleted'}).waitFor();

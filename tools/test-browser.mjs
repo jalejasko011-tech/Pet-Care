@@ -163,6 +163,14 @@ try {
  await page.evaluate(async()=>{const old={};for(const key of [KEY,WORLD_KEY,'petcare_preferences_v1',LANG_KEY])old[key]=localStorage.getItem(key);const q=indexedDB.open('petcare_restore_journal_v1',1);await new Promise((resolve,reject)=>{q.onsuccess=()=>{const tx=q.result.transaction('journal','readwrite');tx.objectStore('journal').put({old,galleryIds:['interrupted-media'],memoryIds:[]},'pending');tx.oncomplete=()=>{q.result.close();resolve();};tx.onerror=()=>reject(tx.error);};});await galleryPut({id:'interrupted-media',petId:data.pets[0].id,name:'partial.png',type:'image/png',blob:new Blob(['partial'],{type:'image/png'})});data.pets.push({id:'interrupted-pet',name:'Partial pet'});localStorage.setItem(KEY,JSON.stringify(data));});
  await page.reload();await page.evaluate(()=>petCareBackup.ready);assert.equal(await page.evaluate(()=>data.pets.length),1);assert.equal(await page.evaluate(async()=>(await galleryAll()).some(x=>x.id==='interrupted-media')),false);
  console.log('PASS full backup media/records, duplicate merge, clean-device restore, quota rollback and interrupted-restore recovery.');
+
+ await page.evaluate(()=>petCareUI.open('home'));await page.evaluate(()=>petCareUI.open('health'));await page.evaluate(()=>petCareUI.open('settings'));
+ await page.goBack();await page.waitForFunction(()=>tab==='health');await page.goForward();await page.waitForFunction(()=>tab==='settings');
+ for(let n=0;n<65;n++)await page.evaluate(i=>petCareUI.open(i%2?'health':'home'),n);
+ const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.0');assert.equal(support.chatPushActive,false);
+ assert.ok(!JSON.stringify(support).includes('private-png-bytes'));assert.ok(!Object.hasOwn(support,'pets'));
+ await openSection('diagnostics');assert.match(await page.locator('#content').innerText(),/Pomoć|Help/);
+ console.log('PASS forward/back through section history and support report without pet or chat data.');
  const response=await page.goto(`http://127.0.0.1:${server.address().port}/privacy.html`);assert.equal(response.status(),200);
  assert.ok((await page.locator('body').innerText()).includes('jalejasko011@gmail.com'));
  console.log(`PASS: ${tabs.length} tabs with and without pets; create/edit/delete, records, persistence, export, gallery, SR/EN policy link, startup network.`);
