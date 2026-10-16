@@ -34,6 +34,7 @@ try {
  await page.screenshot({path:'pet-care-background-preview.png',fullPage:true});
  assert.equal(await page.locator('#footerNote a').getAttribute('href'),'privacy.html');
  assert.equal(await page.locator('.top #exportBtn').count(),0);
+ assert.equal(await page.locator('[data-action=addpet]').innerText(),'＋ Add pet');
  assert.equal(await page.locator('#settingsShortcut').evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('[data-action=addpet]').evaluate(e=>getComputedStyle(e).backgroundColor));
  assert.equal(await page.locator('#globalChatShortcut').evaluate(e=>getComputedStyle(e).position),'fixed');
  await page.locator('#globalChatShortcut').click();
@@ -167,6 +168,7 @@ try {
  await page.evaluate(()=>petCareUI.open('home'));await page.evaluate(()=>petCareUI.open('health'));await page.evaluate(()=>petCareUI.open('settings'));
  await page.goBack();await page.waitForFunction(()=>tab==='health');await page.goForward();await page.waitForFunction(()=>tab==='settings');
  for(let n=0;n<65;n++)await page.evaluate(i=>petCareUI.open(i%2?'health':'home'),n);
+ await page.evaluate(()=>petCareNavigation.back({canGoBack:false}));assert.equal(await page.evaluate(()=>petCareNavigation.getState().depth),0);assert.equal(await page.evaluate(()=>tab),'home');
  const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.0');assert.equal(support.chatPushActive,false);
  assert.ok(!JSON.stringify(support).includes('private-png-bytes'));assert.ok(!Object.hasOwn(support,'pets'));
  await openSection('diagnostics');assert.match(await page.locator('#content').innerText(),/Pomoć|Help/);

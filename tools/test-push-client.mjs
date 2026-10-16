@@ -13,6 +13,7 @@ await window.petCareChatPush.connect();assert.equal(calls.length,0,'No automatic
 await window.petCareChatPush.enable();assert.equal(calls.filter(x=>x[0]==='register').length,1);assert.equal(writes.length,1);assert.equal(writes[0].path,'chatPushSubscriptions/test-viewer');assert.equal(writes[0].value.channelId,'petcare_chat_cheerful_v1');
 current.blocked=['blocked-author'];await window.petCareChatPush.connect();assert.equal(writes.at(-1).value.blockedAuthors[0],'blocked-author');
 handlers.pushNotificationActionPerformed();assert.equal(calls.at(-1)[0],'open');
-await window.petCareChatPush.disable();assert.equal(values.size,0);assert.ok(calls.some(x=>x[0]==='delete'));assert.equal(calls.at(-1)[0],'unregister');
+await window.petCareChatPush.disable();assert.equal(values.size,0);assert.ok(calls.some(x=>x[0]==='delete'));assert.ok(calls.some(x=>x[0]==='unregister'));
+let finishDelete;current.api.deleteDoc=()=>new Promise(resolve=>finishDelete=resolve);const before=calls.filter(x=>x[0]==='unregister').length,stopping=window.petCareChatPush.disable();assert.equal(calls.filter(x=>x[0]==='unregister').length,before+1,'Native revoke must not wait for server acknowledgment');finishDelete();await stopping;
 native.requestPermissions=async()=>({receive:'denied'});await window.petCareChatPush.enable();assert.equal(values.size,0);
 console.log('PASS native push bridge: backend gate, explicit opt-in, legacy synchronous listener handles, registration, block sync, tap navigation, revoke and denied permission. Mock bridge; no live FCM delivery claimed.');

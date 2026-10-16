@@ -11,3 +11,5 @@ Production flags are OFF. Text chat and local pet reminders are independent and 
 7. Only after passing, make a reviewed build with `media.enabled:true`, exact bucket, and `push.enabled:true` in `www/chat-config.js`. Update privacy and Play Data safety for active photos/videos, messaging identifiers and tokens. Notify users of the separate opt-in.
 
 Each opted-in identity has one subscription (the app's identity is device-bound), bounded pages of 100, at most 2 concurrent function instances, duplicate delivery markers, generic notification text, blocked-author filtering and invalid-token cleanup. These are operational limits, not a cost guarantee. Review completed delivery metadata/audit/report retention with the owner and delete old private service metadata on an agreed schedule. No automatic content moderation is provided.
+
+FCM requires compatible Google Play services. A Huawei device without them is not covered by this bridge; Huawei Push Kit integration is not implemented. Verify the actual target phone before promising background chat delivery. Local pet reminders use Android LocalNotifications separately.

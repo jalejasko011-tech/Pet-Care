@@ -186,6 +186,7 @@ function translateUI(){
   document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   const sel=document.getElementById('languageSelect');if(sel)sel.value=lang;
   const tag=document.getElementById('tagline');if(tag)tag.textContent=lang==='sr'?'Brinemo o svojim ljubimcima':'Caring for the pets we love';
+  document.querySelectorAll('[data-action="addpet"]').forEach(b=>b.textContent='＋ '+translateText('Dodaj ljubimca'));
   const ex=document.getElementById('exportBtn');if(ex)ex.textContent=translateText('Izvoz podataka');
   document.querySelectorAll('#nav button').forEach(b=>{if(!b.dataset.original)b.dataset.original=b.textContent.trim();b.textContent=translateText(b.dataset.original)});
   const foot=document.getElementById('footerNote');if(foot){foot.replaceChildren(document.createTextNode(lang==='sr'?'Pet Care World • Evidencija ljubimaca ostaje na uređaju. Chat poruke su javne. ':'Pet Care World • Pet records stay on this device. Chat messages are public. '));const a=document.createElement('a');a.href='privacy.html';a.textContent=lang==='sr'?'Politika privatnosti':'Privacy Policy';foot.append(a);}
