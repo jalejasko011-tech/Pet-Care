@@ -88,6 +88,7 @@ try {
  await page.waitForFunction(()=>document.querySelector('[data-memory] video').readyState>=1);
  assert.ok(await page.locator('[data-memory] video').evaluate(v=>v.duration>0));
  await page.screenshot({path:'private-memories-preview.png',fullPage:true});
+ await page.locator('[data-memory-edit]').click();await page.locator('#cancelMemory').waitFor();await page.goBack();await page.locator('#memoryForm').waitFor();assert.equal(await page.locator('#cancelMemory').count(),0);
  await page.locator('[data-memory-edit]').click();await page.locator('#memoryForm [name=story]').fill('Updated private story');await page.locator('#saveMemory').click();
  await page.waitForFunction(async()=>(await petCareMemories.all())[0]?.text==='Updated private story');
  await page.locator('[data-memory-favorite]').click();await page.waitForFunction(async()=>(await petCareMemories.all())[0]?.favorite===true);

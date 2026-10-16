@@ -23,6 +23,11 @@ try {
  await page.locator('[data-tab="home"]').click();await page.locator('#settingsShortcut').click();await page.locator('#settingsMemories').click();await page.locator('#memoryForm').waitFor();
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='settings');
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
+
+ await page.locator('#settingsShortcut').click();await page.locator('#content a[href="privacy.html"]').click();await page.waitForURL('**/privacy.html');
+ await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>typeof petCareNavigation!=='undefined'&&tab==='settings');
+ assert.equal(await page.evaluate(()=>petCareNavigation.ready),true);
+ await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
  await page.locator('[data-tab="health"]').click();await page.evaluate(()=>{formMode='health';render();});
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='health'&&formMode===null);
  await page.locator('#globalChatShortcut').click();await page.locator('#globalChatDialog').waitFor({state:'visible'});
