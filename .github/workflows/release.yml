@@ -137,22 +137,22 @@ jobs:
               time.sleep(20)
           else: raise SystemExit('Quality checks did not complete; release not published')
           PY
-      - name: Publish version 1.7.2 downloads
+      - name: Publish version 1.8.0 downloads
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view v1.7.2 >/dev/null 2>&1; then
-            echo 'Version 1.7.2 already exists; preserving existing release.'
+          if gh release view v1.8.0 >/dev/null 2>&1; then
+            echo 'Version 1.8.0 already exists; preserving existing release.'
             exit 0
           fi
-          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.7.2.apk
+          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.0.apk
           cd release
-          zip Pet-Care-World-1.7.2.zip Pet-Care-World-1.7.2.apk
-          sha256sum Pet-Care-World-1.7.2.apk Pet-Care-World-1.7.2.zip > SHA256SUMS.txt
+          zip Pet-Care-World-1.8.0.zip Pet-Care-World-1.8.0.apk
+          sha256sum Pet-Care-World-1.8.0.apk Pet-Care-World-1.8.0.zip > SHA256SUMS.txt
           cat > release-notes.txt <<'EOF'
-          Pet Care World 1.7.2 adds Android Back navigation through previous app screens and forms. Back closes an open chat first. At the first screen, press Back twice within two seconds to exit. Existing pet records, settings and private memories are preserved on update.
+          Pet Care World 1.8.0 adds complete local backup/restore, a simpler More menu, device diagnostics and owner moderation tools. Cloud media and background chat push require owner backend activation and billing; the release does not enable those paid services automatically. Existing records remain on device.
           Text chat remains active. Photo/video attachments are prepared but disabled until the owner configures Firebase Storage, its rules and billing. Pet records and feeding logs remain on device. Notification sound respects device settings.
-          Install the APK to update version 1.7.1. ZIP is an alternative download containing the same APK.
+          Install the APK to update version 1.7.2. ZIP is an alternative download containing the same APK.
           EOF
-          gh release create v1.7.2 Pet-Care-World-1.7.2.apk Pet-Care-World-1.7.2.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.7.2 — Android back navigation' --notes-file release-notes.txt
+          gh release create v1.8.0 Pet-Care-World-1.8.0.apk Pet-Care-World-1.8.0.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.0 — backup and launch preparation' --notes-file release-notes.txt

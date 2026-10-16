@@ -7,6 +7,8 @@ try {
  const page=await webview.page();
  assert.ok(page,'Android WebView page missing');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const openSection=async id=>{const button=page.locator(`[data-tab="${id}"]`);if(!await button.isVisible())await page.locator('#moreSectionsShortcut').click();await button.click();};
+
  await page.locator('#content').waitFor();
  await page.selectOption('#languageSelect','en');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
@@ -20,7 +22,7 @@ try {
  await page.reload();
  assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
  assert.equal(await page.evaluate(()=>petCareNavigation.ready),true,'Native Android Back listener missing');
- await page.locator('[data-tab="home"]').click();await page.locator('#settingsShortcut').click();await page.locator('#settingsMemories').click();await page.locator('#memoryForm').waitFor();
+ await openSection('home');await page.locator('#settingsShortcut').click();await page.locator('#settingsMemories').click();await page.locator('#memoryForm').waitFor();
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='settings');
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
 
@@ -28,7 +30,7 @@ try {
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>typeof petCareNavigation!=='undefined'&&tab==='settings');
  assert.equal(await page.evaluate(()=>petCareNavigation.ready),true);
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
- await page.locator('[data-tab="health"]').click();await page.evaluate(()=>{formMode='health';render();});
+ await openSection('health');await page.evaluate(()=>{formMode='health';render();});
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='health'&&formMode===null);
  await page.locator('#globalChatShortcut').click();await page.locator('#globalChatDialog').waitFor({state:'visible'});
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>!document.getElementById('globalChatDialog').open);assert.equal(await page.evaluate(()=>tab),'health');
@@ -39,10 +41,10 @@ try {
  assert.match((await device.shell('pidof com.petcare.companion')).toString().trim(),/^\d+$/);
  console.log('PASS physical Android Back key: previous tab, close form, close chat first, root exit protection.');
 
- for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
+ for(const tab of tabs){await openSection(tab);assert.ok((await page.locator('#content').innerText()).trim());}
  assert.equal(await page.locator('#footerNote a').count(),1);
  await page.locator('#settingsShortcut').click();await page.selectOption('#appWallpaper','lavender');
- await page.locator('[data-tab="memories"]').click();await page.locator('#memoryForm').waitFor();
+ await openSection('memories');await page.locator('#memoryForm').waitFor();
  await page.locator('#memoryForm [name=title]').fill('Private Android memory');await page.locator('#memoryForm [name=story]').fill('Saved on this device');
  await page.locator('#saveMemory').click();await page.locator('[data-memory]').waitFor();await page.reload();
  assert.equal(await page.evaluate(async()=>(await petCareMemories.all())[0].title),'Private Android memory');

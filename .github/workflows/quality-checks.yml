@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Check web app
-        run: npm run check:web
+        run: npm run check:web && node tools/test-backup-codec.mjs
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
       - name: Install browser test runtime
