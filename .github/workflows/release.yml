@@ -137,22 +137,22 @@ jobs:
               time.sleep(20)
           else: raise SystemExit('Quality checks did not complete; release not published')
           PY
-      - name: Publish version 1.6 downloads
+      - name: Publish version 1.7 downloads
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view v1.6 >/dev/null 2>&1; then
-            echo 'Version 1.6 already exists; preserving existing release.'
+          if gh release view v1.7 >/dev/null 2>&1; then
+            echo 'Version 1.7 already exists; preserving existing release.'
             exit 0
           fi
-          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.6.apk
+          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.7.apk
           cd release
-          zip Pet-Care-World-1.6.zip Pet-Care-World-1.6.apk
-          sha256sum Pet-Care-World-1.6.apk Pet-Care-World-1.6.zip > SHA256SUMS.txt
+          zip Pet-Care-World-1.7.zip Pet-Care-World-1.7.apk
+          sha256sum Pet-Care-World-1.7.apk Pet-Care-World-1.7.zip > SHA256SUMS.txt
           cat > release-notes.txt <<'EOF'
-          Pet Care World 1.6 adds meal records, owner-defined daily feeding reminders, an original notification chime and a subtle watercolor pet chat background.
+          Pet Care World 1.7 adds app/chat wallpaper settings, the selected Cheerful Greeting notification sound, and private on-device pet memories with stories, photos, videos and separate media backup.
           Text chat remains active. Photo/video attachments are prepared but disabled until the owner configures Firebase Storage, its rules and billing. Pet records and feeding logs remain on device. Notification sound respects device settings.
-          Install the APK to update version 1.5. ZIP is an alternative download containing the same APK.
+          Install the APK to update version 1.6. ZIP is an alternative download containing the same APK.
           EOF
-          gh release create v1.6 Pet-Care-World-1.6.apk Pet-Care-World-1.6.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.6 — meals and pet wallpaper' --notes-file release-notes.txt
+          gh release create v1.7 Pet-Care-World-1.7.apk Pet-Care-World-1.7.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.7 — settings and private memories' --notes-file release-notes.txt

@@ -32,8 +32,8 @@ try {
   return exists;
  });
  assert.equal(result,true,'Native reminder was not scheduled');
- const chime=await page.evaluate(async()=>{await window.petCareNative.sync([],[]);const channels=await window.Capacitor.Plugins.LocalNotifications.listChannels();return channels.channels.find(c=>c.id==='petcare_care_v2');});
- assert.ok(chime,'Pet Care sound channel missing');assert.match(chime.sound,/petcare_chime/);
+ const chime=await page.evaluate(async()=>{await window.petCareNative.sync([],[]);const channels=await window.Capacitor.Plugins.LocalNotifications.listChannels();return channels.channels.find(c=>c.id==='petcare_cheerful_v1');});
+ assert.ok(chime,'Pet Care sound channel missing');assert.match(chime.sound,/petcare_cheerful/);
  console.log('PASS native Pet Care notification channel uses bundled custom chime. Audible volume/DND behavior needs a physical phone.');
  assert.deepEqual(errors,[]);
  console.log(`PASS: Android WebView create/edit/persist, ${tabs.length} tabs, privacy link, native notification schedule/query/cancel.`);
