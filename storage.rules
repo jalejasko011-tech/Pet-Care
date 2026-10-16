@@ -14,7 +14,7 @@ service firebase.storage {
     }
     match /chatMedia/{uid}/{messageId} {
       allow read: if (active() || moderator()) && linked(uid,messageId);
-      allow create: if active() && request.auth.uid == uid && linked(uid,messageId)
+      allow create: if resource == null && active() && request.auth.uid == uid && linked(uid,messageId)
         && request.resource.size == firestore.get(/databases/(default)/documents/globalMessages/$(messageId)).data.media.size
         && request.resource.contentType == firestore.get(/databases/(default)/documents/globalMessages/$(messageId)).data.media.mime
         && request.resource.size > 0

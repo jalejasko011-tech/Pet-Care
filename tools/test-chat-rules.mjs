@@ -42,7 +42,7 @@ try{
  await assertSucceeds(mediaB.storage().ref('chatMedia/mediaA/mediaA_1').getMetadata());
  await assertFails(env.unauthenticatedContext().storage().ref('chatMedia/mediaA/mediaA_1').getMetadata());
  await assertFails(mediaB.storage().ref('chatMedia/mediaA/mediaA_1').delete());
- await assertFails(object.put(bytes,{contentType:'image/png'}));
+ await assertFails(object.put(new Uint8Array([0,1,2,3]),{contentType:'image/png',customMetadata:{attempt:'overwrite'}}));
  await assertSucceeds(deleteDoc(doc(ma,'globalMessages','mediaA_1')));
  await assertFails(mediaB.storage().ref('chatMedia/mediaA/mediaA_1').getMetadata());
  await assertSucceeds(object.delete());
