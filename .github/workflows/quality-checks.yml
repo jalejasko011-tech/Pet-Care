@@ -30,6 +30,13 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Test user flows in mobile browser
         run: node tools/test-browser.mjs
+      - name: Preserve mobile appearance preview
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-appearance-preview
+          path: pet-care-background-preview.png
+          retention-days: 7
 
   android-smoke:
     runs-on: ubuntu-latest
