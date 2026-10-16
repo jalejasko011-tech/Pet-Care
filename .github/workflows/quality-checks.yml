@@ -94,6 +94,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - name: Install Firebase test tools
-        run: npm install --no-save firebase@12.4.0 @firebase/rules-unit-testing@5 firebase-tools@14
+        run: npm install --no-save firebase@12.4.0 @firebase/rules-unit-testing@5 firebase-tools@14 playwright
+      - name: Install chat browser
+        run: npx playwright install --with-deps chromium
       - name: Verify global chat access and moderation rules
-        run: npx firebase emulators:exec --only firestore --project demo-petcare-chat 'node tools/test-chat-rules.mjs'
+        run: npx firebase emulators:exec --only auth,firestore --project demo-petcare-chat 'node tools/test-chat-rules.mjs && node tools/test-chat-browser.mjs'

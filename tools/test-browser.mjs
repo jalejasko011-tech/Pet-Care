@@ -28,11 +28,12 @@ try {
  assert.equal(await page.locator('#globalChatShortcut').evaluate(e=>getComputedStyle(e).position),'fixed');
  await page.locator('#globalChatShortcut').click();
  await page.locator('#globalChatDialog').waitFor({state:'visible'});
- assert.ok(await page.locator('#chatUnavailable').count());
- assert.equal(await page.locator('#chatSend').count(),0);
+ assert.equal(await page.locator('#chatUnavailable').count(),0);
+ assert.equal(await page.locator('#chatJoin').count(),1);
+ assert.equal(await page.locator('#chatConnected').isVisible(),false);
  await page.locator('#globalChatDialog button').first().click();
  assert.equal(await page.locator('#globalChatDialog').isVisible(),false);
- assert.equal(network.length,0,'Disabled chat must make no external requests');
+ assert.equal(network.length,0,'Chat before consent must make no external requests');
 
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}

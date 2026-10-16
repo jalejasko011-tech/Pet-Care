@@ -1,17 +1,21 @@
-# Global chat activation
+# Global chat — version 1.5
 
-The 1.4 APK includes a floating Chat shortcut and complete client code. The server is **disabled**, so this is not yet a live chat. No chat SDK or authentication request is made before activation and explicit acceptance.
+Enabled by `www/chat-config.js` for Firebase project `pet-care-world`. Anonymous Authentication and Firestore rules were enabled by the project owner. Only public web client configuration is committed; never commit admin credentials.
 
-## Deployment prerequisites
+The floating Chat shortcut opens an opt-in, adults-only text room. Firebase loads only after joining with nickname and explicit consent. Pet records remain local; private pet cloud sync stays disabled.
 
-1. Connect the app owner's Firebase project using the official Firebase plugin. No admin login/token is available in this repository. Never paste administrative credentials into client configuration.
-2. Enable anonymous Firebase Authentication and create Firestore. Use the top-level `firestore.rules` referenced by `firebase.json`; the older `firebase/firestore.rules` is not a deployment target.
-3. Run the security emulator test: `npm install --no-save firebase@12.4.0 @firebase/rules-unit-testing@5 firebase-tools@14`, then `npx firebase emulators:exec --only firestore --project demo-petcare-chat 'node tools/test-chat-rules.mjs'`.
-4. Deploy the tested rules to the verified production project. Assign a human moderator using the trusted server/Admin SDK custom claim `moderator: true`. Review `chatReports` daily; remove abusive `globalMessages`, set the author's `chatProfiles/{uid}.banned` to true, then delete resolved reports. Admin operations must never be exposed in the public client.
-5. Configure `www/chat-config.js` with the project's public web config. Set `enabled: true` only when authentication, rules, deletion, moderation and the updated disclosures are verified. Pet-record cloud synchronization stays separately disabled.
-6. Test on two independent devices/contexts: accept public-room rules; send and receive; delete one message; report; block/unblock; close/reopen; disconnect/reconnect; delete all own messages and identity. Verify only the accepted nickname/text/time/technical ID are public. No local pet records are uploaded.
-7. Replace the disabled-release wording in chat privacy and update the main privacy policy and Play Data Safety review for Firebase identity, public user-generated text, technical IDs, reports, connection information and retention. Complete the Play UGC and audience declarations and a public deletion request procedure before store submission. No claim of E2EE or automatic moderation is made.
+## Verification
 
-## Boundaries
+Two separate anonymous identities successfully exchanged messages against the live project on 16 October 2026. Cross-user message deletion, access to another private chat profile and unauthenticated reads were rejected. Test messages, profiles and identities were removed. A live rate-limit timing assertion was inconclusive because intervening network requests exceeded the five-second cooldown; deterministic emulator tests cover rate limits.
 
-Text-only public room, newest 100 messages, a 1000-character message limit, and a server-enforced minimum five-second interval between ordinary sends. Anonymous identity is device-based and is not recoverable after clearing app data. It is not durable abuse prevention: repeated identity creation can evade bans; App Check, quotas and stronger identity/anti-abuse controls must be evaluated before a broad public launch. Blocking filters the blocked author's messages locally, not their ability to read the public room. Reports are readable only by moderators. Deletion removes own public messages and auth identity; moderators handle deletion requests after device identity loss. Do not enable public launch without moderation coverage.
+CI tests Firestore authorization and two isolated browser clients, including report, block, reconnect and deletion. Check CI results before publishing.
+
+## Owner moderation
+
+In Firebase Console → Firestore → Data, review `chatReports` manually. Reports are private; no automatic notification or automatic moderation is implemented. Locate the referenced `globalMessages` document, review the context, delete abusive messages when warranted, and set the corresponding `chatProfiles/{authorId}.banned` to true to deny further chat access. The project owner's Console permissions allow this; no in-app moderator role has been assigned. Moderator clients would require a server-assigned `moderator: true` custom claim.
+
+Users can delete their own messages or identity in the chat. Handle email deletion requests, especially lost-device or banned identities, manually after verifying authorship. Review reports regularly and apply the published rules consistently.
+
+## Release
+
+Version 1.5 uses Android versionCode 6 and the existing signing certificate so it can update version 1.4. Public release files are published only after required checks pass. Do not describe this as Google Play approval; Play signup, policy declarations and submission remain separate.

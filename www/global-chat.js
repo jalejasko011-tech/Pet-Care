@@ -26,7 +26,7 @@
       const label=node('label',tr('Javni nadimak (2–30 znakova)','Public nickname (2–30 characters)'));label.htmlFor='chatNickname';
       const name=node('input');name.id='chatNickname';name.required=true;name.minLength=2;name.maxLength=30;name.autocomplete='nickname';name.value=localStorage.getItem('petcare_chat_nickname_v1')||'';
       const consent=node('label',null,'chat-consent'),check=node('input');check.id='chatConsent';check.type='checkbox';check.required=true;
-      consent.append(check,node('span',tr('Prihvatam pravila chata. Razumem da su nadimak i poruke javni svim učesnicima. Neću deliti privatne podatke, pretnje, uvrede, spam ili sadržaj zlostavljanja.','I accept the chat rules. My nickname and messages are public to all participants. I will not share private information, threats, harassment, spam or abusive content.')));
+      consent.append(check,node('span',tr('Imam najmanje 18 godina i prihvatam pravila chata. Razumem da su nadimak i poruke javni svim učesnicima. Neću deliti privatne podatke, pretnje, uvrede, spam ili sadržaj zlostavljanja.','I am at least 18 and accept the chat rules. My nickname and messages are public to all participants. I will not share private information, threats, harassment, spam or abusive content.')));
       const join=node('button',tr('Uđi u chat','Join chat'),'btn');join.type='submit';form.append(label,name,consent,join);form.onsubmit=joinChat;box.append(form);
       const connected=node('section');connected.id='chatConnected';connected.hidden=true;
       const messages=node('div');messages.className='chat-messages';messages.id='chatMessages';messages.setAttribute('aria-label',tr('Poruke','Messages'));connected.append(messages);
@@ -45,7 +45,9 @@
   async function sdk(){
     if(api)return;const base='https://www.gstatic.com/firebasejs/12.4.0/';
     const [app,a,f]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
-    api={...a,...f};const instance=app.initializeApp(cfg.firebase,'petcare-global-chat');auth=a.getAuth(instance);db=f.getFirestore(instance);
+    const instance=app.initializeApp(cfg.firebase,'petcare-global-chat');auth=a.getAuth(instance);db=f.getFirestore(instance);
+    if(cfg.emulators===true && location.hostname==='127.0.0.1'){a.connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});f.connectFirestoreEmulator(db,'127.0.0.1',8080);}
+    api={...a,...f};
   }
   async function joinChat(e){
     e.preventDefault();if(joining)return;const nickname=el('chatNickname').value.trim();if(nickname.length<2)return;
