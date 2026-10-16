@@ -23,6 +23,12 @@ try {
  page.on('dialog',d=>d.accept());
  await page.goto(`http://127.0.0.1:${server.address().port}/`);
  await page.selectOption('#languageSelect','en');
+ // Capacitor's injected legacy bridge returns a synchronous listener handle.
+ const nativeLike=await context.newPage();await nativeLike.addInitScript(()=>{window.Capacitor={getPlatform:()=>'android',Plugins:{App:{addListener:(name,callback)=>{window.testAndroidBack=callback;return {remove:async()=>{}};},exitApp:async()=>{}}}};});
+ await nativeLike.goto(`http://127.0.0.1:${server.address().port}/`);
+ assert.equal(await nativeLike.evaluate(()=>petCareNavigation.ready),true);
+ await nativeLike.locator('#settingsShortcut').click();await nativeLike.evaluate(()=>testAndroidBack({canGoBack:true}));await nativeLike.waitForFunction(()=>tab==='home');await nativeLike.close();
+
  await page.screenshot({path:'pet-care-background-preview.png',fullPage:true});
  assert.equal(await page.locator('#footerNote a').getAttribute('href'),'privacy.html');
  assert.equal(await page.locator('.top #exportBtn').count(),0);

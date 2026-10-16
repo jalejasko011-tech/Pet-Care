@@ -36,6 +36,6 @@
   if(Date.now()-lastRootBack<2000){lastRootBack=0;await api.exitApp();return;}
   lastRootBack=Date.now();toast(currentLang()==='sr'?'Pritisnite Nazad još jednom za izlaz.':'Press Back again to exit.');
  }
- const ready=api?api.addListener('backButton',back).then(()=>true).catch(e=>{console.warn('Back navigation registration failed',e);return false;}):Promise.resolve(false);
+ const ready=(async()=>{if(!api)return false;try{await api.addListener('backButton',back);return true;}catch(e){console.warn('Back navigation registration failed',e);return false;}})();
  window.petCareNavigation={back,ready,getState:()=>({depth,screen:snapshot()})};
 })();
