@@ -38,6 +38,8 @@ jobs:
           path: |
             pet-care-background-preview.png
             chat-wallpaper-preview.png
+            settings-preview.png
+            private-memories-preview.png
           retention-days: 7
 
   android-smoke:

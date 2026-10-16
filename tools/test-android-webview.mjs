@@ -21,6 +21,14 @@ try {
  assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
  for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
  assert.equal(await page.locator('#footerNote a').count(),1);
+ await page.locator('#settingsShortcut').click();await page.selectOption('#appWallpaper','lavender');
+ await page.locator('[data-tab="memories"]').click();await page.locator('#memoryForm').waitFor();
+ await page.locator('#memoryForm [name=title]').fill('Private Android memory');await page.locator('#memoryForm [name=story]').fill('Saved on this device');
+ await page.locator('#saveMemory').click();await page.locator('[data-memory]').waitFor();await page.reload();
+ assert.equal(await page.evaluate(async()=>(await petCareMemories.all())[0].title),'Private Android memory');
+ assert.equal(await page.evaluate(()=>petCarePreferences.get().app),'lavender');
+ console.log('PASS Android private memory and appearance survive WebView reload.');
+
  const result=await page.evaluate(async()=>{
   const api=window.Capacitor?.Plugins?.LocalNotifications;
   if(!api)throw Error('Native notifications plugin missing');

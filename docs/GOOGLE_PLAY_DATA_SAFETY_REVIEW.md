@@ -1,4 +1,4 @@
-# Google Play Data safety review — version 1.6
+# Google Play Data safety review — version 1.7
 
 Draft for owner review before submission. Version 1.5 adds optional public Firebase chat; previous “no data collected” declarations are no longer appropriate. Do not submit this document as a completed Console declaration.
 
@@ -34,3 +34,9 @@ Verify the live privacy/deletion URLs, Console answers, Firebase provider disclo
 Meal logs and schedules are local. A three-note original chime is bundled in Android res/raw and selected through channel `petcare_care_v2`. Existing phone notification settings and DND remain in control.
 
 Photo/video code is present but `media.enabled` remains false and the bucket is empty in the shipped config. Before activation, review Photos and videos collection/public sharing, embedded metadata, Firebase Storage processing and deletion. Publish updated declarations for the activated build. Tests use local emulators, not the paid production storage service.
+
+## Version 1.7 additions
+
+Private Memories stores per-pet stories, dates, photos and videos in local IndexedDB. No memories or appearance settings enter cloud sync or public chat. The separate user-initiated memories backup includes media, is unencrypted, and excludes the existing Gallery. Deletion of a pet removes associated memories. Standard pet-record export continues to exclude both sets of media. Local device access is not protected by a separate app account or biometric lock.
+
+Settings offers separate app/chat wallpaper presets, text size, reminders on/off, sound and vibration choices. The selected original 1.8-second Cheerful Greeting is bundled as `petcare_cheerful.wav`; channel `petcare_cheerful_v1` is the new default. Stable alternative channels are used for explicit sound/vibration choices. Android notification permissions, volume and DND remain under device-owner control.
