@@ -39,6 +39,14 @@ try {
 
  await page.locator('#globalChatShortcut').click();await page.screenshot({path:'chat-wallpaper-preview.png',fullPage:true});await page.locator('#globalChatDialog button').first().click();
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
+ // Browser Back/Forward follows in-app routes and closes one form at a time.
+ await page.locator('#settingsShortcut').click();await page.locator('#settingsMemories').click();
+ await page.goBack();assert.equal(await page.evaluate(()=>tab),'settings');
+ await page.goBack();assert.equal(await page.evaluate(()=>tab),'home');
+ await page.locator('[data-action="addpet"]').click();assert.equal(await page.locator('#petForm').count(),1);
+ await page.goBack();assert.equal(await page.evaluate(()=>tab),'home');assert.equal(await page.evaluate(()=>data.pets.length),0);
+ await page.locator('#settingsShortcut').click();await page.goBack();await page.goForward();assert.equal(await page.evaluate(()=>tab),'settings');await page.goBack();
+
  for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
  for(const name of ['Luna','Max']){
   await page.locator('[data-action="addpet"]').click();
@@ -80,6 +88,7 @@ try {
  await page.waitForFunction(()=>document.querySelector('[data-memory] video').readyState>=1);
  assert.ok(await page.locator('[data-memory] video').evaluate(v=>v.duration>0));
  await page.screenshot({path:'private-memories-preview.png',fullPage:true});
+ await page.locator('[data-memory-edit]').click();await page.locator('#cancelMemory').waitFor();await page.goBack();await page.locator('#memoryForm').waitFor();assert.equal(await page.locator('#cancelMemory').count(),0);
  await page.locator('[data-memory-edit]').click();await page.locator('#memoryForm [name=story]').fill('Updated private story');await page.locator('#saveMemory').click();
  await page.waitForFunction(async()=>(await petCareMemories.all())[0]?.text==='Updated private story');
  await page.locator('[data-memory-favorite]').click();await page.waitForFunction(async()=>(await petCareMemories.all())[0]?.favorite===true);
