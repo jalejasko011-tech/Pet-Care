@@ -21,6 +21,14 @@ try {
  assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
  for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
  assert.equal(await page.locator('#footerNote a').count(),1);
+ await page.locator('#settingsShortcut').click();await page.selectOption('#appWallpaper','lavender');
+ await page.locator('[data-tab="memories"]').click();await page.locator('#memoryForm').waitFor();
+ await page.locator('#memoryForm [name=title]').fill('Private Android memory');await page.locator('#memoryForm [name=story]').fill('Saved on this device');
+ await page.locator('#saveMemory').click();await page.locator('[data-memory]').waitFor();await page.reload();
+ assert.equal(await page.evaluate(async()=>(await petCareMemories.all())[0].title),'Private Android memory');
+ assert.equal(await page.evaluate(()=>petCarePreferences.get().app),'lavender');
+ console.log('PASS Android private memory and appearance survive WebView reload.');
+
  const result=await page.evaluate(async()=>{
   const api=window.Capacitor?.Plugins?.LocalNotifications;
   if(!api)throw Error('Native notifications plugin missing');
@@ -32,8 +40,8 @@ try {
   return exists;
  });
  assert.equal(result,true,'Native reminder was not scheduled');
- const chime=await page.evaluate(async()=>{await window.petCareNative.sync([],[]);const channels=await window.Capacitor.Plugins.LocalNotifications.listChannels();return channels.channels.find(c=>c.id==='petcare_care_v2');});
- assert.ok(chime,'Pet Care sound channel missing');assert.match(chime.sound,/petcare_chime/);
+ const chime=await page.evaluate(async()=>{await window.petCareNative.sync([],[]);const channels=await window.Capacitor.Plugins.LocalNotifications.listChannels();return channels.channels.find(c=>c.id==='petcare_cheerful_v1');});
+ assert.ok(chime,'Pet Care sound channel missing');assert.match(chime.sound,/petcare_cheerful/);
  console.log('PASS native Pet Care notification channel uses bundled custom chime. Audible volume/DND behavior needs a physical phone.');
  assert.deepEqual(errors,[]);
  console.log(`PASS: Android WebView create/edit/persist, ${tabs.length} tabs, privacy link, native notification schedule/query/cancel.`);
