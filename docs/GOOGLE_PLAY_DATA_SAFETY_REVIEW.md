@@ -1,57 +1,30 @@
-# Pet Care World — Google Play Data safety preparation
+# Google Play Data safety review — version 1.5
 
-Prepared 15 October 2026 for package `com.petcare.companion`, release source `869ceab2583a0e6a9b5135ce2db18ff539c08fff` (API 36). This is a submission worksheet, not a submitted declaration or Google approval.
+Draft for owner review before submission. Version 1.5 adds optional public Firebase chat; previous “no data collected” declarations are no longer appropriate. Do not submit this document as a completed Console declaration.
 
-Public policy: https://jalejasko011-tech.github.io/Pet-Care/www/privacy.html
-Developer: Jale. Privacy/support contact: jalejasko011@gmail.com.
+## Actual behavior
 
-## Release behavior and form answers
+- Pet records, photos, local community drafts and reminders stay on device unless the user deliberately exports or shares them. Private pet cloud sync is disabled.
+- Chat loads Firebase Authentication and Firestore only after explicit join consent. Anonymous authentication creates a technical user ID. The nickname, text, author ID and timestamp are stored in Firestore and visible to participating users.
+- Abuse reports contain reporter ID, referenced message ID, reason and timestamp. They are private to authorized moderators/project administrators.
+- Firebase processes connection information needed to provide its services. Review current Firebase SDK disclosures and project settings for diagnostic/IP processing before completing exact categories.
+- No advertising SDK or Analytics initialization is included. Chat has no end-to-end encryption. Transport uses HTTPS.
 
-| Form item | Prepared answer and evidence |
-|---|---|
-| User accounts | No account creation or sign-in in the Android app. Firebase cloud module is gated off before SDK imports; no user-account deletion URL applies to this release. The developer's Play Console login is separate from app users. |
-| Pet records | Pet profiles, health records, weights, costs, diary and reminders stay in WebView localStorage. Local-only processing is not off-device collection for Data safety. |
-| Photos and videos | User-selected media stays on device (profile photos/localStorage, gallery/IndexedDB). No automatic media upload. File selection and device notification permissions support those features. |
-| Contact details and city | Optional SOS/contact/family/community data stays local. Sharing is only through a user action and the chosen recipient app. Do not describe local drafts as a public social feed. |
-| Collection/sharing question | Candidate answer: **No**, only for the reviewed local-only release with cloud disabled, no supplier catalog configured, and no ads/analytics SDK. User-initiated shares and open-web navigation must meet Google's exemptions. Do not submit this answer for another build or enabled cloud/catalog integration without reassessment. |
-| Optional supplier catalog | A user-configured HTTPS feed causes network requests on launch and refresh and exposes connection metadata to that endpoint. No feed is configured by this release. Supplier logging and data practices are not verified; connect no production supplier before reassessing the form and policy. |
-| Analytics / ads | No analytics or advertising SDK in package.json. Contains ads: **No** for this release. Future ads require a new review. |
-| Payments / Premium | No integrated billing or checkout. Premium is planned, not purchasable. External purchases are performed by external merchants. |
-| AI assistant | Opens third-party services; no integrated AI model/API or automatic pet-record upload. Store description must say external AI links, not built-in AI chat. |
-| Location, contacts, SMS, calls | No location/contact/SMS/call-log reader in reviewed dependencies. Searches use terms entered by the user. No automatic GPS lookup. |
-| Data encryption | Do not claim end-to-end encryption or encrypted local storage. HTTPS catalog validation exists. Follow the Console's conditional questions if collection is declared; do not claim a security certification. |
-| Deletion | Individual record controls and deleting a pet remove the pet's linked records, local gallery files and private world drafts. Android Settings → Apps → Pet Care World → Storage → Clear storage removes app storage. Exported/shared copies require separate deletion. |
-| Backup | JSON record export works, but does not include gallery photo/video blobs. OS-level backup/restore may operate according to device settings. Do not market developer-hosted cloud backup. |
+## Proposed categories to evaluate in Console
 
-## App-content and listing preparation
+| Data | Purpose | Optional | Treatment |
+| --- | --- | --- | --- |
+| Technical user identifier | Account management, app functionality, abuse prevention | Yes, chat is optional | Stored in Authentication and chat documents |
+| Nickname and public text messages | App functionality | Yes | Public to chat participants; evaluate Messages/other user-generated content and nickname/name classification |
+| Abuse report text and identifiers | Safety and abuse prevention | Yes | Stored privately for owner review |
+| Provider connection/diagnostic information | Service operation/security | Verify provider behavior | Review current Firebase documentation and exact Console definitions |
 
-- Audience: owner must confirm the truthful intended age groups; no final audience or content-rating questionnaire has been submitted.
-- No public user feed, messaging system, video-chat backend, verified emergency directory, live shop checkout or live sponsored promotions is provided. These are local drafts, external links or future functions as labeled in the app.
-- Veterinary records are organizational tools, not diagnosis or veterinary treatment. Answer applicable health-content questions using the final Console questionnaire; do not invent a completed rating.
-- App is free; no paid download or in-app subscription is active. Future monetization needs its own billing/ad implementation and disclosures.
-- Store listing wording: “Keep local pet profiles, vaccination and care records, weight, expenses, photos and reminders. Find external veterinary, shopping and AI services. Your pet records stay on your device unless you choose to share them.”
+Evaluate “sharing” using Google's current user-initiated public-content and service-provider definitions; public visibility must still be clearly disclosed. Do not simply claim no sharing without that review. Data is not used for advertising by this app.
 
-## Verified technical results
+## Deletion and retention
 
-- Signed APK and AAB builds passed from `869ceab…`; APK signing and AAB signature verification passed in release workflow 38789690378.
-- Static JavaScript/privacy regression checks and dependency audit passed (no reported vulnerabilities at test time).
-- Mobile Chromium: 23 tabs, two-pet create/edit/delete, record entry, persistence, export, gallery and SR/EN policy access passed.
-- Android 15 and 16 emulators: installation/launch, WebView create/edit/persistence, 23 tabs, policy link, native reminder schedule/query/cancel passed.
-- Public policy returned HTTP 200 with the updated text and developer contact.
-- Actual background reminder delivery has a separate acceptance test; record its result in the PR before treating it as verified.
+Chat supports deleting one's messages and device-bound anonymous identity. The deletion page is `www/delete-chat.html`; publish it at an accessible web URL for the Play listing. Lost-device/banned-identity requests go to jalejasko011@gmail.com and require authorship verification. Private reports can be retained for abuse investigation; establish an operational retention schedule before submission. Do not promise a fixed deletion deadline that has not been implemented.
 
-## Remaining external steps (no payment taken)
+## Remaining submission work
 
-1. Confirm physical-phone installation and classify the exact Play Protect message. Emulator installation is not Play Protect acceptance. Do not disable Play Protect or promise a code/signature change will remove a Google warning.
-2. Complete personal developer account registration, legal terms, USD 25 fee and identity/device verification with the account owner. These are not completed.
-3. Enter this worksheet in Play Console, complete audience/content rating and other applicable declarations, upload the reviewed signed AAB and run the available Google pre-launch checks/testing requirements.
-4. Submit for review only after required checks are met. Google determines approval and review timing.
-
-Official references:
-- https://support.google.com/googleplay/android-developer/answer/10787469
-- https://support.google.com/googleplay/android-developer/answer/10144311
-- https://support.google.com/googleplay/android-developer/answer/11926878
-- https://developers.google.com/android/play-protect/warning-dev-guidance
-
-## 1.4 chat shortcut
-Global chat is disabled in chat-config.js. Opening the shortcut makes no external request and offers no send form. Do not reuse the local-only declarations after enabling chat; see GLOBAL_CHAT_SETUP.md for activation and disclosure requirements.
+Verify the live privacy/deletion URLs, Console answers, Firebase provider disclosures, owner moderation process and content-rating/target-audience answers. The chat requires users to attest they are 18 or older; this is self-attestation, not verified age checking. Play account setup/payment and final submission remain pending.

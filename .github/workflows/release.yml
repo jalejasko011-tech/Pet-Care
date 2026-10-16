@@ -108,3 +108,51 @@ jobs:
           name: Pet-Care-World-Google-Play-AAB
           path: release/Pet-Care-World-release.aab
           retention-days: 7
+
+  publish:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: Pet-Care-World-Signed-Release
+          path: release
+      - name: Require quality checks for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, subprocess, time
+          for attempt in range(60):
+              runs=json.loads(subprocess.check_output(['gh','api',f'repos/{os.environ["GITHUB_REPOSITORY"]}/actions/runs?head_sha={os.environ["GITHUB_SHA"]}&per_page=30']))['workflow_runs']
+              checks=[r for r in runs if r['name']=='Pet Care quality checks' and r['event']=='push']
+              if checks and checks[0]['status']=='completed':
+                  if checks[0]['conclusion']!='success': raise SystemExit('Quality checks failed; release not published')
+                  break
+              time.sleep(20)
+          else: raise SystemExit('Quality checks did not complete; release not published')
+          PY
+      - name: Publish version 1.5 downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v1.5 >/dev/null 2>&1; then
+            echo 'Version 1.5 already exists; preserving existing release.'
+            exit 0
+          fi
+          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.5.apk
+          cd release
+          zip Pet-Care-World-1.5.zip Pet-Care-World-1.5.apk
+          sha256sum Pet-Care-World-1.5.apk Pet-Care-World-1.5.zip > SHA256SUMS.txt
+          cat > release-notes.txt <<'EOF'
+          Pet Care World 1.5 adds optional global text chat with a floating Chat shortcut.
+          Join with a nickname and accept the 18+ chat rules. Includes reporting, local blocking and deletion of your own messages or chat identity. Pet records remain on device. Internet is required for chat.
+          Install the APK to update version 1.4. ZIP is an alternative download containing the same APK.
+          EOF
+          gh release create v1.5 Pet-Care-World-1.5.apk Pet-Care-World-1.5.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.5 — global chat' --notes-file release-notes.txt
