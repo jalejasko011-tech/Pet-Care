@@ -33,7 +33,6 @@ const nativeBuild='android/app/build.gradle';
 if(!readFileSync(nativeBuild,'utf8').includes("apply plugin: 'com.google.gms.google-services'"))writeFileSync(nativeBuild,readFileSync(nativeBuild,'utf8')+"\napply plugin: 'com.google.gms.google-services'\n");
 const manifestPath='android/app/src/main/AndroidManifest.xml';
 let manifest=readFileSync(manifestPath,'utf8');
-manifest=manifest.replace('<application', '<application');
 manifest=manifest.replace('</application>',`<meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
         <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/petcare_notification" />

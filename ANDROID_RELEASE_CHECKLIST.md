@@ -1,20 +1,12 @@
-# Pet Care World — Android release checklist
+# Pet Care World Android release
 
-This project currently builds a **debug** APK, not a Play Store release. Do not encourage bypassing Google Play Protect warnings.
+Signed release APK and AAB are produced by `.github/workflows/release.yml`. Quality checks gate public APK publication. Release secrets already provide the existing key; no keystore/password is stored in source. Package is `com.petcare.companion`, 1.8.0 code 11, target/compile API 36.
 
-## Before release
-- [ ] Validate all pet-care flows on Android devices, including offline storage and notification permissions
-- [ ] Add automated tests for pet profile creation, record editing, and reminders
-- [ ] Implement data export/import or safe backup and deletion controls
-- [ ] Create privacy policy, terms and accurate health disclaimer
-- [ ] Review third-party dependencies and Android manifest permissions
-- [ ] Create a stable release signing key, stored securely outside GitHub source; configure Play App Signing
-- [ ] Configure reproducible signed AAB build with GitHub secrets (no keys in source files)
-- [ ] Publish first through Google Play internal testing, confirm installation and behavior
-- [ ] Complete store listing, screenshots, content rating, data safety disclosures
-- [ ] Treat shop, vet directory, AI chat, Premium and ads as incomplete until real integrations are tested
+- Automated browser, Firestore/Storage rules, chat media/moderation and Android emulator checks run on each PR.
+- Complete private backup and merge restoration include Gallery and Memories.
+- Native Back, offline records, Filesystem backup and scheduled notifications are covered on the emulator.
+- Release APK signing certificate must remain `e8cdb78355aa5a08d5327dd07c050b92168e8afef6c4aa2d3c8c7f25c5736990` to update existing direct installs.
+- Physical phone/OEM/reboot testing, Play internal installation and Play Protect results remain owner/device tests, not inferred from CI.
+- Cloud media and background chat push are prepared but disabled pending owner backend activation. Other planned services are labeled honestly.
 
-Existing in-app data currently resides only on each device. Reinstalling or clearing app data may erase it.
-
-## Release gate
-Do not label debug APK as production-safe or fully finished merely because the CI build succeeds.
+See `docs/RELEASE_1_8_STATUS.md`, `docs/PHONE_ACCEPTANCE_TEST.md`, `docs/PLAY_STORE_RELEASE_CHECKLIST.md` and `store-listing/` for concrete remaining steps. Never encourage bypassing Play Protect. Back up before clearing storage or uninstalling.

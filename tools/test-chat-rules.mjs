@@ -66,4 +66,4 @@ try{
  await assertSucceeds(object.delete());
  console.log('PASS storage rules: linked media, MIME/size, owner-only create/delete, no overwrite, no unauthenticated read and revoked access after message deletion.');
  console.log('Chat rules: authentication, identity, length, rate limit, moderation and private records verified.');
-}finally{await env.cleanup();}
+}finally{await env.clearFirestore();await env.cleanup();}

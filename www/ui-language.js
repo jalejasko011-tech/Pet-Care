@@ -135,5 +135,6 @@ Promena težine|Weight history`;
  const old=translateText;translateText=function(s){const direct=old(s);if(direct!==s||currentLang()==='sr')return direct;const plain=s.replace(/^[^\p{L}\p{N}]+/u,'');const translated=old(plain);return translated===plain?s:s.slice(0,s.length-plain.length)+translated;};
  window.petCareI18n={phrase(sr,en){const lang=currentLang();return lang==='sr'?sr:extraTranslations[lang]?.[sr]||en;}};
  for(const option of document.querySelectorAll('#languageSelect option'))if(!['sr','en'].includes(option.value))option.textContent+=' · beta';
+ for(const name of ['galleryLoad','worldLoad'])if(typeof window[name]==='function'){const original=window[name];window[name]=async function(...args){const result=await original.apply(this,args);translateUI();return result;};}
  const originalToast=toast;toast=function(s){return originalToast(translateText(s));};
 })();

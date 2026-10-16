@@ -137,6 +137,37 @@ jobs:
               time.sleep(20)
           else: raise SystemExit('Quality checks did not complete; release not published')
           PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: Pet-Care-World-Google-Play-AAB
+          path: release
+      - name: Package Play submission materials and genuine Android screenshots
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PYTHON'
+          import json, os, pathlib, shutil, subprocess, zipfile
+          root=pathlib.Path('release/Play-Submission-1.8.0')
+          root.mkdir(parents=True)
+          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.0.aab')
+          shutil.copytree('store-listing',root/'store-listing')
+          shutil.copytree('docs',root/'docs')
+          repo=os.environ['GITHUB_REPOSITORY']
+          runs=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs?head_sha={os.environ["GITHUB_SHA"]}&per_page=30']))['workflow_runs']
+          run=next(r for r in runs if r['name']=='Pet Care quality checks' and r['event']=='push' and r['conclusion']=='success')
+          artifacts=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs/{run["id"]}/artifacts']))['artifacts']
+          item=next(a for a in artifacts if a['name']=='android-smoke-evidence')
+          evidence=pathlib.Path('release/android-evidence.zip')
+          evidence.write_bytes(subprocess.check_output(['gh','api',f'repos/{repo}/actions/artifacts/{item["id"]}/zip']))
+          shots=root/'store-listing'/'screenshots';shots.mkdir()
+          with zipfile.ZipFile(evidence) as z:
+              for name in ['store-home.png','store-feeding.png','store-memories.png','store-settings.png']:
+                  entry=next(i for i in z.infolist() if pathlib.PurePosixPath(i.filename).name==name)
+                  if entry.file_size>8*1024*1024: raise SystemExit('Screenshot exceeds size limit')
+                  (shots/name).write_bytes(z.read(entry))
+          (root/'BUILD.txt').write_text(f'Version 1.8.0 (11)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
+          shutil.make_archive('release/Play-Submission-1.8.0','zip','release','Play-Submission-1.8.0')
+          PYTHON
       - name: Publish version 1.8.0 downloads
         env:
           GH_TOKEN: ${{ github.token }}
@@ -149,10 +180,10 @@ jobs:
           cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.0.apk
           cd release
           zip Pet-Care-World-1.8.0.zip Pet-Care-World-1.8.0.apk
-          sha256sum Pet-Care-World-1.8.0.apk Pet-Care-World-1.8.0.zip > SHA256SUMS.txt
+          sha256sum Pet-Care-World-1.8.0.apk Pet-Care-World-1.8.0.zip Play-Submission-1.8.0.zip > SHA256SUMS.txt
           cat > release-notes.txt <<'EOF'
           Pet Care World 1.8.0 adds complete local backup/restore, a simpler More menu, device diagnostics and owner moderation tools. Cloud media and background chat push require owner backend activation and billing; the release does not enable those paid services automatically. Existing records remain on device.
           Text chat remains active. Photo/video attachments are prepared but disabled until the owner configures Firebase Storage, its rules and billing. Pet records and feeding logs remain on device. Notification sound respects device settings.
           Install the APK to update version 1.7.2. ZIP is an alternative download containing the same APK.
           EOF
-          gh release create v1.8.0 Pet-Care-World-1.8.0.apk Pet-Care-World-1.8.0.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.0 — backup and launch preparation' --notes-file release-notes.txt
+          gh release create v1.8.0 Pet-Care-World-1.8.0.apk Pet-Care-World-1.8.0.zip Play-Submission-1.8.0.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.0 — backup and launch preparation' --notes-file release-notes.txt
