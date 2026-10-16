@@ -23,6 +23,7 @@ try {
  page.on('dialog',d=>d.accept());
  await page.goto(`http://127.0.0.1:${server.address().port}/`);
  await page.selectOption('#languageSelect','en');
+ await page.screenshot({path:'pet-care-background-preview.png',fullPage:true});
  assert.equal(await page.locator('#footerNote a').getAttribute('href'),'privacy.html');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
