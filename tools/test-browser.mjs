@@ -25,6 +25,8 @@ try {
  await page.selectOption('#languageSelect','en');
  await page.screenshot({path:'pet-care-background-preview.png',fullPage:true});
  assert.equal(await page.locator('#footerNote a').getAttribute('href'),'privacy.html');
+ assert.equal(await page.locator('.top #exportBtn').count(),0);
+ assert.equal(await page.locator('#settingsShortcut').evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('[data-action=addpet]').evaluate(e=>getComputedStyle(e).backgroundColor));
  assert.equal(await page.locator('#globalChatShortcut').evaluate(e=>getComputedStyle(e).position),'fixed');
  await page.locator('#globalChatShortcut').click();
  await page.locator('#globalChatDialog').waitFor({state:'visible'});
@@ -112,7 +114,7 @@ try {
  await page.reload();
  assert.equal(await page.evaluate(()=>data.pets.length),2);
  assert.equal(await page.evaluate(()=>data.health.length),1);
- const download=page.waitForEvent('download');await page.locator('#exportBtn').click();assert.ok((await download).suggestedFilename().endsWith('.json'));
+ await page.locator('#settingsShortcut').click();const download=page.waitForEvent('download');await page.locator('#settingsExport').click();assert.ok((await download).suggestedFilename().endsWith('.json'));
  await page.evaluate(async()=>{
   await galleryPut({id:'test-media',petId:data.pets[0].id,type:'image/png',name:'test.png',blob:new Blob(['test'],{type:'image/png'})});
   if((await galleryAll()).length!==1)throw Error('Gallery write failed');
