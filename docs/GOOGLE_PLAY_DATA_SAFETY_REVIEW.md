@@ -1,4 +1,4 @@
-# Google Play Data safety review — version 1.5
+# Google Play Data safety review — version 1.6
 
 Draft for owner review before submission. Version 1.5 adds optional public Firebase chat; previous “no data collected” declarations are no longer appropriate. Do not submit this document as a completed Console declaration.
 
@@ -28,3 +28,9 @@ Chat supports deleting one's messages and device-bound anonymous identity. The d
 ## Remaining submission work
 
 Verify the live privacy/deletion URLs, Console answers, Firebase provider disclosures, owner moderation process and content-rating/target-audience answers. The chat requires users to attest they are 18 or older; this is self-attestation, not verified age checking. Play account setup/payment and final submission remain pending.
+
+## Version 1.6 additions
+
+Meal logs and schedules are local. A three-note original chime is bundled in Android res/raw and selected through channel `petcare_care_v2`. Existing phone notification settings and DND remain in control.
+
+Photo/video code is present but `media.enabled` remains false and the bucket is empty in the shipped config. Before activation, review Photos and videos collection/public sharing, embedded metadata, Firebase Storage processing and deletion. Publish updated declarations for the activated build. Tests use local emulators, not the paid production storage service.

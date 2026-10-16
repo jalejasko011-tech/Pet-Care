@@ -1,7 +1,7 @@
 import {initializeTestEnvironment,assertSucceeds,assertFails} from '@firebase/rules-unit-testing';
 import {readFile} from 'node:fs/promises';
 import {doc,setDoc,getDoc,getDocs,collection,query,limit,writeBatch,serverTimestamp,Timestamp,deleteDoc,updateDoc} from 'firebase/firestore';
-const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile('firestore.rules','utf8')}});
+const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile('firestore.rules','utf8')},storage:{rules:await readFile('storage.rules','utf8')}});
 try{
  const alice=env.authenticatedContext('alice').firestore(),bob=env.authenticatedContext('bob').firestore(),anon=env.unauthenticatedContext().firestore(),mod=env.authenticatedContext('mod',{moderator:true}).firestore();
  for(const [db,id] of [[alice,'alice'],[bob,'bob']])await assertSucceeds(setDoc(doc(db,'chatProfiles',id),{nickname:id,banned:false,lastSent:Timestamp.fromMillis(0),sequence:0}));
@@ -24,5 +24,28 @@ try{
  await assertFails(send(bob,'bob','bob_1'));
  await assertSucceeds(deleteDoc(doc(alice,'globalMessages','alice_1')));
  await assertFails(setDoc(doc(bob,'users','alice','backups','current'),{data:'stolen'}));
+ // Attachments require a linked message, exact owner, allowed MIME and size.
+ const mediaA=env.authenticatedContext('mediaA'),mediaB=env.authenticatedContext('mediaB');
+ const ma=mediaA.firestore(),mb=mediaB.firestore();
+ for(const [db,id] of [[ma,'mediaA'],[mb,'mediaB']])await setDoc(doc(db,'chatProfiles',id),{nickname:id,banned:false,lastSent:Timestamp.fromMillis(0),sequence:0});
+ const bytes=new Uint8Array([137,80,78,71]);
+ const attachment=(db,id,kind='image',mime='image/png',size=bytes.length,path='chatMedia/'+id+'/'+id+'_1')=>{const b=writeBatch(db);b.update(doc(db,'chatProfiles',id),{lastSent:serverTimestamp(),sequence:1});b.set(doc(db,'globalMessages',id+'_1'),{authorId:id,nickname:id,text:'',createdAt:serverTimestamp(),media:{path,kind,mime,size}});return b.commit();};
+ await assertFails(attachment(ma,'mediaA','image','image/svg+xml'));
+ await assertFails(attachment(ma,'mediaA','image','image/png',11*1024*1024));
+ await assertFails(attachment(ma,'mediaA','image','image/png',4,'chatMedia/mediaB/forged'));
+ await assertSucceeds(attachment(ma,'mediaA'));
+ const object=mediaA.storage().ref('chatMedia/mediaA/mediaA_1');
+ await assertFails(mediaB.storage().ref('chatMedia/mediaA/mediaA_1').put(bytes,{contentType:'image/png'}));
+ await assertFails(mediaA.storage().ref('chatMedia/mediaA/mediaA_1').put(bytes,{contentType:'video/mp4'}));
+ await assertFails(mediaA.storage().ref('chatMedia/mediaA/orphan').put(bytes,{contentType:'image/png'}));
+ await assertSucceeds(object.put(bytes,{contentType:'image/png'}));
+ await assertSucceeds(mediaB.storage().ref('chatMedia/mediaA/mediaA_1').getMetadata());
+ await assertFails(env.unauthenticatedContext().storage().ref('chatMedia/mediaA/mediaA_1').getMetadata());
+ await assertFails(mediaB.storage().ref('chatMedia/mediaA/mediaA_1').delete());
+ await assertFails(object.put(bytes,{contentType:'image/png'}));
+ await assertSucceeds(deleteDoc(doc(ma,'globalMessages','mediaA_1')));
+ await assertFails(mediaB.storage().ref('chatMedia/mediaA/mediaA_1').getMetadata());
+ await assertSucceeds(object.delete());
+ console.log('PASS storage rules: linked media, MIME/size, owner-only create/delete, no overwrite, no unauthenticated read and revoked access after message deletion.');
  console.log('Chat rules: authentication, identity, length, rate limit, moderation and private records verified.');
 }finally{await env.cleanup();}

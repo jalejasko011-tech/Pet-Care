@@ -9,7 +9,7 @@ const server = createServer(async(req,res)=>{
     const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
     const path=resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
     if(!path.startsWith(root+'/')){res.writeHead(403).end();return;}
-    res.setHeader('Content-Type',({'.html':'text/html','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.png':'image/png'})[extname(path)]||'application/octet-stream');
+    res.setHeader('Content-Type',({'.html':'text/html','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.wav':'audio/wav'})[extname(path)]||'application/octet-stream');
     res.end(await readFile(path));
   }catch{res.writeHead(404).end();}
 });
@@ -35,6 +35,7 @@ try {
  assert.equal(await page.locator('#globalChatDialog').isVisible(),false);
  assert.equal(network.length,0,'Chat before consent must make no external requests');
 
+ await page.locator('#globalChatShortcut').click();await page.screenshot({path:'chat-wallpaper-preview.png',fullPage:true});await page.locator('#globalChatDialog button').first().click();
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
  for(const name of ['Luna','Max']){
@@ -48,6 +49,15 @@ try {
  await page.locator('#petForm [name=name]').fill('Luna updated');
  await page.locator('#petForm button').last().click();
  assert.equal(await page.evaluate(()=>data.pets[0].name),'Luna updated');
+ // Meal records distinguish unknown history from a recorded missed interval.
+ await page.locator('[data-tab="feeding"]').click();assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/No meal recorded/);
+ await page.locator('#feedingPlanForm [name=enabled]').check();await page.locator('#feedingPlanForm [name=times]').fill('08:00, 18:00');await page.locator('#feedingPlanForm [name=gapHours]').fill('12');await page.locator('#feedingPlanForm button').first().click();
+ await page.evaluate(()=>petCareFeeding.mark(Date.now()-13*3600000));assert.match(await page.locator('#content').innerText(),/No new meal has been recorded/);
+ await page.locator('[data-fed-now]').click();assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/0 min/);assert.doesNotMatch(await page.locator('#content').innerText(),/No new meal has been recorded/);
+ await page.reload();await page.locator('[data-tab="feeding"]').click();assert.equal(await page.locator('#feedingPlanForm [name=times]').inputValue(),'08:00, 18:00');
+ const reminderPlan=await page.evaluate(async()=>{const captured=[];window.Capacitor={getPlatform:()=>'android',Plugins:{LocalNotifications:{checkPermissions:async()=>({display:'granted'}),createChannel:async c=>captured.push({channel:c}),getPending:async()=>({notifications:[]}),cancel:async()=>{},schedule:async n=>captured.push(n)}}};await window.petCareNative.sync([],data.pets);delete window.Capacitor;return captured;});
+ assert.equal(reminderPlan[0].channel.sound,'petcare_chime.wav');assert.equal(reminderPlan[1].notifications.filter(n=>n.schedule.on).length,2);assert.equal(reminderPlan[1].notifications.filter(n=>n.schedule.at).length,1);assert.ok(reminderPlan[1].notifications.every(n=>n.channelId==='petcare_care_v2'));
+ await page.evaluate(()=>{activePet=data.pets[1].id;render();});await page.locator('[data-tab="feeding"]').click();assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/No meal recorded/);
  for(const [tab,mode,form,values,key] of [
   ['health','health','healthForm',{title:'Vaccine',nextDate:'2027-01-15'},'health'],
   ['diary','log','logForm',{note:'Normal appetite'},'logs'],

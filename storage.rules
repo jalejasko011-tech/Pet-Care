@@ -1,16 +1,28 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Private user photos and attachments, max 10 MB per image.
-    match /users/{userId}/{allPaths=**} {
-      allow read, delete: if request.auth != null && request.auth.uid == userId;
-      allow create, update: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+    function active() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/chatProfiles/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/chatProfiles/$(request.auth.uid)).data.banned == false;
     }
-    match /{allPaths=**} {
-      allow read, write: if false;
+    function moderator() { return request.auth != null && request.auth.token.get('moderator',false) == true; }
+    function linked(uid,messageId) {
+      return firestore.exists(/databases/(default)/documents/globalMessages/$(messageId))
+        && firestore.get(/databases/(default)/documents/globalMessages/$(messageId)).data.authorId == uid
+        && firestore.get(/databases/(default)/documents/globalMessages/$(messageId)).data.media.path == 'chatMedia/' + uid + '/' + messageId;
     }
+    match /chatMedia/{uid}/{messageId} {
+      allow read: if (active() || moderator()) && linked(uid,messageId);
+      allow create: if active() && request.auth.uid == uid && linked(uid,messageId)
+        && request.resource.size == firestore.get(/databases/(default)/documents/globalMessages/$(messageId)).data.media.size
+        && request.resource.contentType == firestore.get(/databases/(default)/documents/globalMessages/$(messageId)).data.media.mime
+        && request.resource.size > 0
+        && ((request.resource.contentType in ['image/jpeg','image/png','image/webp'] && request.resource.size <= 10*1024*1024)
+          || (request.resource.contentType in ['video/mp4','video/webm'] && request.resource.size <= 25*1024*1024));
+      allow update: if false;
+      allow delete: if request.auth != null && request.auth.uid == uid || moderator();
+    }
+    match /{allPaths=**} { allow read, write: if false; }
   }
 }

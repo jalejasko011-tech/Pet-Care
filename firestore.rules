@@ -7,6 +7,14 @@ service cloud.firestore {
       return signedIn() && exists(/databases/$(database)/documents/chatProfiles/$(request.auth.uid))
         && get(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.banned == false;
     }
+    function validMedia(messageId) {
+      let m=request.resource.data.media;
+      return m is map && m.keys().hasAll(['path','kind','mime','size']) && m.keys().hasOnly(['path','kind','mime','size'])
+        && m.path == 'chatMedia/' + request.auth.uid + '/' + messageId
+        && m.size is int && m.size > 0
+        && ((m.kind == 'image' && m.mime in ['image/jpeg','image/png','image/webp'] && m.size <= 10*1024*1024)
+          || (m.kind == 'video' && m.mime in ['video/mp4','video/webm'] && m.size <= 25*1024*1024));
+    }
     match /chatProfiles/{uid} {
       allow get: if signedIn() && request.auth.uid == uid || moderator();
       allow list: if moderator();
@@ -28,11 +36,13 @@ service cloud.firestore {
       allow get: if active() || moderator();
       allow list: if (active() || moderator()) && request.query.limit != null && request.query.limit <= 100;
       allow create: if active()
-        && request.resource.data.keys().hasOnly(['authorId','nickname','text','createdAt'])
+        && request.resource.data.keys().hasOnly(['authorId','nickname','text','createdAt','media'])
         && messageId == request.auth.uid + '_' + string(getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.sequence)
         && request.resource.data.authorId == request.auth.uid
         && request.resource.data.nickname == getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.nickname
-        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000
+        && request.resource.data.text is string && request.resource.data.text.size() <= 1000
+        && (request.resource.data.text.size() > 0 || request.resource.data.keys().hasAny(['media']))
+        && (!request.resource.data.keys().hasAny(['media']) || validMedia(messageId))
         && request.resource.data.createdAt == request.time
         && getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.lastSent == request.time
         && get(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.lastSent <= request.time - duration.value(5,'s');
