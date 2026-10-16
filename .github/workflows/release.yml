@@ -151,7 +151,9 @@ jobs:
           root.mkdir(parents=True)
           shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.0.aab')
           shutil.copytree('store-listing',root/'store-listing')
-          shutil.copytree('docs',root/'docs')
+          (root/'docs').mkdir()
+          for name in ['RELEASE_1_8_STATUS.md','PHONE_ACCEPTANCE_TEST.md','PLAY_STORE_RELEASE_CHECKLIST.md','GOOGLE_PLAY_DATA_SAFETY_REVIEW.md','CHAT_PUSH_ACTIVATION.md','CHAT_MEDIA_ACTIVATION.md']:
+              shutil.copy(pathlib.Path('docs')/name,root/'docs'/name)
           repo=os.environ['GITHUB_REPOSITORY']
           runs=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs?head_sha={os.environ["GITHUB_SHA"]}&per_page=30']))['workflow_runs']
           run=next(r for r in runs if r['name']=='Pet Care quality checks' and r['event']=='push' and r['conclusion']=='success')
