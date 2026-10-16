@@ -81,3 +81,19 @@ jobs:
           name: android-smoke-evidence
           path: android-test-evidence/
           retention-days: 7
+
+  chat-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install Firebase test tools
+        run: npm install --no-save firebase@12.4.0 @firebase/rules-unit-testing@5 firebase-tools@14
+      - name: Verify global chat access and moderation rules
+        run: npx firebase emulators:exec --only firestore --project demo-petcare-chat 'node tools/test-chat-rules.mjs'

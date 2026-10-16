@@ -16,5 +16,5 @@ const { spawnSync } = await import('node:child_process');
 const icons = spawnSync('java', ['-Djava.awt.headless=true', 'tools/GenerateLauncherIcons.java'], {stdio:'inherit'});
 if (icons.status !== 0) throw Error('Android launcher artwork generation failed');
 const appGradle='android/app/build.gradle';
-const app=readFileSync(appGradle,'utf8').replace(/versionCode\s+\d+/, 'versionCode 4').replace(/versionName\s+"[^"]+"/, 'versionName "1.3"');
+const app=readFileSync(appGradle,'utf8').replace(/versionCode\s+\d+/, 'versionCode 5').replace(/versionName\s+"[^"]+"/, 'versionName "1.4"');
 writeFileSync(appGradle,app);

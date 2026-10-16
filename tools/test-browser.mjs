@@ -9,7 +9,7 @@ const server = createServer(async(req,res)=>{
     const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
     const path=resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
     if(!path.startsWith(root+'/')){res.writeHead(403).end();return;}
-    res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.svg':'image/svg+xml','.png':'image/png'})[extname(path)]||'application/octet-stream');
+    res.setHeader('Content-Type',({'.html':'text/html','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.png':'image/png'})[extname(path)]||'application/octet-stream');
     res.end(await readFile(path));
   }catch{res.writeHead(404).end();}
 });
@@ -25,6 +25,15 @@ try {
  await page.selectOption('#languageSelect','en');
  await page.screenshot({path:'pet-care-background-preview.png',fullPage:true});
  assert.equal(await page.locator('#footerNote a').getAttribute('href'),'privacy.html');
+ assert.equal(await page.locator('#globalChatShortcut').evaluate(e=>getComputedStyle(e).position),'fixed');
+ await page.locator('#globalChatShortcut').click();
+ await page.locator('#globalChatDialog').waitFor({state:'visible'});
+ assert.ok(await page.locator('#chatUnavailable').count());
+ assert.equal(await page.locator('#chatSend').count(),0);
+ await page.locator('#globalChatDialog button').first().click();
+ assert.equal(await page.locator('#globalChatDialog').isVisible(),false);
+ assert.equal(network.length,0,'Disabled chat must make no external requests');
+
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
  for(const name of ['Luna','Max']){
