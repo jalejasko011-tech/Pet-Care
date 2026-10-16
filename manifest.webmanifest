@@ -1,6 +1,6 @@
 {
-  "name": "Pet Care — Care for your pet",
-  "short_name": "Pet Care",
+  "name": "Pet Care World",
+  "short_name": "Pet Care World",
   "description": "Track your pets' health, weight, nutrition, reminders and expenses.",
   "start_url": "./index.html",
   "scope": "./",
@@ -11,10 +11,10 @@
   "lang": "en",
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "pet_care_world_original_logo.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
