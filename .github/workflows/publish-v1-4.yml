@@ -1,0 +1,48 @@
+name: Publish version 1.4 download
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-v1-4.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download verified signed 1.4 build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh run view 38870093502 --json conclusion,headSha > "$RUNNER_TEMP/source.json"
+          python3 - <<'PY'
+          import json,os
+          r=json.load(open(os.environ['RUNNER_TEMP']+'/source.json'))
+          assert r['conclusion']=='success'
+          assert r['headSha']=='e4e9e68332e0c6b80fa1f9dd629a396fdd369d87'
+          PY
+          gh run download 38870093502 --name Pet-Care-World-Signed-Release --dir download
+          mv download/Pet-Care-World-release.apk download/Pet-Care-World-1.4.apk
+          cd download
+          echo 'dbbb326c29edf610ded341901ffe21c95f2b8beabee4282bdf621d8a17b695ff  Pet-Care-World-1.4.apk' | sha256sum --check
+          zip Pet-Care-World-1.4.zip Pet-Care-World-1.4.apk
+          sha256sum Pet-Care-World-1.4.apk Pet-Care-World-1.4.zip > SHA256SUMS.txt
+      - name: Publish public download
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/notes.md" <<'NOTES'
+          Pet Care World 1.4 Android update.
+          
+          Includes the animal header, mint/cream background and floating Chat shortcut.
+          Global messaging is not active; the Firebase server connection is still pending.
+          Download the APK directly, or extract the ZIP and open the APK to update.
+          This is a direct Android download, not a Google Play approval.
+          NOTES
+          gh release create v1.4 download/Pet-Care-World-1.4.apk download/Pet-Care-World-1.4.zip download/SHA256SUMS.txt --target e4e9e68332e0c6b80fa1f9dd629a396fdd369d87 --title "Pet Care World 1.4" --notes-file "$RUNNER_TEMP/notes.md"
