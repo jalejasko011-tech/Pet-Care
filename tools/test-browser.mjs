@@ -18,6 +18,8 @@ const browser=await chromium.launch();
 try {
  const context=await browser.newContext({viewport:{width:360,height:800},acceptDownloads:true,serviceWorkers:'block'});
  const page=await context.newPage(),errors=[],network=[];
+ const openSection=async id=>{const button=page.locator(`[data-tab="${id}"]`);if(!await button.isVisible())await page.locator('#moreSectionsShortcut').click();await button.click();};
+
  page.on('pageerror',e=>errors.push(e.message));
  page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:')&&!r.url().startsWith('blob:http://127.0.0.1:'))network.push(r.url());});
  page.on('dialog',d=>d.accept());
@@ -32,6 +34,7 @@ try {
  await page.screenshot({path:'pet-care-background-preview.png',fullPage:true});
  assert.equal(await page.locator('#footerNote a').getAttribute('href'),'privacy.html');
  assert.equal(await page.locator('.top #exportBtn').count(),0);
+ assert.equal(await page.locator('[data-action=addpet]').innerText(),'＋ Add pet');
  assert.equal(await page.locator('#settingsShortcut').evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('[data-action=addpet]').evaluate(e=>getComputedStyle(e).backgroundColor));
  assert.equal(await page.locator('#globalChatShortcut').evaluate(e=>getComputedStyle(e).position),'fixed');
  await page.locator('#globalChatShortcut').click();
@@ -53,7 +56,7 @@ try {
  await page.goBack();assert.equal(await page.evaluate(()=>tab),'home');assert.equal(await page.evaluate(()=>data.pets.length),0);
  await page.locator('#settingsShortcut').click();await page.goBack();await page.goForward();assert.equal(await page.evaluate(()=>tab),'settings');await page.goBack();
 
- for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
+ for(const tab of tabs){await openSection(tab);assert.ok((await page.locator('#content').innerText()).trim());}
  for(const name of ['Luna','Max']){
   await page.locator('[data-action="addpet"]').click();
   await page.locator('#petForm [name=name]').fill(name);
@@ -66,14 +69,14 @@ try {
  await page.locator('#petForm button').last().click();
  assert.equal(await page.evaluate(()=>data.pets[0].name),'Luna updated');
  // Meal records distinguish unknown history from a recorded missed interval.
- await page.locator('[data-tab="feeding"]').click();assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/No meal recorded/);
+ await openSection('feeding');assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/No meal recorded/);
  await page.locator('#feedingPlanForm [name=enabled]').check();await page.locator('#feedingPlanForm [name=times]').fill('08:00, 18:00');await page.locator('#feedingPlanForm [name=gapHours]').fill('12');await page.locator('#feedingPlanForm button').first().click();
  await page.evaluate(()=>petCareFeeding.mark(Date.now()-13*3600000));assert.match(await page.locator('#content').innerText(),/No new meal has been recorded/);
  await page.locator('[data-fed-now]').click();assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/0 min/);assert.doesNotMatch(await page.locator('#content').innerText(),/No new meal has been recorded/);
- await page.reload();await page.locator('[data-tab="feeding"]').click();assert.equal(await page.locator('#feedingPlanForm [name=times]').inputValue(),'08:00, 18:00');
+ await page.reload();await openSection('feeding');assert.equal(await page.locator('#feedingPlanForm [name=times]').inputValue(),'08:00, 18:00');
  const reminderPlan=await page.evaluate(async()=>{const captured=[];window.Capacitor={getPlatform:()=>'android',Plugins:{LocalNotifications:{checkPermissions:async()=>({display:'granted'}),createChannel:async c=>captured.push({channel:c}),getPending:async()=>({notifications:[]}),cancel:async()=>{},schedule:async n=>captured.push(n)}}};await window.petCareNative.sync([],data.pets);delete window.Capacitor;return captured;});
  assert.equal(reminderPlan[0].channel.sound,'petcare_cheerful.wav');assert.equal(reminderPlan[1].notifications.filter(n=>n.schedule.on).length,2);assert.equal(reminderPlan[1].notifications.filter(n=>n.schedule.at).length,1);assert.ok(reminderPlan[1].notifications.every(n=>n.channelId==='petcare_cheerful_v1'));
- await page.evaluate(()=>{activePet=data.pets[1].id;render();});await page.locator('[data-tab="feeding"]').click();assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/No meal recorded/);
+ await page.evaluate(()=>{activePet=data.pets[1].id;render();});await openSection('feeding');assert.match(await page.locator('[data-feeding-elapsed]').innerText(),/No meal recorded/);
  await page.evaluate(()=>{activePet=data.pets[0].id;render();});
  // Independent, persistent appearance preferences and the selected notification sound.
  await page.locator('#settingsShortcut').click();
@@ -84,7 +87,7 @@ try {
  assert.equal(await page.locator('#settingFont').inputValue(),'large');
  await page.screenshot({path:'settings-preview.png',fullPage:true});
  await page.locator('#resetAppearance').click();
- await page.locator('[data-tab="memories"]').click();await page.locator('#memoryForm').waitFor();
+ await openSection('memories');await page.locator('#memoryForm').waitFor();
  await page.locator('#memoryForm [name=title]').fill('First walk <img src=x onerror=alert(1)>');
  await page.locator('#memoryForm [name=story]').fill('A private story about Luna.');
  await page.locator('#memoryForm [name=files]').setInputFiles([{name:'pet.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j4GQAAAAASUVORK5CYII=','base64')},{name:'walk.mp4',mimeType:'video/mp4',buffer:Buffer.from('AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAN2bW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAAfQAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAqB0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAAfQAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAEAAAABAAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAH0AAAIAAABAAAAAAIYbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAoAAAAFABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABw21pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAYNzdGJsAAAAv3N0c2QAAAAAAAAAAQAAAK9hdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAEAAQABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANWF2Y0MBZAAK/+EAGGdkAAqs2UQmwEQAAAMABAAAAwBQPEiWWAEABmjr48siwP34+AAAAAAQcGFzcAAAAAEAAAABAAAAFGJ0cnQAAAAAAAAw8AAAMPAAAAAYc3R0cwAAAAAAAAABAAAABQAABAAAAAAUc3RzcwAAAAAAAAABAAAAAQAAADhjdHRzAAAAAAAAAAUAAAABAAAIAAAAAAEAABQAAAAAAQAACAAAAAABAAAAAAAAAAEAAAQAAAAAHHN0c2MAAAAAAAAAAQAAAAEAAAAFAAAAAQAAAChzdHN6AAAAAAAAAAAAAAAFAAAC3QAAAA4AAAAMAAAADAAAAAwAAAAUc3RjbwAAAAAAAAABAAADpgAAAGJ1ZHRhAAAAWm1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAG1kaXJhcHBsAAAAAAAAAAAAAAAALWlsc3QAAAAlqXRvbwAAAB1kYXRhAAAAAQAAAABMYXZmNjAuMTYuMTAwAAAACGZyZWUAAAMXbWRhdAAAAq4GBf//qtxF6b3m2Ui3lizYINkj7u94MjY0IC0gY29yZSAxNjQgcjMxMDggMzFlMTlmOSAtIEguMjY0L01QRUctNCBBVkMgY29kZWMgLSBDb3B5bGVmdCAyMDAzLTIwMjMgLSBodHRwOi8vd3d3LnZpZGVvbGFuLm9yZy94MjY0Lmh0bWwgLSBvcHRpb25zOiBjYWJhYz0xIHJlZj0zIGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDM6MHgxMTMgbWU9aGV4IHN1Ym1lPTcgcHN5PTEgcHN5X3JkPTEuMDA6MC4wMCBtaXhlZF9yZWY9MSBtZV9yYW5nZT0xNiBjaHJvbWFfbWU9MSB0cmVsbGlzPTEgOHg4ZGN0PTEgY3FtPTAgZGVhZHpvbmU9MjEsMTEgZmFzdF9wc2tpcD0xIGNocm9tYV9xcF9vZmZzZXQ9LTIgdGhyZWFkcz0yIGxvb2thaGVhZF90aHJlYWRzPTEgc2xpY2VkX3RocmVhZHM9MCBucj0wIGRlY2ltYXRlPTEgaW50ZXJsYWNlZD0wIGJsdXJheV9jb21wYXQ9MCBjb25zdHJhaW5lZF9pbnRyYT0wIGJmcmFtZXM9MyBiX3B5cmFtaWQ9MiBiX2FkYXB0PTEgYl9iaWFzPTAgZGlyZWN0PTEgd2VpZ2h0Yj0xIG9wZW5fZ29wPTAgd2VpZ2h0cD0yIGtleWludD0yNTAga2V5aW50X21pbj0xMCBzY2VuZWN1dD00MCBpbnRyYV9yZWZyZXNoPTAgcmNfbG9va2FoZWFkPTQwIHJjPWNyZiBtYnRyZWU9MSBjcmY9MjMuMCBxY29tcD0wLjYwIHFwbWluPTAgcXBtYXg9NjkgcXBzdGVwPTQgaXBfcmF0aW89MS40MCBhcT0xOjEuMDAAgAAAACdliIQAEP/+5sD5llUNV3/2YjwHgLSLlJeKSOrCiJeV3ezaG+F4beEAAAAKQZokbEN//qePiAAAAAhBnkJ4h38FvQAAAAgBnmF0Q38HfAAAAAgBnmNqQ38HfQ==','base64')}]);
@@ -98,7 +101,7 @@ try {
  await page.locator('[data-memory-edit]').click();await page.locator('#memoryForm [name=story]').fill('Updated private story');await page.locator('#saveMemory').click();
  await page.waitForFunction(async()=>(await petCareMemories.all())[0]?.text==='Updated private story');
  await page.locator('[data-memory-favorite]').click();await page.waitForFunction(async()=>(await petCareMemories.all())[0]?.favorite===true);
- await page.reload();await page.locator('[data-tab="memories"]').click();await page.locator('[data-memory]').waitFor();
+ await page.reload();await openSection('memories');await page.locator('[data-memory]').waitFor();
  const memoryDownload=page.waitForEvent('download');await page.evaluate(()=>petCareMemories.backup());
  const backupPath=await (await memoryDownload).path();const backupData=JSON.parse(await readFile(backupPath,'utf8'));
  assert.equal(backupData.records[0].media.length,2);assert.equal(backupData.records[0].media[1].base64,'AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAN2bW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAAfQAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAqB0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAAfQAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAEAAAABAAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAH0AAAIAAABAAAAAAIYbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAoAAAAFABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABw21pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAYNzdGJsAAAAv3N0c2QAAAAAAAAAAQAAAK9hdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAEAAQABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANWF2Y0MBZAAK/+EAGGdkAAqs2UQmwEQAAAMABAAAAwBQPEiWWAEABmjr48siwP34+AAAAAAQcGFzcAAAAAEAAAABAAAAFGJ0cnQAAAAAAAAw8AAAMPAAAAAYc3R0cwAAAAAAAAABAAAABQAABAAAAAAUc3RzcwAAAAAAAAABAAAAAQAAADhjdHRzAAAAAAAAAAUAAAABAAAIAAAAAAEAABQAAAAAAQAACAAAAAABAAAAAAAAAAEAAAQAAAAAHHN0c2MAAAAAAAAAAQAAAAEAAAAFAAAAAQAAAChzdHN6AAAAAAAAAAAAAAAFAAAC3QAAAA4AAAAMAAAADAAAAAwAAAAUc3RjbwAAAAAAAAABAAADpgAAAGJ1ZHRhAAAAWm1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAG1kaXJhcHBsAAAAAAAAAAAAAAAALWlsc3QAAAAlqXRvbwAAAB1kYXRhAAAAAQAAAABMYXZmNjAuMTYuMTAwAAAACGZyZWUAAAMXbWRhdAAAAq4GBf//qtxF6b3m2Ui3lizYINkj7u94MjY0IC0gY29yZSAxNjQgcjMxMDggMzFlMTlmOSAtIEguMjY0L01QRUctNCBBVkMgY29kZWMgLSBDb3B5bGVmdCAyMDAzLTIwMjMgLSBodHRwOi8vd3d3LnZpZGVvbGFuLm9yZy94MjY0Lmh0bWwgLSBvcHRpb25zOiBjYWJhYz0xIHJlZj0zIGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDM6MHgxMTMgbWU9aGV4IHN1Ym1lPTcgcHN5PTEgcHN5X3JkPTEuMDA6MC4wMCBtaXhlZF9yZWY9MSBtZV9yYW5nZT0xNiBjaHJvbWFfbWU9MSB0cmVsbGlzPTEgOHg4ZGN0PTEgY3FtPTAgZGVhZHpvbmU9MjEsMTEgZmFzdF9wc2tpcD0xIGNocm9tYV9xcF9vZmZzZXQ9LTIgdGhyZWFkcz0yIGxvb2thaGVhZF90aHJlYWRzPTEgc2xpY2VkX3RocmVhZHM9MCBucj0wIGRlY2ltYXRlPTEgaW50ZXJsYWNlZD0wIGJsdXJheV9jb21wYXQ9MCBjb25zdHJhaW5lZF9pbnRyYT0wIGJmcmFtZXM9MyBiX3B5cmFtaWQ9MiBiX2FkYXB0PTEgYl9iaWFzPTAgZGlyZWN0PTEgd2VpZ2h0Yj0xIG9wZW5fZ29wPTAgd2VpZ2h0cD0yIGtleWludD0yNTAga2V5aW50X21pbj0xMCBzY2VuZWN1dD00MCBpbnRyYV9yZWZyZXNoPTAgcmNfbG9va2FoZWFkPTQwIHJjPWNyZiBtYnRyZWU9MSBjcmY9MjMuMCBxY29tcD0wLjYwIHFwbWluPTAgcXBtYXg9NjkgcXBzdGVwPTQgaXBfcmF0aW89MS40MCBhcT0xOjEuMDAAgAAAACdliIQAEP/+5sD5llUNV3/2YjwHgLSLlJeKSOrCiJeV3ezaG+F4beEAAAAKQZokbEN//qePiAAAAAhBnkJ4h38FvQAAAAgBnmF0Q38HfAAAAAgBnmNqQ38HfQ==');
@@ -124,7 +127,7 @@ try {
   await page.locator(`#${form} button`).last().click();
   assert.equal(await page.evaluate(k=>data[k].length,key),before+1,form);
  }
- for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
+ for(const tab of tabs){await openSection(tab);assert.ok((await page.locator('#content').innerText()).trim());}
  for(const lang of ['sr','en']){await page.selectOption('#languageSelect',lang);assert.equal(await page.locator('#footerNote a').count(),1);}
  await page.reload();
  assert.equal(await page.evaluate(()=>data.pets.length),2);
@@ -146,6 +149,30 @@ try {
  await page.reload();assert.equal(await page.evaluate(()=>data.pets.length),1);
  assert.deepEqual(errors,[], 'Runtime JavaScript errors');
  assert.deepEqual(network,[], 'Unexpected automatic off-device requests');
+
+ // Full backup includes gallery bytes, memories, records and settings, then merges safely.
+ await page.evaluate(async()=>{await petCareBackup.ready;await galleryPut({id:'full-gallery',petId:data.pets[0].id,date:today(),type:'image/png',name:'private.png',caption:'Full backup image',blob:new Blob(['private-png-bytes'],{type:'image/png'})});});
+ const full=await page.evaluate(async()=>{const x=await petCareBackup.build();window.testCompleteBackup=x.bytes;const parsed=petCareBackup.parse(x.bytes);return {pets:parsed.data.pets.length,media:await parsed.gallery[0].blob.text(),memories:parsed.memories.length};});
+ assert.equal(full.pets,1);assert.equal(full.media,'private-png-bytes');assert.equal(full.memories,1);
+ await page.evaluate(async()=>{await petCareBackup.apply(petCareBackup.parse(window.testCompleteBackup));await petCareBackup.apply(petCareBackup.parse(window.testCompleteBackup));});
+ assert.equal(await page.evaluate(async()=>(await galleryAll()).length),1);assert.equal(await page.evaluate(async()=>(await petCareMemories.all()).length),1);
+ await page.evaluate(async()=>{const parsed=petCareBackup.parse(window.testCompleteBackup);for(const x of await galleryAll())await galleryRemove(x.id);await petCareMemories.removeIds((await petCareMemories.all()).map(x=>x.id));data=seed();for(const k of ['sos','family','training','events','routineDone','feedings','feedingPlans'])data[k]=[];localStorage.setItem(KEY,JSON.stringify(data));worldSave([]);await petCareBackup.apply(parsed);});
+ assert.equal(await page.evaluate(()=>data.pets.length),1);assert.equal(await page.evaluate(async()=>(await galleryAll())[0].blob.text()),'private-png-bytes');
+ // A failed local-storage commit rolls back newly inserted media and records.
+ const rollback=await page.evaluate(async()=>{const parsed=petCareBackup.parse(window.testCompleteBackup);parsed.gallery[0].id='rollback-gallery';parsed.memories[0].id='rollback-memory';parsed.data.pets.push({id:'rollback-pet',name:'Rollback pet'});const before=localStorage.getItem(KEY),original=Storage.prototype.setItem;let once=true;Storage.prototype.setItem=function(k,v){if(k===KEY&&once){once=false;throw new DOMException('Test full storage','QuotaExceededError');}return original.call(this,k,v);};let failed=false;try{await petCareBackup.apply(parsed);}catch{failed=true;}finally{Storage.prototype.setItem=original;}return failed&&localStorage.getItem(KEY)===before&&!(await galleryAll()).some(x=>x.id==='rollback-gallery')&&!(await petCareMemories.all()).some(x=>x.id==='rollback-memory');});assert.equal(rollback,true);
+ // Simulate process death with a durable, partially applied restore journal.
+ await page.evaluate(async()=>{const old={};for(const key of [KEY,WORLD_KEY,'petcare_preferences_v1',LANG_KEY])old[key]=localStorage.getItem(key);const q=indexedDB.open('petcare_restore_journal_v1',1);await new Promise((resolve,reject)=>{q.onsuccess=()=>{const tx=q.result.transaction('journal','readwrite');tx.objectStore('journal').put({old,galleryIds:['interrupted-media'],memoryIds:[]},'pending');tx.oncomplete=()=>{q.result.close();resolve();};tx.onerror=()=>reject(tx.error);};});await galleryPut({id:'interrupted-media',petId:data.pets[0].id,name:'partial.png',type:'image/png',blob:new Blob(['partial'],{type:'image/png'})});data.pets.push({id:'interrupted-pet',name:'Partial pet'});localStorage.setItem(KEY,JSON.stringify(data));});
+ await page.reload();await page.evaluate(()=>petCareBackup.ready);assert.equal(await page.evaluate(()=>data.pets.length),1);assert.equal(await page.evaluate(async()=>(await galleryAll()).some(x=>x.id==='interrupted-media')),false);
+ console.log('PASS full backup media/records, duplicate merge, clean-device restore, quota rollback and interrupted-restore recovery.');
+
+ await page.evaluate(()=>petCareUI.open('home'));await page.evaluate(()=>petCareUI.open('health'));await page.evaluate(()=>petCareUI.open('settings'));
+ await page.goBack();await page.waitForFunction(()=>tab==='health');await page.goForward();await page.waitForFunction(()=>tab==='settings');
+ for(let n=0;n<65;n++)await page.evaluate(i=>petCareUI.open(i%2?'health':'home'),n);
+ await page.evaluate(()=>petCareNavigation.back({canGoBack:false}));assert.equal(await page.evaluate(()=>petCareNavigation.getState().depth),0);assert.equal(await page.evaluate(()=>tab),'home');
+ const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.0');assert.equal(support.chatPushActive,false);
+ assert.ok(!JSON.stringify(support).includes('private-png-bytes'));assert.ok(!Object.hasOwn(support,'pets'));
+ await openSection('diagnostics');assert.match(await page.locator('#content').innerText(),/Pomoć|Help/);
+ console.log('PASS forward/back through section history and support report without pet or chat data.');
  const response=await page.goto(`http://127.0.0.1:${server.address().port}/privacy.html`);assert.equal(response.status(),200);
  assert.ok((await page.locator('body').innerText()).includes('jalejasko011@gmail.com'));
  console.log(`PASS: ${tabs.length} tabs with and without pets; create/edit/delete, records, persistence, export, gallery, SR/EN policy link, startup network.`);

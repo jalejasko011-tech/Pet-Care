@@ -7,6 +7,8 @@ try {
  const page=await webview.page();
  assert.ok(page,'Android WebView page missing');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const openSection=async id=>{const button=page.locator(`[data-tab="${id}"]`);if(!await button.isVisible())await page.locator('#moreSectionsShortcut').click();await button.click();};
+
  await page.locator('#content').waitFor();
  await page.selectOption('#languageSelect','en');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
@@ -20,7 +22,7 @@ try {
  await page.reload();
  assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
  assert.equal(await page.evaluate(()=>petCareNavigation.ready),true,'Native Android Back listener missing');
- await page.locator('[data-tab="home"]').click();await page.locator('#settingsShortcut').click();await page.locator('#settingsMemories').click();await page.locator('#memoryForm').waitFor();
+ await openSection('home');await page.locator('#settingsShortcut').click();await page.locator('#settingsMemories').click();await page.locator('#memoryForm').waitFor();
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='settings');
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
 
@@ -28,7 +30,7 @@ try {
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>typeof petCareNavigation!=='undefined'&&tab==='settings');
  assert.equal(await page.evaluate(()=>petCareNavigation.ready),true);
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
- await page.locator('[data-tab="health"]').click();await page.evaluate(()=>{formMode='health';render();});
+ await openSection('health');await page.evaluate(()=>{formMode='health';render();});
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='health'&&formMode===null);
  await page.locator('#globalChatShortcut').click();await page.locator('#globalChatDialog').waitFor({state:'visible'});
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>!document.getElementById('globalChatDialog').open);assert.equal(await page.evaluate(()=>tab),'health');
@@ -39,16 +41,30 @@ try {
  assert.match((await device.shell('pidof com.petcare.companion')).toString().trim(),/^\d+$/);
  console.log('PASS physical Android Back key: previous tab, close form, close chat first, root exit protection.');
 
- for(const tab of tabs){await page.locator(`[data-tab="${tab}"]`).click();assert.ok((await page.locator('#content').innerText()).trim());}
+ for(const tab of tabs){await openSection(tab);assert.ok((await page.locator('#content').innerText()).trim());}
  assert.equal(await page.locator('#footerNote a').count(),1);
  await page.locator('#settingsShortcut').click();await page.selectOption('#appWallpaper','lavender');
- await page.locator('[data-tab="memories"]').click();await page.locator('#memoryForm').waitFor();
+ await openSection('memories');await page.locator('#memoryForm').waitFor();
  await page.locator('#memoryForm [name=title]').fill('Private Android memory');await page.locator('#memoryForm [name=story]').fill('Saved on this device');
  await page.locator('#saveMemory').click();await page.locator('[data-memory]').waitFor();await page.reload();
  assert.equal(await page.evaluate(async()=>(await petCareMemories.all())[0].title),'Private Android memory');
  assert.equal(await page.evaluate(()=>petCarePreferences.get().app),'lavender');
  console.log('PASS Android private memory and appearance survive WebView reload.');
 
+
+ await device.shell('svc wifi disable');await device.shell('svc data disable');
+ try{
+  await page.reload();await page.locator('#content').waitFor();
+  assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
+  const backup=await page.evaluate(async()=>{await petCareBackup.ready;const built=await petCareBackup.build(),fs=window.Capacitor.Plugins.Filesystem;const base64=await new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.readAsDataURL(new Blob([built.bytes]));});await fs.writeFile({path:'petcare-backup-test.zip',data:base64,directory:'CACHE'});const file=await fs.readFile({path:'petcare-backup-test.zip',directory:'CACHE'}),bytes=Uint8Array.from(atob(file.data),c=>c.charCodeAt(0));const parsed=petCareBackup.parse(bytes);await fs.deleteFile({path:'petcare-backup-test.zip',directory:'CACHE'});return {same:bytes.length===built.bytes.length,pets:parsed.data.pets.length,memories:parsed.memories.length};});
+  assert.deepEqual(backup,{same:true,pets:1,memories:1});
+  console.log('PASS offline Android reload, native Filesystem complete-backup roundtrip and private-memory persistence.');
+ }finally{await device.shell('svc wifi enable');await device.shell('svc data enable');}
+ // Capture only synthetic test records for store review, not real user content.
+ await openSection('home');await page.screenshot({path:'android-test-evidence/store-home.png'});
+ await openSection('feeding');await page.screenshot({path:'android-test-evidence/store-feeding.png'});
+ await openSection('memories');await page.screenshot({path:'android-test-evidence/store-memories.png'});
+ await page.locator('#settingsShortcut').click();await page.screenshot({path:'android-test-evidence/store-settings.png'});
  const result=await page.evaluate(async()=>{
   const api=window.Capacitor?.Plugins?.LocalNotifications;
   if(!api)throw Error('Native notifications plugin missing');

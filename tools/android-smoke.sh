@@ -9,6 +9,12 @@ adb shell am start -W -n com.petcare.companion/.MainActivity | tee android-test-
 for attempt in $(seq 1 20); do
   adb shell uiautomator dump /sdcard/pet-care-ui.xml >/dev/null 2>&1 || true
   adb pull /sdcard/pet-care-ui.xml android-test-evidence/ui.xml >/dev/null 2>&1 || true
+  # Only recover the emulator launcher's observed ANR; never dismiss an app ANR.
+  if grep -q "Quickstep isn't responding" android-test-evidence/ui.xml 2>/dev/null; then
+    echo 'Recovering emulator Quickstep launcher ANR (not Pet Care).'
+    adb shell am force-stop com.android.launcher3
+    adb shell am start -W -n com.petcare.companion/.MainActivity >/dev/null
+  fi
   if grep -q 'Pet Care World' android-test-evidence/ui.xml 2>/dev/null; then break; fi
   sleep 2
 done

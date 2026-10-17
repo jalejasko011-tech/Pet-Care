@@ -2,6 +2,7 @@
 window.PETCARE_CHAT_CONFIG = {
   "enabled": true,
   "media": {"enabled": false, "bucket": ""},
+  "push": {"enabled": false},
   "firebase": {
     "apiKey": "AIzaSyDG4ly3BEPk92KmQGhioOREkuNyT1LABjU",
     "authDomain": "pet-care-world.firebaseapp.com",

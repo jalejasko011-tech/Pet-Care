@@ -38,13 +38,14 @@
       const submit=node('button',tr('Pošalji','Send'),'btn');submit.type='submit';send.append(msgLabel,text,submit);send.onsubmit=sendMessage;connected.append(send);
       const attachment=node('div',null,'chat-attachment');const fileLabel=node('label',tr('📎 Slika ili snimak','📎 Photo or video'));fileLabel.htmlFor='chatFile';const file=node('input');file.type='file';file.id='chatFile';file.accept='image/jpeg,image/png,image/webp,video/mp4,video/webm';file.disabled=!mediaEnabled;file.onchange=()=>chooseMedia(file.files[0]);const help=node('p',mediaEnabled?tr('Slike do 10 MB; video do 25 MB. Prilog je javan učesnicima.','Images up to 10 MB; video up to 25 MB. Attachments are public to participants.'):tr('Slike i snimci još nisu aktivirani. Tekstualni chat radi.','Photos and videos are not activated yet. Text chat is available.'),'chat-note');const preview=node('div');preview.id='chatAttachmentPreview';const progress=node('progress');progress.id='chatUploadProgress';progress.className='chat-upload-progress';progress.max=100;progress.hidden=true;attachment.append(fileLabel,file,help,preview,progress);send.insertBefore(attachment,submit);
       const tools=node('div',null,'chat-tools');
-      for(const [caption,action] of [[tr('Izađi','Leave'),leave],[tr('Odblokiraj sve','Unblock all'),()=>{blocked.clear();localStorage.removeItem('petcare_chat_blocked_v1');paint();}],[tr('Obriši chat identitet i moje poruke','Delete chat identity and my messages'),erase]]){const b=node('button',caption,'btn secondary');b.type='button';b.onclick=action;tools.append(b);}connected.append(tools);box.append(connected);
+      for(const [caption,action] of [[tr('Izađi','Leave'),leave],[tr('Odblokiraj sve','Unblock all'),()=>{blocked.clear();localStorage.removeItem('petcare_chat_blocked_v1');paint();window.dispatchEvent(new Event('petcare:chat-blocks-changed'));}],[tr('Obriši chat identitet i moje poruke','Delete chat identity and my messages'),erase]]){const b=node('button',caption,'btn secondary');b.type='button';b.onclick=action;tools.append(b);}connected.append(tools);box.append(connected);
     }
     const note=node('p',tr('Samo za punoletne učesnike (18+). Poruke nisu end-to-end šifrovane. Ne delite adresu, telefon ili brojeve dokumenata. Chat identitet je vezan za ovaj uređaj; nakon brisanja podataka aplikacije pristup starom identitetu se gubi. Podaci o ljubimcima se ne objavljuju.','For adults (18+) only. Messages are not end-to-end encrypted. Do not share addresses, phone numbers or document numbers. Your chat identity belongs to this device; clearing app data loses access to it. Pet records are not published.'),'chat-note');box.append(note);
     const policy=node('a',tr('Privatnost i pravila chata','Privacy and chat rules'));policy.href='chat-privacy.html';policy.target='_blank';policy.rel='noopener noreferrer';box.append(policy);dialog.append(box);
     if(!enabled)status(tr('Nije povezano','Not connected'));
   }
   function leave(){if(busy)return;generation++;stop?.();stop=null;rows=[];shell();status(tr('Izašli ste iz razgovora.','You left the conversation.'));}
+  window.petCareChat={getSession:()=>user&&api?{api,auth,db,user,blocked:[...blocked]}:null,open:()=>shortcut.click()};
   shortcut.onclick=()=>{if(!dialog.open){shell();dialog.showModal();}};
   dialog.addEventListener('cancel',e=>{if(busy)e.preventDefault();});
   dialog.addEventListener('close',()=>{releaseMedia();if(previewURL)URL.revokeObjectURL(previewURL);selected=null;generation++;stop?.();stop=null;rows=[];shortcut.focus();});
@@ -65,6 +66,7 @@
       if(snapshot.exists())await api.updateDoc(profile,{nickname});
       else await api.setDoc(profile,{nickname,banned:false,lastSent:api.Timestamp.fromMillis(0),sequence:0});
       if(token!==generation)return;
+      window.dispatchEvent(new Event('petcare:chat-connected'));
       localStorage.setItem('petcare_chat_nickname_v1',nickname);el('chatJoin').hidden=true;el('chatConnected').hidden=false;
       stop=api.onSnapshot(api.query(api.collection(db,'globalMessages'),api.orderBy('createdAt','desc'),api.limit(100)),snap=>{rows=snap.docs.map(d=>({id:d.id,...d.data()})).reverse();paint();status(tr('Povezano • javni razgovor','Connected • public conversation'));},()=>{status(tr('Veza je prekinuta ili pristup nije dozvoljen. Pokušajte ponovo.','Connection interrupted or access denied. Try again.'));el('chatSend').querySelector('button[type="submit"]').disabled=true;});
     }catch{status(tr('Povezivanje nije uspelo. Proverite internet ili pokušajte kasnije.','Could not connect. Check your connection or try later.'));}
@@ -81,7 +83,7 @@
       if(x.authorId===user.uid){const b=node('button',tr('Obriši','Delete'),'btn secondary');b.onclick=()=>run(()=>removeMessage(x));actions.append(b);}
       else{
         const report=node('button',tr('Prijavi','Report'),'btn secondary');report.onclick=async()=>{const reason=prompt(tr('Razlog prijave (najviše 300 znakova):','Report reason (up to 300 characters):'));if(!reason?.trim())return;await run(async()=>{await api.setDoc(api.doc(db,'chatReports',user.uid+'_'+x.id),{reporterId:user.uid,messageId:x.id,reason:reason.trim().slice(0,300),createdAt:api.serverTimestamp()});status(tr('Prijava je poslata moderatoru.','Report sent to the moderator.'));});};
-        const block=node('button',tr('Blokiraj','Block'),'btn secondary');block.onclick=()=>{blocked.add(x.authorId);localStorage.setItem('petcare_chat_blocked_v1',JSON.stringify([...blocked]));paint();};actions.append(report,block);
+        const block=node('button',tr('Blokiraj','Block'),'btn secondary');block.onclick=()=>{blocked.add(x.authorId);localStorage.setItem('petcare_chat_blocked_v1',JSON.stringify([...blocked]));paint();window.dispatchEvent(new Event('petcare:chat-blocks-changed'));};actions.append(report,block);
       }item.append(actions);list.append(item);
     }list.scrollTop=list.scrollHeight;
   }
@@ -123,7 +125,7 @@
     if(!confirm(tr('Trajno obrisati sve svoje javne poruke i chat identitet?','Permanently delete all your public messages and chat identity?')))return;
     await run(async()=>{stop?.();stop=null;let snapshot;
       do{snapshot=await api.getDocs(api.query(api.collection(db,'globalMessages'),api.where('authorId','==',user.uid),api.limit(100)));if(snapshot.size){const batch=api.writeBatch(db);for(const d of snapshot.docs){const x={id:d.id,...d.data()};if(x.media&&mediaEnabled&&validMedia(x)){try{await api.deleteObject(api.ref(storage,x.media.path));}catch(e){if(e.code!=='storage/object-not-found')throw e;}}batch.delete(d.ref);}await batch.commit();}}while(snapshot.size===100);
-      await api.deleteDoc(api.doc(db,'chatProfiles',user.uid));await api.deleteUser(user);user=null;localStorage.removeItem('petcare_chat_nickname_v1');leave();status(tr('Chat identitet i poruke su obrisani.','Chat identity and messages deleted.'));
+      await window.petCareChatPush?.disable();await api.deleteDoc(api.doc(db,'chatProfiles',user.uid));await api.deleteUser(user);user=null;localStorage.removeItem('petcare_chat_nickname_v1');leave();status(tr('Chat identitet i poruke su obrisani.','Chat identity and messages deleted.'));
     });
   }
 })();

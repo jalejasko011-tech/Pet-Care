@@ -1,0 +1,26 @@
+import {Script,createContext} from 'node:vm';
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const values=new Map(),events={},handlers={},writes=[],calls=[];
+const current={blocked:[],user:{uid:'test-viewer'},db:{},api:{doc:(_,...p)=>p.join('/'),setDoc:async(path,value)=>writes.push({path,value}),deleteDoc:async path=>calls.push(['delete',path]),serverTimestamp:()=>'<server-time>'}};
+const native={checkPermissions:async()=>({receive:'granted'}),requestPermissions:async()=>({receive:'granted'}),addListener:(name,callback)=>{handlers[name]=callback;return {remove(){}};},createChannel:async value=>calls.push(['channel',value]),register:async()=>{calls.push(['register']);await handlers.registration({value:'test-token-'.repeat(10)});},unregister:async()=>calls.push(['unregister'])};
+const window={PETCARE_CHAT_CONFIG:{push:{enabled:false}},Capacitor:{getPlatform:()=>'android',Plugins:{PushNotifications:native}},petCareChat:{getSession:()=>current,open:()=>calls.push(['open'])},petCarePreferences:{notification:()=>({sound:'petcare_cheerful.wav',vibration:true}),get:()=>({sound:'cheerful'})},addEventListener:(n,fn)=>events[n]=fn};
+const sandbox=createContext({window,currentLang:()=>'en',localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},document:{querySelectorAll:()=>[],getElementById:()=>null},MutationObserver:class{observe(){}},console});
+new Script(await readFile('www/chat-push.js','utf8')).runInContext(sandbox);
+await window.petCareChatPush.enable();assert.equal(calls.length,0,'Disabled backend must never register');
+window.PETCARE_CHAT_CONFIG.push.enabled=true;
+await window.petCareChatPush.connect();assert.equal(calls.length,0,'No automatic opt-in');
+await window.petCareChatPush.enable();assert.equal(calls.filter(x=>x[0]==='register').length,1);assert.equal(writes.length,1);assert.equal(writes[0].path,'chatPushSubscriptions/test-viewer');assert.equal(writes[0].value.channelId,'petcare_chat_cheerful_v1');
+current.blocked=['blocked-author'];await window.petCareChatPush.connect();assert.equal(writes.at(-1).value.blockedAuthors[0],'blocked-author');
+handlers.pushNotificationActionPerformed();assert.equal(calls.at(-1)[0],'open');
+await window.petCareChatPush.disable();assert.equal(values.size,0);assert.ok(calls.some(x=>x[0]==='delete'));assert.ok(calls.some(x=>x[0]==='unregister'));
+let finishDelete;current.api.deleteDoc=()=>new Promise(resolve=>finishDelete=resolve);const before=calls.filter(x=>x[0]==='unregister').length,stopping=window.petCareChatPush.disable();assert.equal(calls.filter(x=>x[0]==='unregister').length,before+1,'Native revoke must not wait for server acknowledgment');finishDelete();await stopping;
+// A previously opted-in cold launch installs tap handling before any chat session.
+values.set('petcare_chat_push_v1','enabled');window.petCareChat.getSession=()=>null;
+const count=calls.filter(x=>x[0]==='register').length;
+new Script(await readFile('www/chat-push.js','utf8')).runInContext(sandbox);
+for(let n=0;n<8;n++)await Promise.resolve();
+handlers.pushNotificationActionPerformed();assert.equal(calls.at(-1)[0],'open');assert.equal(calls.filter(x=>x[0]==='register').length,count);
+values.clear();window.petCareChat.getSession=()=>current;
+native.requestPermissions=async()=>({receive:'denied'});await window.petCareChatPush.enable();assert.equal(values.size,0);
+console.log('PASS native push bridge: backend gate, explicit opt-in, legacy synchronous listener handles, registration, block sync, tap navigation, revoke and denied permission. Mock bridge; no live FCM delivery claimed.');

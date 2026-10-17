@@ -44,7 +44,7 @@ function header(title,btn=''){return `<div class="sectionhead"><h2>${title}</h2>
 function card(title,body){return `<section class="card"><h3>${title}</h3>${body}</section>`}
 function list(items,fn,empty='Još nema unosa.'){return items.length?items.map(fn).join(''):`<div class="empty">${empty}</div>`}
 function petFilter(arr){return arr.filter(x=>x.petId===activePet)}
-function render(){renderChips();document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));let el=document.getElementById('content');if(!data.pets.length&&!['pets','shop','deals','vets','assistant'].includes(tab)){el.innerHTML=`<div class="notice">Dobro došli! Dodajte svoja dva psa (ili bilo kog drugog ljubimca) da biste počeli da pratite zdravlje, obaveze i troškove.</div><button class="btn" onclick="tab='pets';formMode='pet';render()">＋ Dodaj prvog ljubimca</button>`;return}el.innerHTML=({home:homeView,pets:petsView,health:healthView,diary:diaryView,food:foodView,costs:costsView,reminders:remindersView,bonding:bondingView,shop:shopView,deals:dealsView,vets:vetsView,assistant:assistantView}[tab]||homeView)();wireForms()}
+function render(){renderChips();document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));let el=document.getElementById('content');if(!data.pets.length&&!['pets','shop','deals','vets','assistant'].includes(tab)){el.innerHTML=`<div class="notice">Dobro došli! Dodajte ljubimca da biste pratili zdravlje, obroke, obaveze i troškove.</div><button class="btn" onclick="tab='pets';formMode='pet';render()">＋ Dodaj prvog ljubimca</button>`;return}el.innerHTML=({home:homeView,pets:petsView,health:healthView,diary:diaryView,food:foodView,costs:costsView,reminders:remindersView,bonding:bondingView,shop:shopView,deals:dealsView,vets:vetsView,assistant:assistantView}[tab]||homeView)();wireForms()}
 document.getElementById('nav').addEventListener('click',e=>{let b=e.target.closest('[data-tab]');if(b){tab=b.dataset.tab;formMode=null;render()}});
 function homeView(){let p=pet(), hs=petFilter(data.health), due=[...hs,...petFilter(data.reminders)].filter(x=>x.nextDate&&x.nextDate<=localDateOffset(30)).sort((a,b)=>a.nextDate.localeCompare(b.nextDate));let costs=petFilter(data.costs).filter(x=>x.date?.slice(0,4)===String(new Date().getFullYear())).reduce((s,x)=>s+(+x.amount||0),0);let w=petFilter(data.weights).sort((a,b)=>b.date.localeCompare(a.date))[0];return `${p?`<div class="card" style="margin-bottom:14px"><div class="row"><div class="avatar">${p.photo?`<img src="${p.photo}">`:(p.type==='Pas'?'🐕':p.type==='Mačka'?'🐈':p.type==='Ptica'?'🦜':'🐾')}</div><div class="grow"><div style="font-size:21px;font-weight:850">${esc(p.name)}</div><div class="muted">${esc(p.breed||p.type||'Ljubimac')}${p.birth?' · '+age(p.birth):''}</div><div class="pill" style="margin-top:6px">${esc(p.type||'Ljubimac')}</div></div><button class="btn secondary" onclick="tab='pets';render()">Profil</button></div></div>`:''}<div class="stats"><div class="stat"><strong>${w?esc(w.kg)+' kg':'—'}</strong><span>Poslednja težina</span></div><div class="stat"><strong>${due.length}</strong><span>Obaveze uskoro</span></div><div class="stat"><strong>${money(costs)}</strong><span>Troškovi ove godine</span></div></div><div class="grid"><section class="card"><h3>📅 Uskoro na redu</h3>${list(due.slice(0,5),x=>`<div class="item"><div class="itemtitle">${esc(x.title||x.name||x.kind||'Podsetnik')}</div><div class="muted small">${date(x.nextDate)} · ${esc(x.type||'Podsetnik')}</div></div>`,'Nema obaveza u narednih 30 dana.')}</section><section class="card"><h3>⚡ Brzi unos</h3><div class="btnrow"><button class="btn secondary" onclick="tab='diary';formMode='log';render()">＋ Dnevna beleška</button><button class="btn secondary" onclick="tab='health';formMode='health';render()">＋ Zdravstveni unos</button><button class="btn secondary" onclick="tab='costs';formMode='cost';render()">＋ Trošak</button><button class="btn secondary" onclick="tab='diary';formMode='weight';render()">＋ Težina</button></div></section></div>${card('Nedavne beleške',list(petFilter(data.logs).slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3),x=>`<div class="item"><div class="itemtitle">${date(x.date)} · ${esc(x.mood||'Dnevnik')}</div><div>${esc(x.note||'Bez dodatnih napomena')}</div><div class="muted small">Apetit: ${esc(x.appetite||'—')} · Stolica: ${esc(x.stool||'—')}</div></div>`,'Nema beležaka za ovog ljubimca.'))}`}
 function petsView(){let p=pet();return `${header('Moji ljubimci',`<button class="btn" onclick="formMode='pet';render()">＋ Dodaj ljubimca</button>`)}${(formMode==='pet'||formMode?.startsWith('editpet:'))?petForm():''}<div class="grid">${list(data.pets,p=>`<section class="card"><div class="row"><div class="avatar">${p.photo?`<img src="${p.photo}">`:p.type==='Pas'?'🐕':p.type==='Mačka'?'🐈':p.type==='Ptica'?'🦜':'🐾'}</div><div class="grow"><div class="itemtitle">${esc(p.name)}</div><div class="muted">${esc(p.type)} · ${esc(p.breed||'Rasa nije uneta')}</div><div class="small muted">${p.birth?'Rođen/a: '+date(p.birth):''}</div></div></div><div class="btnrow"><button class="btn secondary" onclick="activePet='${p.id}';tab='home';render()">Otvori profil</button><button class="btn ghost" onclick="editPet('${p.id}')">Izmeni</button><button class="btn danger" onclick="deletePet('${p.id}')">Obriši</button></div></section>`,'Dodajte svog prvog ljubimca.')}</div>`}
@@ -119,7 +119,7 @@ const translations = {
   "Izvoz podataka":"Export data","Pregled":"Dashboard","Ljubimci":"Pets","Zdravlje":"Health",
   "Dnevnik":"Diary","Ishrana":"Nutrition","Troškovi":"Expenses","Podsetnici":"Reminders",
   "Dodaj ljubimca":"Add pet","Dodaj prvog ljubimca":"Add your first pet",
-  "Dobro došli! Dodajte svoja dva psa (ili bilo kog drugog ljubimca) da biste počeli da pratite zdravlje, obaveze i troškove.":"Welcome! Add your two dogs (or any other pets) to track health, reminders and expenses.",
+  "Dobro došli! Dodajte ljubimca da biste pratili zdravlje, obroke, obaveze i troškove.":"Welcome! Add a pet to track health, meals, reminders and expenses.",
   "Moji ljubimci":"My pets","Novi profil ljubimca":"New pet profile","Izmena profila":"Edit profile",
   "Ime *":"Name *","Vrsta *":"Species *","Rasa":"Breed","Pol":"Sex","Datum rođenja":"Date of birth",
   "Broj čipa":"Microchip number","Broj pasoša":"Passport number","Trenutna težina (kg)":"Current weight (kg)",
@@ -186,6 +186,7 @@ function translateUI(){
   document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   const sel=document.getElementById('languageSelect');if(sel)sel.value=lang;
   const tag=document.getElementById('tagline');if(tag)tag.textContent=lang==='sr'?'Brinemo o svojim ljubimcima':'Caring for the pets we love';
+  document.querySelectorAll('[data-action="addpet"]').forEach(b=>b.textContent='＋ '+translateText('Dodaj ljubimca'));
   const ex=document.getElementById('exportBtn');if(ex)ex.textContent=translateText('Izvoz podataka');
   document.querySelectorAll('#nav button').forEach(b=>{if(!b.dataset.original)b.dataset.original=b.textContent.trim();b.textContent=translateText(b.dataset.original)});
   const foot=document.getElementById('footerNote');if(foot){foot.replaceChildren(document.createTextNode(lang==='sr'?'Pet Care World • Evidencija ljubimaca ostaje na uređaju. Chat poruke su javne. ':'Pet Care World • Pet records stay on this device. Chat messages are public. '));const a=document.createElement('a');a.href='privacy.html';a.textContent=lang==='sr'?'Politika privatnosti':'Privacy Policy';foot.append(a);}
@@ -361,10 +362,16 @@ render=function(){petCareRender();if(tab==='home'||tab==='pets'){petCareNav.scro
 petCareNav.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b&&['home','pets'].includes(b.dataset.tab))petCareNav.scrollLeft=0;});
 render();
 </script>
+<script src="ui-language.js"></script>
 <script src="preferences.js"></script>
 <script src="feeding.js"></script>
 <script src="chat-config.js"></script>
 <script src="global-chat.js"></script>
+<script src="chat-push.js"></script>
 <script src="settings-memories.js"></script>
+<script src="backup-zip.js"></script>
+<script src="complete-backup.js"></script>
+<script src="diagnostics.js"></script>
+<script src="simple-navigation.js"></script>
 <script src="navigation.js"></script>
 </body></html>

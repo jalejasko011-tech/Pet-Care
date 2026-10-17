@@ -1,4 +1,4 @@
-# Pet Care World — Community specification (not yet live)
+# Pet Care World — community scope
 
 ## Privacy decision
 Users choose a public **nickname**. Never display legal names or email addresses in public posts, comments, or profiles. Authentication credentials stay private.
@@ -20,7 +20,7 @@ Users choose a public **nickname**. Never display legal names or email addresses
 - Use security-rule emulator tests before deploying and update Privacy Policy and Play Data safety declarations.
 
 ## State and prerequisites
-This file is a design document, **not a working chat**. No Firebase project has been connected and no real-time public or private messaging has been deployed. A Firebase project controlled by the app owner and security configuration are needed before launch.
+Public text chat is connected to the owner project pet-care-world. Public-feed posts, private messages and shared family accounts described above remain proposals. Photo/video chat and background push code are prepared but production flags are OFF. Device-only community drafts are not a public feed. The role-gated moderator console is implemented; the owner must assign a real moderator role and operate the queue. See RELEASE_1_8_STATUS.md for the exact shipped behavior.
 
 References:
 https://firebase.google.com/docs/rules/rules-and-auth

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { Script } from 'node:vm';
 
 const required = ['www/index.html', 'www/manifest.webmanifest', 'www/icon.svg', 'capacitor.config.json'];
@@ -62,3 +62,6 @@ for (const path of ['firebase-sync.js','www/firebase-sync.js']) {
   if (!cloud.includes('if (window.PETCARE_CLOUD_ENABLED !== true) return;')) throw Error('Cloud privacy gate missing');
 }
 console.log('Privacy release regression checks passed.');
+
+for(const file of readdirSync('www').filter(x=>x.endsWith('.js')&&!['moderator.js','sw.js'].includes(x))){new Script(readFileSync('www/'+file,'utf8'),{filename:file});}
+console.log('Standalone app script syntax checked.');

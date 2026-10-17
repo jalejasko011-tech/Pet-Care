@@ -20,8 +20,8 @@
  window.addEventListener('petcare:screen-updated',record);
  window.addEventListener('popstate',event=>{
   const saved=event.state?.[key];if(!saved){pending=false;return;}
-  const next=normalize(saved.screen),same=signature(next)===signature(current);depth=saved.depth;current=next;apply(next);lastRootBack=0;
-  if(same&&depth>0){history.back();return;}
+  const direction=saved.depth>depth?1:-1;const next=normalize(saved.screen),same=signature(next)===signature(current);depth=saved.depth;current=next;apply(next);lastRootBack=0;
+  if(same&&depth>0){history.go(direction);setTimeout(()=>pending=false,500);return;}
   restoring=true;render();restoring=false;pending=false;
   document.querySelector(`#nav [data-tab="${tab}"]`)?.scrollIntoView({block:'nearest',inline:'nearest'});
   requestAnimationFrame(()=>window.scrollTo(0,Number(saved.scrollY)||0));
@@ -30,6 +30,7 @@
  async function back(event={}){
   if(closeOverlay()){lastRootBack=0;return;}
   if(pending)return;
+  if(event.canGoBack===false&&depth>0){depth=0;tab='home';formMode=null;window.petCareMemories?.setEditor?.(null);restoring=true;current=snapshot();history.replaceState(state(current),'');render();restoring=false;return;}
   if(depth>0||event.canGoBack){pending=true;history.back();setTimeout(()=>pending=false,500);return;}
   if(tab!=='home'||formMode){tab='home';formMode=null;window.petCareMemories?.setEditor?.(null);restoring=true;current=snapshot();history.replaceState(state(current),'');render();restoring=false;return;}
   if(!api)return;

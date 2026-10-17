@@ -61,6 +61,29 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time;
       allow update: if false;
     }
+    match /chatPushSubscriptions/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid || moderator();
+      allow list: if false;
+      allow create, update: if active() && request.auth.uid == uid
+        && request.resource.data.keys().hasAll(['token','enabled','channelId','sound','blockedAuthors','language','updatedAt'])
+        && request.resource.data.keys().hasOnly(['token','enabled','channelId','sound','blockedAuthors','language','updatedAt'])
+        && request.resource.data.token is string && request.resource.data.token.size() >= 20 && request.resource.data.token.size() <= 512
+        && request.resource.data.enabled is bool
+        && request.resource.data.channelId.matches('^petcare_chat_(cheerful|soft|silent)_v1(_novibe)?$')
+        && request.resource.data.sound in ['petcare_cheerful.wav','petcare_chime.wav','petcare_silent.wav']
+        && request.resource.data.blockedAuthors is list && request.resource.data.blockedAuthors.size() <= 1000
+        && request.resource.data.language in ['sr','en'] && request.resource.data.updatedAt == request.time;
+      allow delete: if signedIn() && request.auth.uid == uid || moderator();
+    }
+    match /moderationAudit/{id} {
+      allow read: if moderator();
+      allow create: if moderator() && request.resource.data.keys().hasOnly(['actorId','action','targetId','createdAt'])
+        && request.resource.data.actorId == request.auth.uid
+        && request.resource.data.action in ['remove-message','ban','unban','resolve-report']
+        && request.resource.data.targetId is string && request.resource.data.targetId.size() <= 200
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

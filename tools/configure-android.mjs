@@ -16,7 +16,7 @@ const { spawnSync } = await import('node:child_process');
 const icons = spawnSync('java', ['-Djava.awt.headless=true', 'tools/GenerateLauncherIcons.java'], {stdio:'inherit'});
 if (icons.status !== 0) throw Error('Android launcher artwork generation failed');
 const appGradle='android/app/build.gradle';
-const app=readFileSync(appGradle,'utf8').replace(/versionCode\s+\d+/, 'versionCode 10').replace(/versionName\s+"[^"]+"/, 'versionName "1.7.2"');
+const app=readFileSync(appGradle,'utf8').replace(/versionCode\s+\d+/, 'versionCode 11').replace(/versionName\s+"[^"]+"/, 'versionName "1.8.0"');
 writeFileSync(appGradle,app);
 
 mkdirSync('android/app/src/main/res/raw',{recursive:true});
@@ -24,3 +24,19 @@ copyFileSync('www/petcare_chime.wav','android/app/src/main/res/raw/petcare_chime
 
 copyFileSync('www/petcare_cheerful.wav','android/app/src/main/res/raw/petcare_cheerful.wav');
 copyFileSync('www/petcare_silent.wav','android/app/src/main/res/raw/petcare_silent.wav');
+
+// Native push is opt-in: no messaging token is registered before consent.
+copyFileSync('firebase/native-client-config.json','android/app/google-services.json');
+const rootBuild='android/build.gradle';
+writeFileSync(rootBuild,readFileSync(rootBuild,'utf8').replace('dependencies {',"dependencies {\n        classpath 'com.google.gms:google-services:4.4.4'"));
+const nativeBuild='android/app/build.gradle';
+if(!readFileSync(nativeBuild,'utf8').includes("apply plugin: 'com.google.gms.google-services'"))writeFileSync(nativeBuild,readFileSync(nativeBuild,'utf8')+"\napply plugin: 'com.google.gms.google-services'\n");
+const manifestPath='android/app/src/main/AndroidManifest.xml';
+let manifest=readFileSync(manifestPath,'utf8');
+manifest=manifest.replace('</application>',`<meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
+        <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/petcare_notification" />
+        </application>`);
+writeFileSync(manifestPath,manifest);
+mkdirSync('android/app/src/main/res/drawable',{recursive:true});
+writeFileSync('android/app/src/main/res/drawable/petcare_notification.xml',`<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"><path android:fillColor="#FFFFFFFF" android:pathData="M12,10 C8,10 4,15 5,19 C6,22 9,20 12,20 C15,20 18,22 19,19 C20,15 16,10 12,10 M5,6 a2.5,3 0,1 0,0.1 0 M10,3 a2.5,3 0,1 0,0.1 0 M16,3 a2.5,3 0,1 0,0.1 0 M20,7 a2,3 0,1 0,0.1 0"/></vector>`);

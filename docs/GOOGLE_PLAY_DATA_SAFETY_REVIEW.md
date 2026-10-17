@@ -40,3 +40,15 @@ Photo/video code is present but `media.enabled` remains false and the bucket is 
 Private Memories stores per-pet stories, dates, photos and videos in local IndexedDB. No memories or appearance settings enter cloud sync or public chat. The separate user-initiated memories backup includes media, is unencrypted, and excludes the existing Gallery. Deletion of a pet removes associated memories. Standard pet-record export continues to exclude both sets of media. Local device access is not protected by a separate app account or biometric lock.
 
 Settings offers separate app/chat wallpaper presets, text size, reminders on/off, sound and vibration choices. The selected original 1.8-second Cheerful Greeting is bundled as `petcare_cheerful.wav`; channel `petcare_cheerful_v1` is the new default. Stable alternative channels are used for explicit sound/vibration choices. Android notification permissions, volume and DND remain under device-owner control.
+
+## Version 1.8.0 shipped configuration (supersedes earlier version notes)
+
+- Complete ZIP export adds Gallery + Memories + records + private drafts + settings; it is user initiated, unencrypted and local until deliberately shared. Standard records-only JSON and separate Memories backup remain available with narrower coverage.
+- Native FCM plugin/public client configuration are bundled with messaging auto-init and analytics collection explicitly disabled. `push.enabled:false` prevents registration before activation and user opt-in. Prepared Functions are not evidence of production deployment.
+- `media.enabled:false` and empty client bucket still prevent chat photo/video uploads. Private local photos/videos do not become cloud collection merely because the media code exists.
+- After push activation, evaluate the messaging registration token as a technical device/user identifier, stored subscription preferences/blocked IDs, notification delivery processing and deletion. After media activation, evaluate Photos and videos and public content sharing. Update the declaration for the activated release before distribution.
+- Moderator console collects administrator email/password through Firebase Authentication only on explicit sign-in; the private queue/audit uses server-issued roles. Action records include actor/target technical IDs and action time. Decide administrative-data retention, staff access and user support before launch.
+- No ads SDK, integrated purchase or pet-record cloud sync is active. The adult chat uses self-attestation; do not claim verified age screening or a child-safe public room.
+- Production dependency audits reported zero known advisories for the app and the updated optional backend (Admin 14.5 / Functions 7.4) at implementation check. This is not a security certification. Re-run audits and review provider disclosures at submission.
+
+Owner must complete Console's actual questionnaire, classification and exceptions using the exact distributed APK/AAB and live backend configuration. Do not auto-fill 'no data collected'.
