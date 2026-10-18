@@ -11,3 +11,7 @@ Run on at least one current Google Play Android device and the owner's Huawei/Ho
 - Install through Play internal testing and check pre-launch report, Android permissions, app links, privacy/deletion URLs and Play Protect result. Do not turn off device protection.
 
 Result: PENDING physical devices and Play Console access. Automated emulator results are recorded separately in GitHub Actions, never filled in here as physical passes.
+
+## Owner phone observations — 18 October 2026
+
+Version 1.8.0 installed. Owner reported background/sound test and locked-screen reminder succeeded after Huawei manual App launch settings (all three options on). A later reminder after reboot/first unlock/relock arrived only when unlocked again: FAILED reboot/locked-screen acceptance. Exact-alarm access and native scheduling changes in 1.8.1 require a new physical-device test. No pass is inferred from emulator tests.

@@ -147,9 +147,9 @@ jobs:
         run: |
           python - <<'PYTHON'
           import json, os, pathlib, shutil, subprocess, zipfile
-          root=pathlib.Path('release/Play-Submission-1.8.0')
+          root=pathlib.Path('release/Play-Submission-1.8.1')
           root.mkdir(parents=True)
-          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.0.aab')
+          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.1.aab')
           shutil.copytree('store-listing',root/'store-listing')
           (root/'docs').mkdir()
           for name in ['RELEASE_1_8_STATUS.md','PHONE_ACCEPTANCE_TEST.md','PLAY_STORE_RELEASE_CHECKLIST.md','GOOGLE_PLAY_DATA_SAFETY_REVIEW.md','CHAT_PUSH_ACTIVATION.md','CHAT_MEDIA_ACTIVATION.md']:
@@ -167,25 +167,25 @@ jobs:
                   entry=next(i for i in z.infolist() if pathlib.PurePosixPath(i.filename).name==name)
                   if entry.file_size>8*1024*1024: raise SystemExit('Screenshot exceeds size limit')
                   (shots/name).write_bytes(z.read(entry))
-          (root/'BUILD.txt').write_text(f'Version 1.8.0 (11)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
-          shutil.make_archive('release/Play-Submission-1.8.0','zip','release','Play-Submission-1.8.0')
+          (root/'BUILD.txt').write_text(f'Version 1.8.1 (12)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
+          shutil.make_archive('release/Play-Submission-1.8.1','zip','release','Play-Submission-1.8.1')
           PYTHON
-      - name: Publish version 1.8.0 downloads
+      - name: Publish version 1.8.1 downloads
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view v1.8.0 >/dev/null 2>&1; then
-            echo 'Version 1.8.0 already exists; preserving existing release.'
+          if gh release view v1.8.1 >/dev/null 2>&1; then
+            echo 'Version 1.8.1 already exists; preserving existing release.'
             exit 0
           fi
-          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.0.apk
+          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.1.apk
           cd release
-          zip Pet-Care-World-1.8.0.zip Pet-Care-World-1.8.0.apk
-          sha256sum Pet-Care-World-1.8.0.apk Pet-Care-World-1.8.0.zip Play-Submission-1.8.0.zip > SHA256SUMS.txt
+          zip Pet-Care-World-1.8.1.zip Pet-Care-World-1.8.1.apk
+          sha256sum Pet-Care-World-1.8.1.apk Pet-Care-World-1.8.1.zip Play-Submission-1.8.1.zip > SHA256SUMS.txt
           cat > release-notes.txt <<'EOF'
-          Pet Care World 1.8.0 adds complete local backup/restore, a simpler More menu, device diagnostics and owner moderation tools. Cloud media and background chat push require owner backend activation and billing; the release does not enable those paid services automatically. Existing records remain on device.
+          Pet Care World 1.8.1 adds user-controlled exact reminder access, serialized scheduling and visible native scheduling status. Physical OEM/reboot testing remains pending. Cloud media and background chat push require owner backend activation and billing; the release does not enable those paid services automatically. Existing records remain on device.
           Text chat remains active. Photo/video attachments are prepared but disabled until the owner configures Firebase Storage, its rules and billing. Pet records and feeding logs remain on device. Notification sound respects device settings.
           Install the APK to update version 1.7.2. ZIP is an alternative download containing the same APK.
           EOF
-          gh release create v1.8.0 Pet-Care-World-1.8.0.apk Pet-Care-World-1.8.0.zip Play-Submission-1.8.0.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.0 — backup and launch preparation' --notes-file release-notes.txt
+          gh release create v1.8.1 Pet-Care-World-1.8.1.apk Pet-Care-World-1.8.1.zip Play-Submission-1.8.1.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.1 — reminder scheduling repair' --notes-file release-notes.txt

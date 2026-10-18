@@ -34,4 +34,7 @@ echo 'This does not verify Play Protect, release signing, physical device behavi
 
 # Connect to the debuggable WebView of this test APK, not a desktop browser.
 adb shell pm grant com.petcare.companion android.permission.POST_NOTIFICATIONS
+adb shell appops set com.petcare.companion SCHEDULE_EXACT_ALARM allow
 node tools/test-android-webview.mjs | tee android-test-evidence/webview-tests.txt
+
+node tools/test-android-reboot.mjs | tee android-test-evidence/reboot-tests.txt
