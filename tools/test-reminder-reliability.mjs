@@ -1,0 +1,16 @@
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const code=readFileSync('www/reminder-reliability.js','utf8');
+let active=0,max=0,mode='denied',calls=[],release;
+const listeners={};
+const context=vm.createContext({currentLang:()=> 'en',tab:'home',render:()=>{},data:{reminders:[],health:[],pets:[]},document:{addEventListener:(n,f)=>listeners[n]=f},window:{Capacitor:{getPlatform:()=> 'android',Plugins:{LocalNotifications:{checkExactNotificationSetting:async()=>({exact_alarm:mode}),changeExactNotificationSetting:async()=>{mode='granted';}}}},petCareNative:{sync:async(rs)=>{active++;max=Math.max(max,active);calls.push(rs.map(r=>r.id));await new Promise(r=>setTimeout(r,10));active--;if(rs[0]?.id==='fail')throw Error('Native failed');return {native:true,permission:true,count:rs.length};}}}});
+vm.runInContext(code,context);
+const n=context.window.petCareNative;
+const input=[{id:'first'}];const first=n.sync(input,[]);input[0].id='mutated';const second=n.sync([{id:'second'}],[]);await Promise.all([first,second]);
+assert.equal(max,1);assert.equal(calls[0][0],'first');assert.equal(calls[1][0],'second');
+await assert.rejects(n.sync([{id:'fail'}],[]));assert.equal(n.lastSchedule.state,'error');await n.sync([{id:'recovered'}],[]);assert.equal(n.lastSchedule.state,'scheduled');
+assert.equal(await n.exactStatus(),'denied');await n.requestExact();assert.equal(await n.exactStatus(),'granted');
+context.window.Capacitor.Plugins.LocalNotifications.checkExactNotificationSetting=async()=>{throw Error('Unsupported');};assert.equal(await n.exactStatus(),'unknown');
+const manifest=readFileSync('tools/configure-android.mjs','utf8');assert.ok(manifest.includes('android.permission.SCHEDULE_EXACT_ALARM'));assert.ok(!manifest.includes('android.permission.USE_EXACT_ALARM'));assert.ok(manifest.includes('android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED'));
+console.log('PASS overlapping sync serialized, immutable snapshots, recovery after native failure, user-granted exact access and unsupported API.');
