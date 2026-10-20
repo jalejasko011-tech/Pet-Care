@@ -1,3 +1,4 @@
+import {unlockAdult} from './family-test-helper.mjs';
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
@@ -23,11 +24,11 @@ try {
  page.on('pageerror',e=>errors.push(e.message));
  page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:')&&!r.url().startsWith('blob:http://127.0.0.1:'))network.push(r.url());});
  page.on('dialog',d=>d.accept());
- await page.goto(`http://127.0.0.1:${server.address().port}/`);
+ await page.goto(`http://127.0.0.1:${server.address().port}/`);await unlockAdult(page);
  await page.selectOption('#languageSelect','en');
  // Capacitor's injected legacy bridge returns a synchronous listener handle.
  const nativeLike=await context.newPage();await nativeLike.addInitScript(()=>{window.Capacitor={getPlatform:()=>'android',Plugins:{App:{addListener:(name,callback)=>{window.testAndroidBack=callback;return {remove:async()=>{}};},exitApp:async()=>{}}}};});
- await nativeLike.goto(`http://127.0.0.1:${server.address().port}/`);
+ await nativeLike.goto(`http://127.0.0.1:${server.address().port}/`);await unlockAdult(nativeLike);
  assert.equal(await nativeLike.evaluate(()=>petCareNavigation.ready),true);
  await nativeLike.locator('#settingsShortcut').click();await nativeLike.evaluate(()=>testAndroidBack({canGoBack:true}));await nativeLike.waitForFunction(()=>tab==='home');await nativeLike.close();
 
@@ -169,7 +170,7 @@ try {
  await page.goBack();await page.waitForFunction(()=>tab==='health');await page.goForward();await page.waitForFunction(()=>tab==='settings');
  for(let n=0;n<65;n++)await page.evaluate(i=>petCareUI.open(i%2?'health':'home'),n);
  await page.evaluate(()=>petCareNavigation.back({canGoBack:false}));assert.equal(await page.evaluate(()=>petCareNavigation.getState().depth),0);assert.equal(await page.evaluate(()=>tab),'home');
- const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.3');assert.equal(support.chatPushActive,false);
+ const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.4');assert.equal(support.chatPushActive,false);
  assert.ok(!JSON.stringify(support).includes('private-png-bytes'));assert.ok(!Object.hasOwn(support,'pets'));
  await openSection('diagnostics');assert.match(await page.locator('#content').innerText(),/Pomoć|Help/);
  console.log('PASS forward/back through section history and support report without pet or chat data.');

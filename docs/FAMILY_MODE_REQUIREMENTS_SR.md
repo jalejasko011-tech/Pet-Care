@@ -3,7 +3,7 @@
 Vlasnik Jale je 20. oktobra 2026. izričito potvrdio: „Svi svi da mogu da koriste
 i najmlađi“. Prethodni izbor cele aplikacije samo za 18+ više ne važi.
 
-Ovo je prihvaćen obuhvat naredne dorade. Nije potvrda da je izdanje 1.8.3 već
+Lokalni režim implementiran je u pripremi izdanja 1.8.4; testovi ovog izdanja moraju se proveriti u CI. Nije potvrda da je izdanje 1.8.3 već
 prilagođeno deci, da je dečji režim napravljen ili da su sve uzrasne grupe upisane
 u Play Console. Nema novog APK-a u ovoj dokumentacionoj izmeni.
 
@@ -58,9 +58,11 @@ osnovu ovog nacrta. Pravno značenje deteta i obaveze zavise od tržišta.
 
 ## Status
 
-Zahtev publike je potvrđen. Dizajn, kod, provera SDK-a, testovi na telefonu i
-završni odgovori u Console-u još nisu završeni. Ne označavati ovu stavku kao
-ispunjenu na osnovu testova prethodnog izdanja.
+Zahtev publike je potvrđen. Kod 1.8.4 sada sadrži podrazumevani lokalni prikaz, neutralan unos datuma pri podešavanju odrasle osobe, hash roditeljskog koda sa solju, ograničavanje pokušaja i zaključavanje spoljnih funkcija. Datum se odbacuje. Dečji prikaz nudi velike kontrole za igru i odmor; medicinske podatke i rasporede uređuje odrasla osoba. Novi tekst ovog prikaza za sada je na engleskom i srpskom. Ne tvrditi da je dodatak preveden na sva 24 jezika.
+
+Odrasla sesija traje najviše 15 minuta; eksplicitno zaključavanje vraća lokalni prikaz i ponovo učitava aplikaciju da zaustavi SDK veze. Novi browser session zahteva kod. Na deljenom telefonu obavezno izabrati Porodični prikaz pre predaje detetu. Lokalni kod nije dokaz identiteta, srodstva niti zamena za pravno potreban verifikovani roditeljski pristanak. Brisanje podataka aplikacije uklanja lokalno podešavanje.
+
+CI, provera ugrađenih SDK-a u stvarnom paketu, upotrebljivost uz dete i odraslu osobu, fizički telefon i završni odgovori u Console-u ostaju zasebne provere. Ne označavati ih kao ispunjene na osnovu prethodnog izdanja.
 
 Zvanični izvori provereni 20. oktobra 2026:
 https://support.google.com/googleplay/android-developer/answer/9893335?hl=en

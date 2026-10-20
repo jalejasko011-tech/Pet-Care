@@ -1,3 +1,4 @@
+import {unlockAdult} from './family-test-helper.mjs';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
@@ -6,7 +7,7 @@ import {resolve,extname} from 'node:path';
 const root=resolve('www'),server=createServer(async(req,res)=>{try{const path=resolve(root,'.'+(req.url==='/'?'/index.html':new URL(req.url,'http://localhost').pathname));if(!path.startsWith(root+'/')){res.writeHead(403).end();return;}res.setHeader('Content-Type',({'.js':'text/javascript','.html':'text/html','.css':'text/css','.png':'image/png','.webp':'image/webp'})[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browser=await chromium.launch({executablePath:process.env.PETCARE_BROWSER||undefined});
-try{const page=await browser.newPage({viewport:{width:360,height:800},serviceWorkers:'block'}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(`http://127.0.0.1:${server.address().port}/`);
+try{const page=await browser.newPage({viewport:{width:360,height:800},serviceWorkers:'block'}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(`http://127.0.0.1:${server.address().port}/`);await unlockAdult(page);
  const languages=await page.locator('#languageSelect option').evaluateAll(xs=>xs.map(x=>x.value));assert.equal(languages.length,24);for(const code of ['el','ro','hr','bg'])assert.ok(languages.includes(code));assert.equal(await page.locator('html').getAttribute('lang'),'en');
  await page.locator('[data-action=addpet]').click();await page.locator('#petForm [name=name]').fill('Podsetnici');await page.locator('#petForm [name=breed]').fill('My custom breed');
  await page.locator('#petForm [name=photo]').setInputFiles({name:'pet.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aX1cAAAAASUVORK5CYII=','base64')});

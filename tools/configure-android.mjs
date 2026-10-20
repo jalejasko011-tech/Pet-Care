@@ -16,7 +16,7 @@ const { spawnSync } = await import('node:child_process');
 const icons = spawnSync('java', ['-Djava.awt.headless=true', 'tools/GenerateLauncherIcons.java'], {stdio:'inherit'});
 if (icons.status !== 0) throw Error('Android launcher artwork generation failed');
 const appGradle='android/app/build.gradle';
-const app=readFileSync(appGradle,'utf8').replace(/versionCode\s+\d+/, 'versionCode 14').replace(/versionName\s+"[^"]+"/, 'versionName "1.8.3"');
+const app=readFileSync(appGradle,'utf8').replace(/versionCode\s+\d+/, 'versionCode 15').replace(/versionName\s+"[^"]+"/, 'versionName "1.8.4"');
 writeFileSync(appGradle,app);
 
 mkdirSync('android/app/src/main/res/raw',{recursive:true});
@@ -37,7 +37,8 @@ let manifest=readFileSync(manifestPath,'utf8');
 manifest=manifest.replace('</manifest>', '<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" /></manifest>');
 // Reuse Capacitor restore logic when exact-alarm access is granted, including after process death.
 manifest=manifest.replace('</application>', `<receiver android:name="com.capacitorjs.plugins.localnotifications.LocalNotificationRestoreReceiver" android:exported="false"><intent-filter><action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" /></intent-filter></receiver></application>`);
-manifest=manifest.replace('</application>',`<meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
+manifest=manifest.replace('</application>',`<meta-data android:name="firebase_data_collection_default_enabled" android:value="false" />
+        <meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
         <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/petcare_notification" />
         </application>`);

@@ -1,3 +1,4 @@
+import {unlockAdult} from './family-test-helper.mjs';
 import {chromium} from 'playwright';
 import {initializeApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
@@ -27,7 +28,7 @@ try{
  const alice=await a.newPage(),bob=await b.newPage(),errors=[];
  for(const page of [alice,bob]){page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.type()==='prompt'?d.accept('Automated emulator test report'):d.accept());}
  const url=`http://127.0.0.1:${server.address().port}/`;
- async function join(page,nick){await page.goto(url);await page.selectOption('#languageSelect','en');await page.locator('#globalChatShortcut').click();await page.locator('#chatNickname').fill(nick);await page.locator('#chatConsent').check();await page.locator('#chatJoin button').click();await page.locator('#chatStatus').filter({hasText:'Connected'}).waitFor({timeout:45000});}
+ async function join(page,nick){await page.goto(url);await unlockAdult(page);await page.selectOption('#languageSelect','en');await page.locator('#globalChatShortcut').click();await page.locator('#chatNickname').fill(nick);await page.locator('#chatConsent').check();await page.locator('#chatJoin button').click();await page.locator('#chatStatus').filter({hasText:'Connected'}).waitFor({timeout:45000});}
  await join(alice,'Chat test A');await join(bob,'Chat test B');
  const text='<img src=x onerror=alert(1)> Emulator greeting';
  await alice.locator('#chatText').fill(text);await alice.locator('#chatSend button[type=submit]').click();
@@ -53,7 +54,7 @@ try{
  const mod=await adminAuth.createUser({email:'moderator@example.test',password:'EmulatorOnlyPassword42',emailVerified:true});
  await adminAuth.setCustomUserClaims(mod.uid,{moderator:true});
  const moderation=await browser.newPage();moderation.on('pageerror',e=>errors.push(e.message));moderation.on('dialog',d=>d.accept());
- await moderation.goto(url+'moderator.html');
+ await moderation.goto(url);await unlockAdult(moderation);await moderation.goto(url+'moderator.html');
  async function login(email){await moderation.locator('#moderatorEmail').fill(email);await moderation.locator('#moderatorPassword').fill('EmulatorOnlyPassword42');await moderation.locator('#moderatorLoginForm button[type=submit]').click();}
  await login(normal.email);await moderation.locator('#moderatorApproval').waitFor();assert.equal(await moderation.locator('#moderatorWorkspace').isVisible(),false);
  await moderation.locator('#moderatorSignOut').click();await moderation.locator('#moderatorLogin').waitFor();
