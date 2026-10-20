@@ -8,7 +8,7 @@ function load(local=storage(),session=storage()){
  let requests=0,opens=0,shares=0;
  const events=new EventTarget(),window={fetch:async()=>{requests++;return {};},open:()=>{opens++;},dispatchEvent:events.dispatchEvent.bind(events),addEventListener:events.addEventListener.bind(events)};
  const navigator={share:async()=>{shares++;}};
- runInNewContext(source,{window,document:{addEventListener(){}},navigator,localStorage:local,sessionStorage:session,location:{href:'https://app.test/index.html',origin:'https://app.test'},URL,TextEncoder,Uint8Array,Event,Date,crypto:webcrypto});
+ runInNewContext(source,{window,document:{documentElement:{dataset:{}},addEventListener(){}},navigator,localStorage:local,sessionStorage:session,location:{href:'https://app.test/index.html',origin:'https://app.test'},URL,TextEncoder,Uint8Array,Event,Date,crypto:webcrypto});
  return {p:window.petCareFamily,window,navigator,local,session,counts:()=>({requests,opens,shares})};
 }
 const f=load();assert.equal(f.p.isAdult(),false);assert.equal(f.p.hasCode(),false);
