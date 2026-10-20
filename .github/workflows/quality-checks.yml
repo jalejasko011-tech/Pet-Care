@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Check web app
-        run: python tools/build-locales.py && git diff --exit-code -- www/locale-data.js && npm run check:web && node tools/test-reminder-reliability.mjs && node tools/test-backup-codec.mjs && node tools/test-push-policy.mjs && node tools/test-push-client.mjs
+        run: python tools/build-locales.py && git diff --exit-code -- www/locale-data.js && npm run check:web && node tools/test-startup-privacy.mjs && node tools/test-reminder-reliability.mjs && node tools/test-backup-codec.mjs && node tools/test-push-policy.mjs && node tools/test-push-client.mjs
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high && npm --prefix functions ci && npm --prefix functions audit --omit=dev --audit-level=moderate && node tools/test-functions-config.mjs
       - name: Install browser test runtime

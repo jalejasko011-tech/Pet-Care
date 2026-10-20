@@ -58,11 +58,15 @@
     if(mediaEnabled){const st=await import(base+'firebase-storage.js');storage=st.getStorage(instance,'gs://'+cfg.media.bucket);if(cfg.emulators===true&&location.hostname==='127.0.0.1')st.connectStorageEmulator(storage,'127.0.0.1',9199);Object.assign(api,st);}
   }
   async function joinChat(e){
-    e.preventDefault();if(joining)return;const nickname=el('chatNickname').value.trim();if(nickname.length<2)return;
+    e.preventDefault();if(joining||!dialog.open||!el('chatJoin')?.reportValidity()||!el('chatConsent')?.checked)return;const nickname=el('chatNickname').value.trim();if(nickname.length<2)return;
     joining=true;const token=++generation;el('chatJoin').querySelector('button').disabled=true;status(tr('Povezivanje…','Connecting…'));
     try{
-      await sdk();await auth.authStateReady();user=auth.currentUser||(await api.signInAnonymously(auth)).user;
+      await sdk();if(token!==generation||!dialog.open)return;
+      await auth.authStateReady();if(token!==generation||!dialog.open)return;
+      user=auth.currentUser||(await api.signInAnonymously(auth)).user;
+      if(token!==generation||!dialog.open)return;
       const profile=api.doc(db,'chatProfiles',user.uid),snapshot=await api.getDoc(profile);
+      if(token!==generation||!dialog.open)return;
       if(snapshot.exists())await api.updateDoc(profile,{nickname});
       else await api.setDoc(profile,{nickname,banned:false,lastSent:api.Timestamp.fromMillis(0),sequence:0});
       if(token!==generation)return;
