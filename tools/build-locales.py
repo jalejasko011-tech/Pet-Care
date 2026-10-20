@@ -16,7 +16,11 @@ for code in codes:
   else:result[code]=json.loads(path.read_text())
  result[code].update(terms.get(code,{}))
  for key in source:
-  if not isinstance(result[code].get(key),str) or not result[code][key].strip():raise SystemExit(f'Empty translation: {code}: {key}')
+  if not isinstance(result[code].get(key),str) or not result[code][key].strip():
+   if '--preview' in sys.argv:
+    result[code][key]=source[key]
+    if code not in missing:missing.append(code)
+   else:raise SystemExit(f'Empty translation: {code}: {key}')
  # No untranslated identifiers or model control tokens enter the app.
  for key,text in result[code].items():
   if '<unk>' in text or '__en__' in text:raise SystemExit(f'Invalid translation token: {code}: {key}')

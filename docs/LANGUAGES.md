@@ -6,6 +6,8 @@ Greek, Romanian, Croatian, Bulgarian and Korean. Indonesian, Thai, Vietnamese an
 Swedish remain available for installations that already used those four options.
 English remains the initial default. The selected locale is saved on the device.
 
+The catalog currently covers 785 source phrases per locale.
+
 Dictionaries are bundled in `www/locale-data.js`; runtime translation does not
 call a translation service or transmit pet records. `locales/source-en.json`
 contains Serbian keys and English source copy. `locales/<language>.json` contains
@@ -13,7 +15,8 @@ additional translations. Run `python tools/build-locales.py` after changes.
 `locales/reviewed-terms.json` supplies manually checked terminology and selected
 privacy text which take precedence over generated translations.
 
-Additional copy was machine translated locally using the MIT-licensed Meta
+Croatian copy also uses adapted Serbian source text with Croatian terminology.
+Other additional copy was machine translated locally using the MIT-licensed Meta
 M2M100-418M model in CTranslate2 format. Translation coverage is a technical check,
 not certification of fluent or legally reviewed copy. Native-speaker review of
 additional languages remains required before advertising professional translation.

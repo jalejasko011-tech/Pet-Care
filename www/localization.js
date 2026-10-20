@@ -7,7 +7,7 @@
  function exact(text,lang){const key=Object.hasOwn(source,text)?text:reverse.get(text);if(key===undefined)return null;return lang==='sr'?key:dictionaries[lang]?.[key]??source[key];}
  function translate(text){if(typeof text!=='string'||!text.trim())return text;const lang=currentLang(),s=text.trim(),direct=exact(s,lang);if(direct!==null)return text.replace(s,direct);
   // Preserve icons, punctuation and whitespace around a known interface phrase.
-  const match=s.match(/^([^\p{L}\p{N}]*)([\s\S]*?)(\s*[:*])?$/u);if(match){const body=exact(match[2],lang);if(body!==null)return text.replace(s,match[1]+body+(match[3]||''));}
+  const match=s.match(/^([^\p{L}\p{N}]*)([\s\S]*?)(\s*[^\p{L}\p{N}]+)?$/u);if(match){const body=exact(match[2],lang);if(body!==null)return text.replace(s,match[1]+body+(match[3]||''));}
   // UI status messages may have a count, date or error detail appended.
   for(const key of ['Sačuvano.','Greška:','Nije sačuvano:','Kopija nije završena:','Lokalno zauzeće aplikacije:','Rođen/a:','Rođenje:','Čip:','· Pasoš:','· Sledeće:','; galerija:','; uspomene:']){const en=source[key];for(const prefix of [key,en].filter(Boolean))if(s.startsWith(prefix+' ')){const translated=exact(key,lang);return text.replace(s,translated+s.slice(prefix.length));}}
   return text;
