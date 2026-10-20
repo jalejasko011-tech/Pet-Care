@@ -1,0 +1,261 @@
+{
+  "checked_at_utc": "2026-10-20T16:08:48.863456+00:00",
+  "build_commit": "551f2d323810cdeef4488864d1018195173d6890",
+  "version": "1.8.3",
+  "version_code": 14,
+  "package": "com.petcare.companion",
+  "quality_run": 39430220493,
+  "quality_result": "success",
+  "release_run": 39430220520,
+  "apk_sha256": "eae137309b58b5c5f4b9fde716375ed313218d751e277cca6ee2879f60538438",
+  "apk_signer_sha256": "e8cdb78355aa5a08d5327dd07c050b92168e8afef6c4aa2d3c8c7f25c5736990",
+  "public_pages": [
+    {
+      "page": "privacy.html",
+      "status": 200,
+      "matches_release_source": true,
+      "bytes": 10764
+    },
+    {
+      "page": "chat-privacy.html",
+      "status": 200,
+      "matches_release_source": true,
+      "bytes": 3831
+    },
+    {
+      "page": "delete-chat.html",
+      "status": 200,
+      "matches_release_source": true,
+      "bytes": 1701
+    },
+    {
+      "page": "moderator.html",
+      "status": 200,
+      "matches_release_source": true,
+      "bytes": 4541
+    },
+    {
+      "page": "chat-config.js",
+      "status": 200,
+      "matches_release_source": true,
+      "bytes": 421
+    }
+  ],
+  "breeds": {
+    "suggestions": 456,
+    "categories": 43,
+    "official_exhaustive_registry": false
+  },
+  "locale_coverage": [
+    {
+      "locale": "en",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 43,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "sr",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 0,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "de",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "fr",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "es",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "it",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 84,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "pt",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 84,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "tr",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "ru",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "zh",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 84,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "ja",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 84,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "ar",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 85,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "hi",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "nl",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "pl",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "el",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 89,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "ro",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 88,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "hr",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 88,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "bg",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 89,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "ko",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 86,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "id",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "th",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "vi",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    },
+    {
+      "locale": "sv",
+      "source_phrases": 801,
+      "missing": 0,
+      "invalid_model_tokens": 0,
+      "terminology_overrides": 83,
+      "full_native_speaker_review": "not_confirmed"
+    }
+  ],
+  "owner_choices": {
+    "moderator": "Jale",
+    "whole_app_18_only": "withdrawn_by_owner",
+    "include_younger_users": true,
+    "minimum_age": "not_confirmed",
+    "public_chat_adults_only": true
+  },
+  "not_confirmed": [
+    "Play Console registration/payment/verification",
+    "Console Data safety and rating submissions",
+    "production moderator UID and custom claim",
+    "live two-device moderation acceptance",
+    "physical Honor acceptance of 1.8.3",
+    "age-based access adaptations for younger users",
+    "full native-language review",
+    "tester enrolment and closed-test start/end",
+    "Google production approval"
+  ]
+}

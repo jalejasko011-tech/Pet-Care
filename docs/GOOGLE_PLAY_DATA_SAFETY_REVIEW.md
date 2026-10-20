@@ -1,3 +1,7 @@
+> Current 1.8.3 handoff: see `PLAY_CONSOLE_ANSWERS_1_8_3_SR.md`. The historical
+> version notes below are not a submitted Console declaration. The owner now
+> wants younger users too; target-age adaptations and final selections remain pending.
+
 # Google Play Data safety review — version 1.7
 
 Draft for owner review before submission. Version 1.5 adds optional public Firebase chat; previous “no data collected” declarations are no longer appropriate. Do not submit this document as a completed Console declaration.

@@ -1,6 +1,6 @@
-# Google Play owner submission — 1.8.0
+# Google Play owner submission — 1.8.3
 
-**Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 11, target API 36. Developer display name requested: Jale; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.
+**Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 14, target API 36. Developer display name must match the owner’s current Console choice; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.
 
 ## Prepared materials
 
@@ -33,3 +33,10 @@ Official references checked 16 October 2026:
 - https://support.google.com/googleplay/android-developer/answer/14151465
 - https://support.google.com/googleplay/android-developer/answer/10787469
 - https://support.google.com/googleplay/android-developer/answer/9876937
+
+## Current owner handoff (20 October 2026)
+
+Use `PLAY_CONSOLE_ANSWERS_1_8_3_SR.md`, `MODERATION_OPERATIONS_1_8_3_SR.md`
+and `CLOSED_TEST_1_8_3_SR.md` for the current exact-build answers and evidence.
+They are prepared handoff documents, not evidence of Console submission, assigned
+moderator privileges, physical-device acceptance or a completed tester period.
