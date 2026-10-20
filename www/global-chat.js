@@ -3,7 +3,7 @@
   const sr=()=>document.getElementById('languageSelect')?.value==='sr';
   const tr=(s,e)=>window.petCareI18n.phrase(s,e);
   const cfg=window.PETCARE_CHAT_CONFIG;
-  const enabled=cfg?.enabled===true && cfg.firebase?.apiKey && cfg.firebase?.projectId && cfg.firebase?.appId;
+  const enabled=window.petCareFamily?.adult===true && cfg?.enabled===true && cfg.firebase?.apiKey && cfg.firebase?.projectId && cfg.firebase?.appId;
   const shortcut=document.createElement('button');
   shortcut.className='chat-shortcut';shortcut.id='globalChatShortcut';shortcut.textContent='💬 Chat';shortcut.type='button';shortcut.setAttribute('aria-haspopup','dialog');
   const dialog=document.createElement('dialog');dialog.className='chat-dialog';dialog.id='globalChatDialog';dialog.setAttribute('aria-labelledby','globalChatTitle');
@@ -46,11 +46,11 @@
   }
   function leave(){if(busy)return;generation++;stop?.();stop=null;rows=[];shell();status(tr('Izašli ste iz razgovora.','You left the conversation.'));}
   window.petCareChat={getSession:()=>user&&api?{api,auth,db,user,blocked:[...blocked]}:null,open:()=>shortcut.click()};
-  shortcut.onclick=()=>{if(!dialog.open){shell();dialog.showModal();}};
+  shortcut.onclick=()=>{if(!window.petCareFamily?.adult)return;if(!dialog.open){shell();dialog.showModal();}};
   dialog.addEventListener('cancel',e=>{if(busy)e.preventDefault();});
   dialog.addEventListener('close',()=>{releaseMedia();if(previewURL)URL.revokeObjectURL(previewURL);selected=null;generation++;stop?.();stop=null;rows=[];shortcut.focus();});
   async function sdk(){
-    if(api)return;const base='https://www.gstatic.com/firebasejs/12.4.0/';
+    if(!window.petCareFamily?.adult)throw Error('Adult access required');if(api)return;const base='https://www.gstatic.com/firebasejs/12.4.0/';
     const [app,a,f]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
     const instance=app.initializeApp(cfg.firebase,'petcare-global-chat');auth=a.getAuth(instance);db=f.getFirestore(instance);
     if(cfg.emulators===true && location.hostname==='127.0.0.1'){a.connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});f.connectFirestoreEmulator(db,'127.0.0.1',8080);}
@@ -58,7 +58,7 @@
     if(mediaEnabled){const st=await import(base+'firebase-storage.js');storage=st.getStorage(instance,'gs://'+cfg.media.bucket);if(cfg.emulators===true&&location.hostname==='127.0.0.1')st.connectStorageEmulator(storage,'127.0.0.1',9199);Object.assign(api,st);}
   }
   async function joinChat(e){
-    e.preventDefault();if(joining)return;const nickname=el('chatNickname').value.trim();if(nickname.length<2)return;
+    e.preventDefault();if(!window.petCareFamily?.adult||!el('chatConsent')?.checked)return;if(joining)return;const nickname=el('chatNickname').value.trim();if(nickname.length<2)return;
     joining=true;const token=++generation;el('chatJoin').querySelector('button').disabled=true;status(tr('Povezivanje…','Connecting…'));
     try{
       await sdk();await auth.authStateReady();user=auth.currentUser||(await api.signInAnonymously(auth)).user;

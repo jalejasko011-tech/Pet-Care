@@ -58,6 +58,10 @@ osnovu ovog nacrta. Pravno značenje deteta i obaveze zavise od tržišta.
 
 ## Status
 
+Razvojna grana uvodi početni lokalni porodični prikaz i roditeljski PIN;
+pogledati `FAMILY_ACCESS_AUDIT_2026_10_20_SR.md`. Još nije objavljen novi APK
+niti potvrđena usklađenost za sve uzraste.
+
 Zahtev publike je potvrđen. Dizajn, kod, provera SDK-a, testovi na telefonu i
 završni odgovori u Console-u još nisu završeni. Ne označavati ovu stavku kao
 ispunjenu na osnovu testova prethodnog izdanja.
