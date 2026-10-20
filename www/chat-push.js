@@ -1,6 +1,6 @@
 // Opt-in Android FCM bridge. No registration until backend activation + explicit user choice.
 (() => {
- const key='petcare_chat_push_v1',t=(sr,en)=>currentLang()==='sr'?sr:en;
+ const key='petcare_chat_push_v1',t=(sr,en)=>window.petCareI18n.phrase(sr,en);
  const plugin=()=>window.Capacitor?.getPlatform?.()==='android'?window.Capacitor?.Plugins?.PushNotifications:null;
  const configured=()=>window.PETCARE_CHAT_CONFIG?.push?.enabled===true;
  let listeners=false,token=null,registering=false;
