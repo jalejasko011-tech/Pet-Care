@@ -1,7 +1,7 @@
 // Full private device backup. Merge-only restoration has a durable rollback journal.
 (() => {
  'use strict';
- const t=(s,e)=>currentLang()==='sr'?s:e,encode=s=>new TextEncoder().encode(s),decode=b=>new TextDecoder('utf-8',{fatal:true}).decode(b),safeId=/^[A-Za-z0-9_-]{1,100}$/;
+ const t=(s,e)=>window.petCareI18n.phrase(s,e),encode=s=>new TextEncoder().encode(s),decode=b=>new TextDecoder('utf-8',{fatal:true}).decode(b),safeId=/^[A-Za-z0-9_-]{1,100}$/;
  const recordKey='petcare_data_v1',worldKey='petcare_world_drafts_v1',prefKey='petcare_preferences_v1';
  const journalDb='petcare_restore_journal_v1';let busy=false;
  const modal=document.createElement('dialog');modal.id='backupProgress';modal.className='chat-dialog';modal.setAttribute('aria-label','Backup / Rezervna kopija');modal.innerHTML='<div class="chat-shell"><p role="status"></p></div>';document.body.append(modal);modal.addEventListener('cancel',e=>e.preventDefault());

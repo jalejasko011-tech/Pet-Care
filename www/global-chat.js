@@ -1,7 +1,7 @@
 // Optional public chat. No SDK, authentication or network request before consent.
 (() => {
   const sr=()=>document.getElementById('languageSelect')?.value==='sr';
-  const tr=(s,e)=>sr()?s:e;
+  const tr=(s,e)=>window.petCareI18n.phrase(s,e);
   const cfg=window.PETCARE_CHAT_CONFIG;
   const enabled=cfg?.enabled===true && cfg.firebase?.apiKey && cfg.firebase?.projectId && cfg.firebase?.appId;
   const shortcut=document.createElement('button');
@@ -78,7 +78,7 @@
     for(const x of visible){
       const item=node('article',null,'chat-message'+(x.authorId===user.uid?' is-own':''));item.dataset.messageId=x.id;item.append(node('strong',x.nickname),node('p',x.text));
       if(x.media)renderAttachment(item,x);
-      const date=x.createdAt?.toDate?.();if(date)item.append(node('small',date.toLocaleString()));
+      const date=x.createdAt?.toDate?.();if(date)item.append(node('small',date.toLocaleString(window.petCareI18n.locale())));
       const actions=node('div',null,'chat-tools');
       if(x.authorId===user.uid){const b=node('button',tr('Obriši','Delete'),'btn secondary');b.onclick=()=>run(()=>removeMessage(x));actions.append(b);}
       else{

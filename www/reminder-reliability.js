@@ -1,7 +1,7 @@
 // Keep native cancellation/scheduling in order even when save, resume and settings overlap.
 (() => {
  const native=window.petCareNative,api=()=>window.Capacitor?.Plugins?.LocalNotifications;
- const t=(sr,en)=>currentLang()==='sr'?sr:en;
+ const t=(sr,en)=>window.petCareI18n.phrase(sr,en);
  let queue=Promise.resolve();
  const sync=native.sync.bind(native);
  native.lastSchedule={state:'unknown'};
