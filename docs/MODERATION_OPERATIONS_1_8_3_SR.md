@@ -1,6 +1,6 @@
 # Moderacija javnog chata — postupak aktivacije
 
-Odgovorna osoba: Jale, po izboru vlasnika od 20. oktobra 2026. Javni chat: 18+. Sama aplikacija se priprema i za mlađe; tačne ciljne grupe čekaju prilagođavanje.
+Odgovorna osoba: Jale, po izboru vlasnika od 20. oktobra 2026. Javni chat: 18+. Za samu aplikaciju vlasnik zahteva sve uzraste, uključujući najmlađe. Dečji režim još zahteva izradu i proveru.
 Status: alat i postupak pripremljeni; stvarni moderatorski UID i ovlašćenje nisu
 potvrđeni. Ovaj dokument sam po sebi ne aktivira moderaciju.
 

@@ -1,6 +1,6 @@
 > Current 1.8.3 handoff: see `PLAY_CONSOLE_ANSWERS_1_8_3_SR.md`. The historical
 > version notes below are not a submitted Console declaration. The owner now
-> wants younger users too; target-age adaptations and final selections remain pending.
+> wants all ages, including preschool children; child-mode implementation and acceptance remain pending.
 
 # Google Play Data safety review — version 1.7
 
