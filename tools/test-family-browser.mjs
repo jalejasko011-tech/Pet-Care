@@ -29,6 +29,10 @@ try{
  await page.locator('#parentPanel').waitFor({state:'visible'});await page.locator('#parentCancel').click();
  await unlockAdult(page);assert.equal(await page.evaluate(async()=>petCareBackup.parse((await petCareBackup.build()).bytes).data.bonding.filter(x=>x.source==='family').length),1);await page.evaluate(async bytes=>{await petCareBackup.apply(petCareBackup.parse(Uint8Array.from(bytes)));},backup);
  await page.locator('#familyModeButton').click();await page.waitForFunction(()=>!petCareFamily.isAdult()&&document.body.classList.contains('family-view'));assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
+ // Another unlocked tab must reload into family view when this tab locks.
+ await unlockAdult(page);const second=await context.newPage();await second.goto(url);await unlockAdult(second);
+ await page.locator('#familyModeButton').click();await second.waitForFunction(()=>!petCareFamily.isAdult()&&document.body.classList.contains('family-view'));
+ assert.equal(await second.locator('#globalChatShortcut').isVisible(),false);await second.close();
  assert.deepEqual(network,[]);assert.deepEqual(errors,[]);
  // A new browsing session cannot reuse the adult session capability.
  const fresh=await browser.newContext({storageState:await context.storageState(),serviceWorkers:'block'}),newPage=await fresh.newPage();await newPage.goto(url);await newPage.locator('body.family-view').waitFor();assert.equal(await newPage.evaluate(()=>petCareFamily.isAdult()),false);await fresh.close();

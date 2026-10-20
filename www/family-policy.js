@@ -23,5 +23,5 @@
  const originalOpen=window.open.bind(window);window.open=function(...args){if(!requireAdult())return null;return originalOpen(...args);};
  if(navigator.share){const share=navigator.share.bind(navigator);navigator.share=function(...args){if(!requireAdult())return Promise.reject(Error('PARENT_REQUIRED'));return share(...args);};}
  document.addEventListener('click',e=>{if(isAdult())return;const a=e.target.closest?.('a');if(!a)return;const url=new URL(a.href,location.href);if(url.origin===location.origin&&/\/(?:privacy|index)\.html$/.test(url.pathname))return;e.preventDefault();e.stopImmediatePropagation();requireAdult();},true);
- window.addEventListener('storage',e=>{if(e.key===key){state=read();mark();if(!isAdult())window.dispatchEvent(new Event('petcare:family-locked'));}});
+ window.addEventListener('storage',e=>{if(e.key===key){state=read();mark();if(!isAdult()){window.dispatchEvent(new Event('petcare:family-locked'));location.reload();}}});
 })();
