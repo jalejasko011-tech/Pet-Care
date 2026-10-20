@@ -25,8 +25,8 @@ dozvola i ponašanja na stvarnom uređaju. Emulator nije provera fizičkog Honor
 
 ## Planirani pristup za mlađe — nije potvrđen u izdanju
 
-Vlasnik želi i mlađe korisnike. Pre objave proveriti tačne uzrasne grupe i
-usklađenost za decu, ako su uključena. Testirati da mlađi/nepoznat uzrast ne
+Vlasnik izričito želi sve uzraste, uključujući i najmlađe. Pre objave izraditi
+i proveriti dečji režim i usklađenost za uključenu dečju publiku. Testirati da mlađi/nepoznat uzrast ne
 pristupa javnom odraslom chatu niti pokreće njegovu autentikaciju. Trenutna
 potvrda punoletstva nije dokaz takvog razdvajanja. Ne označavati ovu stavku
 prošlom na osnovu prethodnih Android testova: novi režim nije implementiran

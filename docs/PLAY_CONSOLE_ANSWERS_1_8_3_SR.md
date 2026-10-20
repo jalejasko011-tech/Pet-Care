@@ -6,8 +6,9 @@ izdanju; nisu uneti niti predati kroz vlasnički Play Console nalog.
 
 Jale je izabrao sebe kao odgovornog moderatora. Naknadno je promenio izbor
 publike: aplikacija treba da bude dostupna i mlađima. Prethodni izbor „samo 18+“
-za celu aplikaciju je povučen. Donja granica uzrasta još nije potvrđena; ne
-predavati konačne uzrasne grupe pre prilagođavanja za izabranu publiku. Javni
+za celu aplikaciju je povučen. Vlasnik je potom izričito potvrdio da želi sve uzraste, uključujući i najmlađe.
+Ne predavati sve uzrasne grupe dok odgovarajući dečji režim nije napravljen i
+proveren. Javni
 chat ostaje namenjen punoletnima. Ovo nije potvrda aktivne moderatorske uloge
 niti automatski dodeljena IARC ocena.
 Ovaj dokument ima prednost nad pripremom za ranije verzije.
@@ -19,7 +20,7 @@ Ovaj dokument ima prednost nad pripremom za ranije verzije.
 | Naziv | Pet Care World |
 | Vrsta | Aplikacija, nije igra |
 | Primarna namena | Organizacija brige o ljubimcima; predlog kategorije Lifestyle |
-| Ciljna publika | Odrasli i mlađi; donja granica i konačne uzrasne grupe čekaju potvrdu i prilagođavanje |
+| Ciljna publika | Svi uzrasti, uključujući predškolsku decu — potvrđen zahtev; implementacija i provera dečjeg režima čekaju |
 | Oglasi | Ne — nema ugrađene oglasne mreže niti aktivnih plaćenih promocija |
 | Kupovine i pretplata | Nisu aktivne u ovoj verziji |
 | Privatnost | https://jalejasko011-tech.github.io/Pet-Care/www/privacy.html |
@@ -77,10 +78,9 @@ adrese; pregledati da li dobavljač zaista izvodi i obrađuje lokaciju.
 
 ## Izmenjena publika — blokada završne predaje
 
-Izbor mlađe publike nije samo promena kvačice u Console-u. Potrebno je odrediti
-ciljne grupe, proveriti uzrast i ograničiti odrasli chat pre autentikacije/mrežnog
+Izbor mlađe publike nije samo promena kvačice u Console-u. Cilj su sve uzrasne grupe; potrebno je proveriti uzrast i ograničiti odrasli chat pre autentikacije/mrežnog
 pristupa za neodgovarajući ili nepoznat uzrast. Postojeća potvrda „imam 18“ nije
-dokaz uvedenog neutralnog ekrana uzrasta. Za publiku koja uključuje decu pregledati
+dokaz uvedenog neutralnog ekrana uzrasta. Pošto ciljna publika uključuje decu, pregledati
 Families uslove, SDK obradu, spoljne linkove, deljenje i potrebnu saglasnost;
 proveriti i regionalno značenje deteta. Ni izbor 13+ sam po sebi ne rešava sve
 regionalne obaveze. Verzija 1.8.3 nije ovim dokumentom sertifikovana za sve uzraste.
@@ -130,3 +130,5 @@ administratorski ekran. Nikada davati recenzentu vlasnički administratorski nal
 
 Mapiranje ponašanja u kategorije je priprema zasnovana na kodu; dobavljačka
 Android dokumentacija nije potvrda identičnog ponašanja web SDK-a.
+
+Potvrđeni porodični obuhvat i uslovi: `FAMILY_MODE_REQUIREMENTS_SR.md`.
