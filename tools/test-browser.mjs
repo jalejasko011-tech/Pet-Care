@@ -1,3 +1,4 @@
+import {unlockParent} from './family-test-helper.mjs';
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
@@ -24,13 +25,20 @@ try {
  page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:')&&!r.url().startsWith('blob:http://127.0.0.1:'))network.push(r.url());});
  page.on('dialog',d=>d.accept());
  await page.goto(`http://127.0.0.1:${server.address().port}/`);
- await page.selectOption('#languageSelect','en');
+ await unlockParent(page);await page.selectOption('#languageSelect','en');
  // Capacitor's injected legacy bridge returns a synchronous listener handle.
  const nativeLike=await context.newPage();await nativeLike.addInitScript(()=>{window.Capacitor={getPlatform:()=>'android',Plugins:{App:{addListener:(name,callback)=>{window.testAndroidBack=callback;return {remove:async()=>{}};},exitApp:async()=>{}}}};});
  await nativeLike.goto(`http://127.0.0.1:${server.address().port}/`);
- assert.equal(await nativeLike.evaluate(()=>petCareNavigation.ready),true);
+ await unlockParent(nativeLike);assert.equal(await nativeLike.evaluate(()=>petCareNavigation.ready),true);
  await nativeLike.locator('#settingsShortcut').click();await nativeLike.evaluate(()=>testAndroidBack({canGoBack:true}));await nativeLike.waitForFunction(()=>tab==='home');await nativeLike.close();
 
+
+ // Quota failures must keep the form and suppress success/scheduling side effects.
+ await page.locator('[data-action=addpet]').click();await page.locator('#petForm [name=name]').fill('Unsaved quota pet');
+ await page.evaluate(()=>{window.originalStorageSet=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key===KEY)throw new DOMException('full','QuotaExceededError');return window.originalStorageSet.call(this,key,value);};});
+ await page.locator('#petForm button').last().click();await page.waitForFunction(()=>document.getElementById('toast').textContent.includes('space'));
+ assert.equal(await page.evaluate(()=>data.pets.length),0);assert.equal(await page.locator('#petForm [name=name]').inputValue(),'Unsaved quota pet');
+ await page.evaluate(()=>{Storage.prototype.setItem=window.originalStorageSet;formMode=null;tab='home';render();});
  await page.screenshot({path:'pet-care-background-preview.png',fullPage:true});
  assert.equal(await page.locator('#footerNote a').getAttribute('href'),'privacy.html');
  assert.equal(await page.locator('.top #exportBtn').count(),0);

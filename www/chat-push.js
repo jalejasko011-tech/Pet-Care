@@ -2,7 +2,7 @@
 (() => {
  const key='petcare_chat_push_v1',t=(sr,en)=>window.petCareI18n.phrase(sr,en);
  const plugin=()=>window.Capacitor?.getPlatform?.()==='android'?window.Capacitor?.Plugins?.PushNotifications:null;
- const configured=()=>window.PETCARE_CHAT_CONFIG?.push?.enabled===true;
+ const configured=()=>window.petCareFamily?.adult===true && window.PETCARE_CHAT_CONFIG?.push?.enabled===true;
  let listeners=false,token=null,registering=false;
  const enabled=()=>localStorage.getItem(key)==='enabled';
  const session=()=>window.petCareChat?.getSession();

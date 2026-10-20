@@ -1,3 +1,4 @@
+import {unlockParent} from './family-test-helper.mjs';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
@@ -7,6 +8,7 @@ const root=resolve('www'),server=createServer(async(req,res)=>{try{const path=re
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browser=await chromium.launch({executablePath:process.env.PETCARE_BROWSER||undefined});
 try{const page=await browser.newPage({viewport:{width:360,height:800},serviceWorkers:'block'}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(`http://127.0.0.1:${server.address().port}/`);
+ await unlockParent(page);
  const languages=await page.locator('#languageSelect option').evaluateAll(xs=>xs.map(x=>x.value));assert.equal(languages.length,24);for(const code of ['el','ro','hr','bg'])assert.ok(languages.includes(code));assert.equal(await page.locator('html').getAttribute('lang'),'en');
  await page.locator('[data-action=addpet]').click();await page.locator('#petForm [name=name]').fill('Podsetnici');await page.locator('#petForm [name=breed]').fill('My custom breed');
  await page.locator('#petForm [name=photo]').setInputFiles({name:'pet.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aX1cAAAAASUVORK5CYII=','base64')});

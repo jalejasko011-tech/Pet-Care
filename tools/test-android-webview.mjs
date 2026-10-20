@@ -1,3 +1,4 @@
+import {unlockParent} from './family-test-helper.mjs';
 import { _android } from 'playwright';
 import assert from 'node:assert/strict';
 const [device]=await _android.devices();
@@ -10,7 +11,7 @@ try {
  const openSection=async id=>{const button=page.locator(`[data-tab="${id}"]`);if(!await button.isVisible())await page.locator('#moreSectionsShortcut').click();await button.click();};
 
  await page.locator('#content').waitFor();
- await page.selectOption('#languageSelect','en');
+ await unlockParent(page);await page.selectOption('#languageSelect','en');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  await page.locator('[data-action="addpet"]').click();
  await page.locator('#petForm [name=name]').fill('Android test pet');

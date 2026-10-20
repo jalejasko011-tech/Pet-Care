@@ -1,3 +1,4 @@
+import {unlockParent} from './family-test-helper.mjs';
 import {chromium} from 'playwright';
 import {initializeApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
@@ -27,7 +28,7 @@ try{
  const alice=await a.newPage(),bob=await b.newPage(),errors=[];
  for(const page of [alice,bob]){page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.type()==='prompt'?d.accept('Automated emulator test report'):d.accept());}
  const url=`http://127.0.0.1:${server.address().port}/`;
- async function join(page,nick){await page.goto(url);await page.selectOption('#languageSelect','en');await page.locator('#globalChatShortcut').click();await page.locator('#chatNickname').fill(nick);await page.locator('#chatConsent').check();await page.locator('#chatJoin button').click();await page.locator('#chatStatus').filter({hasText:'Connected'}).waitFor({timeout:45000});}
+ async function join(page,nick){await page.goto(url);await unlockParent(page);await page.selectOption('#languageSelect','en');await page.locator('#globalChatShortcut').click();await page.locator('#chatNickname').fill(nick);await page.locator('#chatConsent').check();await page.locator('#chatJoin button').click();await page.locator('#chatStatus').filter({hasText:'Connected'}).waitFor({timeout:45000});}
  await join(alice,'Chat test A');await join(bob,'Chat test B');
  const text='<img src=x onerror=alert(1)> Emulator greeting';
  await alice.locator('#chatText').fill(text);await alice.locator('#chatSend button[type=submit]').click();

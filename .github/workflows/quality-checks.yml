@@ -29,7 +29,7 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
       - name: Test user flows in mobile browser
-        run: node tools/test-browser.mjs && node tools/test-locales.mjs
+        run: node tools/test-family-access.mjs && node tools/test-browser.mjs && node tools/test-locales.mjs
       - name: Preserve mobile appearance preview
         if: always()
         uses: actions/upload-artifact@v4
@@ -42,6 +42,7 @@ jobs:
             private-memories-preview.png
             languages-arabic-preview.png
             breeds-serbian-preview.png
+            family-reading-preview.png
           retention-days: 7
 
   android-smoke:
