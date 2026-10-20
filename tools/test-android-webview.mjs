@@ -10,7 +10,17 @@ try {
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const openSection=async id=>{const button=page.locator(`[data-tab="${id}"]`);if(!await button.isVisible())await page.locator('#moreSectionsShortcut').click();await button.click();};
 
- await page.locator('#content').waitFor();await unlockAdult(page);
+ await page.locator('#content').waitFor();
+ const familyRequests=[];const appOrigin=new URL(page.url()).origin;
+ page.on('request',r=>{if(!['data:','blob:'].includes(new URL(r.url()).protocol)&&new URL(r.url()).origin!==appOrigin)familyRequests.push(r.url());});
+ await page.reload();await page.locator('body.family-view').waitFor();
+ assert.equal(await page.evaluate(()=>petCareFamily.isAdult()),false);
+ assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
+ await page.evaluate(async()=>{petCareChat.open();await refreshCatalog();});
+ await page.locator('#parentPanel').waitFor();await page.locator('#parentCancel').click();
+ assert.deepEqual(familyRequests,[],'Restricted Android WebView must not load chat or supplier SDK/network');
+ console.log('PASS Android family startup: locked UI and no WebView off-device requests before parent unlock.');
+ await unlockAdult(page);
  await page.selectOption('#languageSelect','en');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  await page.locator('[data-action="addpet"]').click();

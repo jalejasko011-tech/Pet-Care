@@ -27,7 +27,7 @@ try{
  await page.reload();await page.locator('body.family-view').waitFor();assert.match(await page.locator('#familyActivityStatus').innerText(),/1/);
  const result=await page.evaluate(async bytes=>{try{await petCareBackup.apply(petCareBackup.parse(Uint8Array.from(bytes)));return 'unexpected';}catch(e){return e.message;}},backup);assert.equal(result,'PARENT_REQUIRED');
  await page.locator('#parentPanel').waitFor({state:'visible'});await page.locator('#parentCancel').click();
- await unlockAdult(page);await page.evaluate(async bytes=>{await petCareBackup.apply(petCareBackup.parse(Uint8Array.from(bytes)));},backup);
+ await unlockAdult(page);assert.equal(await page.evaluate(async()=>petCareBackup.parse((await petCareBackup.build()).bytes).data.bonding.filter(x=>x.source==='family').length),1);await page.evaluate(async bytes=>{await petCareBackup.apply(petCareBackup.parse(Uint8Array.from(bytes)));},backup);
  await page.locator('#familyModeButton').click();await page.waitForFunction(()=>!petCareFamily.isAdult()&&document.body.classList.contains('family-view'));assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
  assert.deepEqual(network,[]);assert.deepEqual(errors,[]);
  // A new browsing session cannot reuse the adult session capability.
