@@ -1,6 +1,10 @@
-> Current 1.8.3 handoff: see `PLAY_CONSOLE_ANSWERS_1_8_3_SR.md`. The historical
-> version notes below are not a submitted Console declaration. The owner now
-> wants all ages, including preschool children; child-mode implementation and acceptance remain pending.
+> Current build: 1.8.4 (15). See `RELEASE_1_8_4.md` and
+> `FAMILY_MODE_REQUIREMENTS_SR.md`. The restricted local family view is implemented;
+> physical acceptance and audience/Console review remain pending. Caregiver setup
+> discards the birth date and stores only a salted code derivative locally. Family
+> activities are local records and are included in backups. Public chat and external
+> services require adult access. Earlier version notes below are historical review
+> material, not a submitted or completed Console declaration.
 
 # Google Play Data safety review — version 1.7
 

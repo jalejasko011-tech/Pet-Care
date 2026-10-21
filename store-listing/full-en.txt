@@ -1,5 +1,8 @@
 Keep the everyday details of your pet's life in one place with Pet Care World.
 
+LOCAL FAMILY VIEW
+The app opens in a restricted family view with pet names and large play/rest activity buttons. A caregiver configures a private code to access records, sharing and online features. Lock Family view before handing the device to a child. New family-view text is available in English and Serbian, with English fallback in other languages.
+
 Create profiles for dogs, cats, birds, rabbits, pigs and other companion animals. Record vaccinations, treatments, weight, diary notes, food, expenses and important dates.
 
 MEALS AND REMINDERS

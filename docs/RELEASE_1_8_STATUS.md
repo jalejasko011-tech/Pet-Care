@@ -1,3 +1,5 @@
+> Historical 1.8.0 status. For the current build use `RELEASE_1_8_4.md` and `PHONE_ACCEPTANCE_1_8_4_SR.md`.
+
 # Pet Care World 1.8.0 readiness
 
 Package `com.petcare.companion`, versionCode 11. Same existing release signing key; never uninstall just to update. No Play publication or physical-device certification is implied by a signed build.
