@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import {initializeTestEnvironment,assertSucceeds,assertFails} from '@firebase/rules-unit-testing';
 import {readFile} from 'node:fs/promises';
-import {doc,setDoc,getDoc,getDocs,collection,query,where,limit,writeBatch,serverTimestamp,Timestamp,deleteDoc,updateDoc,runTransaction} from 'firebase/firestore';
-const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:(await readFile('firestore.rules','utf8')).replace("return hash is string && hash.matches","return debug({'before':before,'after':after,'uid':uid,'family':id,'time':request.time}).before.familyId == id && hash is string && hash.matches")}});
+import {doc,setDoc,getDoc,getDocs,collection,query,where,limit,writeBatch,serverTimestamp,Timestamp,deleteDoc,updateDoc,runTransaction,increment} from 'firebase/firestore';
+const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile('firestore.rules','utf8')}});
 const pet={name:'Shared test dog',type:'Dog',breed:'Mixed',sex:'',birth:''},hash='a'.repeat(64),fid='sharedRulesFamily';
 try{
  const owner=env.authenticatedContext('familyOwner').firestore(),alice=env.authenticatedContext('familyAlice').firestore(),bob=env.authenticatedContext('familyBob').firestore(),outsider=env.authenticatedContext('familyOutsider').firestore(),anon=env.unauthenticatedContext().firestore();
@@ -18,9 +18,9 @@ try{
  await assertSucceeds(getDocs(query(collection(owner,'petFamilyInvites'),where('ownerId','==','familyOwner'),limit(100))));
  await assertFails(setDoc(doc(alice,'petFamilies',fid,'members','familyAlice'),member('Alice')));
  await assertFails(updateDoc(doc(alice,'petFamilyInvites',hash),{uses:1,lastJoined:'familyAlice',lastUsedAt:serverTimestamp()}));
- const join=(db,uid,name,code=hash)=>runTransaction(db,async tx=>{const ref=doc(db,'petFamilyInvites',code),snap=await tx.get(ref);tx.set(doc(db,'petFamilies',fid,'members',uid),member(name,'member',code));tx.update(ref,{uses:snap.data().uses+1,lastJoined:uid,lastUsedAt:serverTimestamp()});});
+ const join=(db,uid,name,code=hash)=>runTransaction(db,async tx=>{const ref=doc(db,'petFamilyInvites',code),snap=await tx.get(ref);tx.set(doc(db,'petFamilies',fid,'members',uid),member(name,'member',code));tx.update(ref,{uses:increment(1),lastJoined:uid,lastUsedAt:serverTimestamp()});});
  // One family code admits multiple people, including concurrent joins.
- console.log('TEST reusable family code joins');await Promise.all([assertSucceeds(join(alice,'familyAlice','Alice')),assertSucceeds(join(bob,'familyBob','Bob'))]);
+ await Promise.all([assertSucceeds(join(alice,'familyAlice','Alice')),assertSucceeds(join(bob,'familyBob','Bob'))]);
  assert.equal((await getDoc(doc(owner,'petFamilyInvites',hash))).data().uses,2);
  await assertSucceeds(getDoc(doc(alice,'petFamilies',fid)));await assertSucceeds(getDoc(doc(bob,'petFamilies',fid)));
  await assertFails(updateDoc(doc(alice,'petFamilies',fid),{ownerId:'familyAlice'}));
@@ -41,13 +41,17 @@ try{
   await env.withSecurityRulesDisabled(async c=>setDoc(doc(c.firestore(),'petFamilyInvites',key),{...invitation,createdAt:Timestamp.now(),...patch}));
   await assertFails(join(outsider,'familyOutsider','Outsider',key));
  }
+ // With one invitation slot left, concurrent joins cannot exceed its cap.
+ const last='d'.repeat(64),dana=env.authenticatedContext('familyDana').firestore();
+ await env.withSecurityRulesDisabled(async c=>setDoc(doc(c.firestore(),'petFamilyInvites',last),{...invitation,createdAt:Timestamp.now(),uses:9}));
+ const outcomes=await Promise.allSettled([join(outsider,'familyOutsider','Outsider',last),join(dana,'familyDana','Dana',last)]);assert.equal(outcomes.filter(x=>x.status==='fulfilled').length,1);assert.equal((await getDoc(doc(owner,'petFamilyInvites',last))).data().uses,10);
  await assertFails(deleteDoc(doc(owner,'petFamilies',fid,'members','familyOwner')));
  await assertFails(deleteDoc(doc(owner,'petFamilies',fid)));
  await assertSucceeds(updateDoc(doc(owner,'petFamilies',fid),{active:false}));
  await assertFails(setDoc(doc(bob,'petFamilies',fid,'entries','afterDeleting'),{...entry,authorId:'familyBob',authorName:'Bob'}));
  await assertSucceeds(deleteDoc(doc(owner,'petFamilies',fid,'entries','meal')));
- for(const uid of ['familyBob','familyOwner'])await assertSucceeds(deleteDoc(doc(owner,'petFamilies',fid,'members',uid)));
- for(const key of ['b'.repeat(64),'c'.repeat(64)])await assertSucceeds(deleteDoc(doc(owner,'petFamilyInvites',key)));
+ const members=await getDocs(query(collection(owner,'petFamilies',fid,'members'),limit(100)));for(const m of members.docs)await assertSucceeds(deleteDoc(m.ref));
+ for(const key of ['b'.repeat(64),'c'.repeat(64),'d'.repeat(64)])await assertSucceeds(deleteDoc(doc(owner,'petFamilyInvites',key)));
  await assertSucceeds(deleteDoc(doc(owner,'petFamilies',fid)));
  console.log('PASS shared family atomic creation, concurrent reusable-code joins, isolation, roles, forged entries, removal, revocation, expiry, exhaustion and deletion.');
 }finally{await env.cleanup();}
