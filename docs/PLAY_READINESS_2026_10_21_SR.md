@@ -12,13 +12,15 @@ Ovo je nalaz, nije završena registracija, popunjen Console upitnik ili Google o
 - Moderatorski alat, prijava/blokiranje javnog chata, politika i opisi podataka.
 - Automatizovani browser/Android/Firebase testovi i stvarni emulator snimci za listing.
 
-## Pronađeni tehnički propust
+## Pronađeni i ispravljeni tehnički propust
 
-Objavljena porodična pravila ne dozvoljavaju moderationAudit, a moderatorski alat
+Prethodna porodična pravila nisu dozvoljavala moderationAudit, a moderatorski alat
 upisuje tu evidenciju u istoj atomskoj radnji kao zabranu/brisanje. Takva radnja
-se odbija. production-review-current.rules dodaje samo privatnu, neizmenjivu
-evidenciju dozvoljenu nalogu sa serverskom ulogom moderatora. Potrebni su test,
-objava tog fajla i potvrđen stvarni moderatorski nalog. Ne objavljivati širi
+se odbijala. production-review-current.rules dodaje samo privatnu, neizmenjivu
+evidenciju dozvoljenu nalogu sa serverskom ulogom moderatora. Testovi su prošli i
+fajl je objavljen u Firebase konzoli 21. oktobra 2026. u 17:48 po vremenu konzole.
+Potvrda: aktivna revizija u Rules, uz poređenje celog teksta sa testiranim fajlom.
+Potvrđen stvarni moderatorski nalog i dalje nedostaje. Ne objavljivati širi
 korenski preview koji uključuje neaktivirane medije/push.
 
 ## Šta sprečava tvrdnju da je javna objava spremna
