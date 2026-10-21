@@ -36,7 +36,7 @@ try{
  await assertSucceeds(updateDoc(doc(owner,'petFamilies',fid),{pet:{...pet,name:'Updated shared dog'}}));
  await assertSucceeds(deleteDoc(doc(owner,'petFamilies',fid,'members','familyAlice')));
  await assertFails(getDoc(doc(alice,'petFamilies',fid)));await assertFails(setDoc(doc(alice,'petFamilies',fid,'entries','removed'),entry));
- await assertSucceeds(deleteDoc(doc(owner,'petFamilyInvites',hash)));await assertFails(join(outsider,'familyOutsider','Outsider'));
+ await assertSucceeds(deleteDoc(doc(owner,'petFamilyInvites',hash)));await assert.rejects(join(outsider,'familyOutsider','Outsider'),e=>['permission-denied','invalid-argument'].includes(e.code));assert.equal((await getDoc(doc(owner,'petFamilies',fid,'members','familyOutsider'))).exists(),false);
  for(const [key,patch] of [['b'.repeat(64),{expiresAt:Timestamp.fromMillis(Date.now()-10000)}],['c'.repeat(64),{uses:10}]]){
   await env.withSecurityRulesDisabled(async c=>setDoc(doc(c.firestore(),'petFamilyInvites',key),{...invitation,createdAt:Timestamp.now(),...patch}));
   await assertFails(join(outsider,'familyOutsider','Outsider',key));
