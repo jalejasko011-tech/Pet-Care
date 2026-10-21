@@ -1,3 +1,4 @@
+import {unlockAdult} from './family-test-helper.mjs';
 import { _android } from 'playwright';
 import assert from 'node:assert/strict';
 const [device]=await _android.devices();
@@ -10,6 +11,16 @@ try {
  const openSection=async id=>{const button=page.locator(`[data-tab="${id}"]`);if(!await button.isVisible())await page.locator('#moreSectionsShortcut').click();await button.click();};
 
  await page.locator('#content').waitFor();
+ const familyRequests=[];const appOrigin=new URL(page.url()).origin;
+ page.on('request',r=>{if(!['data:','blob:'].includes(new URL(r.url()).protocol)&&new URL(r.url()).origin!==appOrigin)familyRequests.push(r.url());});
+ await page.reload();await page.locator('body.family-view').waitFor();
+ assert.equal(await page.evaluate(()=>petCareFamily.isAdult()),false);
+ assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
+ await page.evaluate(async()=>{petCareChat.open();await refreshCatalog();});
+ await page.locator('#parentPanel').waitFor();await page.locator('#parentCancel').click();
+ assert.deepEqual(familyRequests,[],'Restricted Android WebView must not load chat or supplier SDK/network');
+ console.log('PASS Android family startup: locked UI and no WebView off-device requests before parent unlock.');
+ await unlockAdult(page);
  await page.selectOption('#languageSelect','en');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  await page.locator('[data-action="addpet"]').click();
@@ -54,7 +65,7 @@ try {
 
  await device.shell('svc wifi disable');await device.shell('svc data disable');
  try{
-  await page.reload();await page.locator('#content').waitFor();
+  await page.reload();await page.locator('#content').waitFor();await unlockAdult(page);
   assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
   const backup=await page.evaluate(async()=>{await petCareBackup.ready;const built=await petCareBackup.build(),fs=window.Capacitor.Plugins.Filesystem;const base64=await new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.readAsDataURL(new Blob([built.bytes]));});await fs.writeFile({path:'petcare-backup-test.zip',data:base64,directory:'CACHE'});const file=await fs.readFile({path:'petcare-backup-test.zip',directory:'CACHE'}),bytes=Uint8Array.from(atob(file.data),c=>c.charCodeAt(0));const parsed=petCareBackup.parse(bytes);await fs.deleteFile({path:'petcare-backup-test.zip',directory:'CACHE'});return {same:bytes.length===built.bytes.length,pets:parsed.data.pets.length,memories:parsed.memories.length};});
   assert.deepEqual(backup,{same:true,pets:1,memories:1});

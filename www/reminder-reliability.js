@@ -11,7 +11,11 @@
    native.lastSchedule={state:'scheduling'};
    try{const result=await sync(snapshot.reminders,snapshot.pets);native.lastSchedule={state:result.native&&result.permission?'scheduled':'notScheduled',...result};return result;}
    catch(error){native.lastSchedule={state:'error'};throw error;}
-  });queue=run;return run;
+  });queue=run;
+  // Report a stalled bridge without starting a competing native mutation. The
+  // original run remains the queue barrier until it actually settles.
+  let timer;const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{native.lastSchedule={state:'error',reason:'nativeTimeout',operation:native.lastOperation?.name||'queue'};reject(Error('Notification bridge timeout: '+(native.lastOperation?.name||'queue')));},20000);});
+  return Promise.race([run,deadline]).finally(()=>clearTimeout(timer));
  };
  native.exactStatus=async()=>{
   if(window.Capacitor?.getPlatform?.()!=='android'||!api()?.checkExactNotificationSetting)return 'notApplicable';
@@ -22,7 +26,7 @@
   if(await native.exactStatus()!=='granted')await api()?.changeExactNotificationSetting?.();
   return resync();
  };
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)resync().catch(()=>{});});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.readyState==='complete')resync().catch(()=>{});});
  const previous=render;
  render=function(){previous();if(!['reminders','diagnostics'].includes(tab)||window.Capacitor?.getPlatform?.()!=='android')return;
   const section=document.createElement('section');section.className='card';section.style.marginBottom='14px';

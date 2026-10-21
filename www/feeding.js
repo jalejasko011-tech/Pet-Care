@@ -30,6 +30,8 @@
  const bridge=window.petCareNative.sync.bind(window.petCareNative);window.petCareNative.sync=(reminders,pets)=>{ensure();const now=Date.now(),extra=[];for(const p of pets){const cfg=plan(p.id);if(!cfg?.enabled)continue;for(const time of cfg.times||[])extra.push({id:'meal-'+p.id+'-'+time,petId:p.id,time,daily:true,title:t('Vreme je za obrok. Proverite da li je već nahranjen/a.','Meal time. Check whether your pet has already been fed.')});const last=lastMeal(p.id);if(last!=null&&cfg.gapHours>0){const at=new Date(last+cfg.gapHours*3600000);if(at.getTime()>now)extra.push({id:'meal-gap-'+p.id,petId:p.id,at:at.getTime(),title:t('Nema novog zapisa o obroku u postavljenom intervalu. Proverite ljubimca.','No new meal recorded within your chosen interval. Check your pet.')});}}return bridge([...reminders,...extra],pets);};
  window.petCareFeeding={lastMeal,mark,elapsed};
  setInterval(()=>{const at=pet()?lastMeal(activePet):null;document.querySelectorAll('[data-feeding-elapsed]').forEach(e=>e.textContent=elapsed(at));},60000);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(!document.querySelector('#content form'))render();window.petCareNative.sync([...data.reminders,...data.health.filter(h=>h.nextDate).map(h=>({...h,title:h.title||h.category||'Health reminder',time:'09:00'}))],data.pets).catch(()=>{});}});
- render();window.petCareNative.sync([...data.reminders,...data.health.filter(h=>h.nextDate).map(h=>({...h,title:h.title||h.category||'Health reminder',time:'09:00'}))],data.pets).catch(()=>{});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.readyState==='complete'){if(!document.querySelector('#content form'))// The load handler performs startup scheduling after the bridge is ready.
+ render();}});
+ // The load handler performs startup scheduling after the bridge is ready.
+ render();
 })();

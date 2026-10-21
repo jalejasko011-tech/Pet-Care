@@ -5,6 +5,7 @@ APK=android/app/build/outputs/apk/debug/app-debug.apk
 adb logcat -c
 adb install -r "$APK" | tee android-test-evidence/install.txt
 adb shell am start -W -n com.petcare.companion/.MainActivity | tee android-test-evidence/launch.txt
+system_ui_recoveries=0
 # Let WebView finish its first launch; this is an installation/startup smoke test.
 for attempt in $(seq 1 20); do
   adb shell uiautomator dump /sdcard/pet-care-ui.xml >/dev/null 2>&1 || true
@@ -14,6 +15,27 @@ for attempt in $(seq 1 20); do
     echo 'Recovering emulator Quickstep launcher ANR (not Pet Care).'
     adb shell am force-stop com.android.launcher3
     adb shell am start -W -n com.petcare.companion/.MainActivity >/dev/null
+  fi
+  # Android 36 can show a System UI ANR over a healthy app immediately after
+  # a cold emulator boot. Select that dialog's observed Wait control at most
+  # twice; never dismiss an ANR belonging to Pet Care or skip its assertions.
+  if grep -q "System UI isn't responding" android-test-evidence/ui.xml 2>/dev/null && [ "$system_ui_recoveries" -lt 2 ]; then
+    read -r wait_x wait_y < <(python3 - <<'PY'
+import re, xml.etree.ElementTree as ET
+for node in ET.parse('android-test-evidence/ui.xml').iter('node'):
+    if node.get('resource-id') == 'android:id/aerr_wait':
+        values = list(map(int, re.findall(r'\d+', node.get('bounds', ''))))
+        if len(values) == 4:
+            print((values[0]+values[2])//2, (values[1]+values[3])//2)
+            break
+PY
+    )
+    if [[ "${wait_x:-}" =~ ^[0-9]+$ && "${wait_y:-}" =~ ^[0-9]+$ ]]; then
+      echo 'Waiting for the observed emulator System UI ANR (not Pet Care).'
+      adb shell input tap "$wait_x" "$wait_y"
+      system_ui_recoveries=$((system_ui_recoveries+1))
+      continue
+    fi
   fi
   if grep -q 'Pet Care World' android-test-evidence/ui.xml 2>/dev/null; then break; fi
   sleep 2
