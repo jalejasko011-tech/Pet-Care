@@ -4,7 +4,7 @@ import {initializeTestEnvironment,assertSucceeds,assertFails} from '@firebase/ru
 import {doc,setDoc,getDoc,getDocs,collection,query,limit,writeBatch,serverTimestamp,Timestamp,updateDoc,deleteDoc} from 'firebase/firestore';
 const baseline=await readFile('firebase/production-chat-baseline-2026-10-21.rules','utf8'),candidate=await readFile('firebase/production-family-candidate.rules','utf8'),full=await readFile('firestore.rules','utf8');
 const family=full.slice(full.indexOf('    // Family profiles'),full.indexOf('    match /{document=**}'));
-assert.equal(candidate,baseline.replace('    match /{document=**}',family+'    match /{document=**}'),'The supplied chat rules remain byte-for-byte intact');
+assert.equal(candidate,baseline.replace('    match /{document=**}',()=>family+'    match /{document=**}'),'The supplied chat rules remain byte-for-byte intact');
 const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:candidate}});
 try{
  const a=env.authenticatedContext('productionAlice').firestore(),b=env.authenticatedContext('productionBob').firestore(),anon=env.unauthenticatedContext().firestore(),mod=env.authenticatedContext('productionMod',{moderator:true}).firestore();
