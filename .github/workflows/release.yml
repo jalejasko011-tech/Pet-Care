@@ -147,12 +147,12 @@ jobs:
         run: |
           python - <<'PYTHON'
           import json, os, pathlib, shutil, subprocess, zipfile
-          root=pathlib.Path('release/Play-Submission-1.8.3')
+          root=pathlib.Path('release/Play-Submission-1.8.4')
           root.mkdir(parents=True)
-          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.3.aab')
+          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.4.aab')
           shutil.copytree('store-listing',root/'store-listing')
           (root/'docs').mkdir()
-          for name in ['RELEASE_1_8_STATUS.md','PHONE_ACCEPTANCE_TEST.md','PLAY_STORE_RELEASE_CHECKLIST.md','GOOGLE_PLAY_DATA_SAFETY_REVIEW.md','CHAT_PUSH_ACTIVATION.md','CHAT_MEDIA_ACTIVATION.md','LANGUAGES.md','PHONE_ACCEPTANCE_1_8_3.md','RELEASE_1_8_3.md']:
+          for name in ['RELEASE_1_8_STATUS.md','PHONE_ACCEPTANCE_TEST.md','PLAY_STORE_RELEASE_CHECKLIST.md','GOOGLE_PLAY_DATA_SAFETY_REVIEW.md','CHAT_PUSH_ACTIVATION.md','CHAT_MEDIA_ACTIVATION.md','LANGUAGES.md','PHONE_ACCEPTANCE_1_8_4_SR.md','RELEASE_1_8_4.md','FAMILY_MODE_REQUIREMENTS_SR.md']:
               shutil.copy(pathlib.Path('docs')/name,root/'docs'/name)
           repo=os.environ['GITHUB_REPOSITORY']
           runs=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs?head_sha={os.environ["GITHUB_SHA"]}&per_page=30']))['workflow_runs']
@@ -167,25 +167,25 @@ jobs:
                   entry=next(i for i in z.infolist() if pathlib.PurePosixPath(i.filename).name==name)
                   if entry.file_size>8*1024*1024: raise SystemExit('Screenshot exceeds size limit')
                   (shots/name).write_bytes(z.read(entry))
-          (root/'BUILD.txt').write_text(f'Version 1.8.3 (14)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
-          shutil.make_archive('release/Play-Submission-1.8.3','zip','release','Play-Submission-1.8.3')
+          (root/'BUILD.txt').write_text(f'Version 1.8.4 (15)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
+          shutil.make_archive('release/Play-Submission-1.8.4','zip','release','Play-Submission-1.8.4')
           PYTHON
-      - name: Publish version 1.8.3 downloads
+      - name: Publish version 1.8.4 downloads
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view v1.8.3 >/dev/null 2>&1; then
-            echo 'Version 1.8.3 already exists; preserving existing release.'
+          if gh release view v1.8.4 >/dev/null 2>&1; then
+            echo 'Version 1.8.4 already exists; preserving existing release.'
             exit 0
           fi
-          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.3.apk
+          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.4.apk
           cd release
-          zip Pet-Care-World-1.8.3.zip Pet-Care-World-1.8.3.apk
-          sha256sum Pet-Care-World-1.8.3.apk Pet-Care-World-1.8.3.zip Play-Submission-1.8.3.zip > SHA256SUMS.txt
+          zip Pet-Care-World-1.8.4.zip Pet-Care-World-1.8.4.apk
+          sha256sum Pet-Care-World-1.8.4.apk Pet-Care-World-1.8.4.zip Play-Submission-1.8.4.zip > SHA256SUMS.txt
           cat > release-notes.txt <<'EOF'
-          Pet Care World 1.8.3 fixes missing interface translations, commands in 22 additional locales, icon-prefixed sentences, mixed record captions and unfinished forms after returning from another app. It retains 456 offline breed/species suggestions and 24 interface languages. Additional locale text includes machine translations and needs native-language review. Physical acceptance of this update remains pending. Cloud media and background chat push require owner backend activation and billing; the release does not enable those paid services automatically. Existing records remain on device.
-          Text chat remains active. Photo/video attachments are prepared but disabled until the owner configures Firebase Storage, its rules and billing. Pet records and feeding logs remain on device. Notification sound respects device settings.
+          Pet Care World 1.8.4 adds a local family view with caregiver controls, protects sharing and online features behind adult access, and removes automatic catalog requests at startup. Existing pet records remain on device. The existing interface supports 24 languages; new family-view text is available in English and Serbian, with English fallback in other languages.
+          Physical phone reminder acceptance and production Firebase moderator access remain pending. Cloud media and background chat push remain disabled pending owner backend configuration and billing. This download is not a Google Play approval or registration.
           Install over the existing app without uninstalling it. ZIP is an alternative download containing the same APK.
           EOF
-          gh release create v1.8.3 Pet-Care-World-1.8.3.apk Pet-Care-World-1.8.3.zip Play-Submission-1.8.3.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.3 — language and form fixes' --notes-file release-notes.txt
+          gh release create v1.8.4 Pet-Care-World-1.8.4.apk Pet-Care-World-1.8.4.zip Play-Submission-1.8.4.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.4 — family view and privacy controls' --notes-file release-notes.txt
