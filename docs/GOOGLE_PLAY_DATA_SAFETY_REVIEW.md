@@ -1,4 +1,4 @@
-> Current build: 1.8.9 (20). See RELEASE_1_8_9.md. The local app opens
+> Current build: 1.8.10 (21). See RELEASE_1_8_10.md. The local app opens
 > without a code, birthday, year or account; no entry age is collected or inferred.
 > Family view is optional and is not a parental lock. Public chat separately asks
 > for explicit rules acceptance and an 18+ self-declaration before connection.

@@ -1,6 +1,6 @@
-# Play submission package — 1.8.0
+# Play submission package — 1.8.10
 
-This is prepared material, not an approved or published Play listing. Owner: Jale. Support: jalejasko011@gmail.com. Android ID: `com.petcare.companion`; code 11; target API 36.
+This is prepared material, not an approved or published Play listing. Owner: Jale. Support: jalejasko011@gmail.com. Android ID: `com.petcare.companion`; code 21; target API 36.
 
 Use `title.txt`, `short-en.txt`, `full-en.txt`, `short-sr.txt`, `full-sr.txt`. Descriptions explicitly reflect shipped disabled media/push flags. Category suggestion: Lifestyle; owner chooses in Console. Intended public-chat audience: adults 18+, self-attested, not verified. Do not fabricate a content rating.
 

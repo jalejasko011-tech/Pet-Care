@@ -1,4 +1,4 @@
-> Historical 1.8.0 status. For the current build use `RELEASE_1_8_9.md`, `SHARED_FAMILY_ACTIVATION_SR.md` and `PHONE_ACCEPTANCE_1_8_4_SR.md`.
+> Historical 1.8.0 status. For the current build use `RELEASE_1_8_10.md`, `SHARED_FAMILY_ACTIVATION_SR.md` and `PHONE_ACCEPTANCE_1_8_4_SR.md`.
 
 # Pet Care World 1.8.0 readiness
 

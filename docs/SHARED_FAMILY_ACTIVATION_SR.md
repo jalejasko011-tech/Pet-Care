@@ -2,8 +2,9 @@
 
 Verzija 1.8.8 (19) aktivira deljenje profila i dnevnika preko Firebase-a.
 Produkcijska pravila i Anonymous Authentication su provereni u vlasnikovoj
-konzoli 21. oktobra 2026. Ceo objavljeni kod odgovara fajlu
-`firebase/production-family-candidate.rules`; stara chat pravila su sačuvana.
+konzoli 21. oktobra 2026. Prvobitni objavljeni kod odgovarao je fajlu
+`firebase/production-family-candidate.rules`; dodatak za evidenciju moderatora je
+naveden ispod. Stara chat pravila su sačuvana.
 Tri nezavisna pregledačka identiteta uspešno su proverena na stvarnom serveru:
 https://github.com/jalejasko011-tech/Pet-Care/actions/runs/39614002015
 Ovo nije test tri fizička telefona. Ulaz u lokalnu aplikaciju ostaje bez koda,
@@ -46,7 +47,10 @@ datuma i naloga; porodični kod služi samo dobrovoljnom povezivanju.
 
 ## Objavljena konfiguracija i preostala provera
 
-- Aktivni produkcijski fajl je **firebase/production-family-candidate.rules**.
+- Aktivni produkcijski fajl je **firebase/production-review-current.rules**
+  od 21. oktobra 2026, 17:48 po vremenu konzole. Dodaje privatnu neizmenjivu
+  evidenciju moderatora na prethodni family candidate; sadržaj ostalih pravila
+  je očuvan. Prethodni family-only fajl ostaje kao povratak.
   Ne objavljivati širi korenski `firestore.rules`: on priprema i medije/push koji
   još nisu aktivirani. Sačuvan povratak je
   `firebase/production-chat-baseline-2026-10-21.rules`.
