@@ -226,12 +226,13 @@ window.petCareNative = {
  async sync(reminders,pets){
    const api=window.Capacitor?.Plugins?.LocalNotifications;
    if(!api)return {native:false};
-   const p=await api.checkPermissions();if(p.display!=='granted')return {native:true,permission:false};
+   const call=async(name,args)=>{window.petCareNative.lastOperation={name,startedAt:Date.now()};return api[name](args);};
+   const p=await call('checkPermissions');if(p.display!=='granted')return {native:true,permission:false};
    const choice=window.petCarePreferences?.notification()||{id:'petcare_cheerful_v1',sound:'petcare_cheerful.wav',vibration:true};
-   if(window.Capacitor?.getPlatform?.()==='android')await api.createChannel({id:choice.id,name:'Pet Care reminders · '+(choice.sound||'silent'),description:'Meals and pet-care reminders',importance:4,visibility:0,sound:choice.sound,vibration:choice.vibration});
-   const old=await api.getPending();
+   if(window.Capacitor?.getPlatform?.()==='android')await call('createChannel',{id:choice.id,name:'Pet Care reminders · '+(choice.sound||'silent'),description:'Meals and pet-care reminders',importance:4,visibility:0,sound:choice.sound,vibration:choice.vibration});
+   const old=await call('getPending');
    const own=(old.notifications||[]).filter(n=>n.extra?.petCare).map(n=>({id:n.id}));
-   if(own.length)await api.cancel({notifications:own});
+   if(own.length)await call('cancel',{notifications:own});
    if(window.petCarePreferences?.get().notifications===false)return {native:true,permission:true,count:0};
    const now=Date.now(), scheduled=[];
    for(const r of reminders){
@@ -244,7 +245,7 @@ window.petCareNative = {
      scheduled.push({id:Math.abs(hash)%2000000000+1,title:'Pet Care · '+(pet?.name||'Ljubimac'),body:r.title||'Podsetnik',channelId:choice.id,sound:choice.sound,schedule:r.daily?{on:{hour:at.getHours(),minute:at.getMinutes()},allowWhileIdle:true}:{at,allowWhileIdle:true},extra:{petCare:true}});
    }
    scheduled.sort((a,b)=>a.schedule.at-b.schedule.at);
-   if(scheduled.length)await api.schedule({notifications:scheduled.slice(0,64)});
+   if(scheduled.length)await call('schedule',{notifications:scheduled.slice(0,64)});
    return {native:true,permission:true,count:Math.min(scheduled.length,64)};
  }
 };
