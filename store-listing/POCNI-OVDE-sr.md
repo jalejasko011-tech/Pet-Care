@@ -1,10 +1,10 @@
-# Pet Care World 1.8.9 — počni ovde
+# Pet Care World 1.8.10 — počni ovde
 
 Ovaj paket je pripremljen za predaju na Google Play. Aplikacija još nije objavljena niti odobrena na Play Store-u.
 
 ## Za telefon
 
-Preuzmi `Pet-Care-World-1.8.9.apk` sa stranice izdanja i instaliraj preko postojeće aplikacije. Nemoj brisati staru instalaciju radi ažuriranja. APK u alternativnom ZIP-u je isti fajl. AAB iz ovog paketa se predaje Play Console-u; nije fajl za direktnu instalaciju na telefon.
+Preuzmi `Pet-Care-World-1.8.10.apk` sa stranice izdanja i instaliraj preko postojeće aplikacije. Nemoj brisati staru instalaciju radi ažuriranja. APK u alternativnom ZIP-u je isti fajl. AAB iz ovog paketa se predaje Play Console-u; nije fajl za direktnu instalaciju na telefon.
 
 U aplikaciji otvori Podešavanja → Potpuna rezervna kopija. ZIP uključuje evidenciju, Galeriju i Uspomene. Sačuvaj ga u bezbednom mestu izvan podataka aplikacije. Kopija nije šifrovana; ograničenja veličine su prikazana pre izvoza.
 
@@ -12,7 +12,7 @@ U Više → Pomoć i provera možeš zakazati test obaveštenja za 10 sekundi. N
 
 ## Šta je u paketu za Play
 
-- `Pet-Care-World-1.8.9.aab`: potpisana aplikacija za predaju.
+- `Pet-Care-World-1.8.10.aab`: potpisana aplikacija za predaju.
 - `store-listing/title.txt`, `short-sr.txt` i `full-sr.txt`: naziv i opisi na srpskom. Tu su i engleski opisi.
 - `store-listing/assets/`: ikona 512×512 i promotivna slika 1024×500.
 - `store-listing/screenshots/`: stvarni snimci aplikacije na Android emulatoru, sa izmišljenim testnim zapisima.
