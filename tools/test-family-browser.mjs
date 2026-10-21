@@ -18,6 +18,15 @@ try{
  await page.evaluate(async()=>{petCareUI.open('community');petCareChat.open();await refreshCatalog();window.open('https://shop.example');try{await petCareBackup.saveFile(new Uint8Array([1]),'private.zip');}catch{}});
  await page.locator('#parentPanel').waitFor({state:'visible'});await page.locator('#parentCancel').click();assert.equal(await page.evaluate(()=>tab),'home');
  assert.deepEqual(network,[]);
+ // Birth entry supports direct year typing and rejects impossible calendar dates.
+ await page.locator('#familyModeButton').click();
+ assert.equal(await page.locator('#parentBirthYear').inputValue(),'');
+ await page.locator('#parentBirthDay').selectOption('29');await page.locator('#parentBirthMonth').selectOption('02');await page.locator('#parentBirthYear').fill('2001');
+ assert.equal(await page.locator('#parentBirthDay').evaluate(e=>e.validity.customError),true);
+ assert.equal(await page.locator('#parentBirth').inputValue(),'');
+ await page.locator('#parentBirthYear').fill('2000');assert.equal(await page.locator('#parentBirthDay').evaluate(e=>e.validity.customError),false);
+ assert.equal(await page.locator('#parentBirth').inputValue(),'2000-02-29');
+ await page.locator('#parentCancel').click();
  await unlockAdult(page);await page.locator('[data-action=addpet]').click();await page.locator('#petForm [name=name]').fill('Family pet');await page.locator('#petForm button').last().click();
  const backup=await page.evaluate(async()=>{await petCareBackup.ready;const x=await petCareBackup.build();return [...x.bytes];});
  assert.ok(!(await page.evaluate(()=>JSON.stringify(localStorage))).includes('1980-01-01'));

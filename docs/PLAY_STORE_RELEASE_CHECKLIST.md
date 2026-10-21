@@ -1,6 +1,6 @@
-# Google Play owner submission — 1.8.4
+# Google Play owner submission — 1.8.5
 
-**Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 15, target API 36. Developer display name must match the owner’s current Console choice; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.
+**Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 16, target API 36. Developer display name must match the owner’s current Console choice; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.
 
 ## Prepared materials
 
