@@ -7,9 +7,7 @@ export async function unlockAdult(page){
   await page.locator('#parentBirthDay').selectOption('01');
   await page.locator('#parentBirthMonth').selectOption('01');
   await page.locator('#parentBirthYear').fill('1980');
-  await page.locator('#parentRepeat').fill('73194628');
  }
- await page.locator('#parentCode').fill('73194628');
  await page.locator('#parentForm [type=submit]').click();
  await page.waitForFunction(()=>petCareFamily.isAdult());
  await page.locator('#parentPanel').waitFor({state:'hidden'});

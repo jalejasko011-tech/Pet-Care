@@ -20,6 +20,7 @@ try{
  assert.deepEqual(network,[]);
  // Birth entry supports direct year typing and rejects impossible calendar dates.
  await page.locator('#familyModeButton').click();
+ assert.equal(await page.locator('#parentCode,#parentRepeat').count(),0);
  assert.equal(await page.locator('#parentBirthYear').inputValue(),'');
  await page.locator('#parentBirthDay').selectOption('29');await page.locator('#parentBirthMonth').selectOption('02');await page.locator('#parentBirthYear').fill('2001');
  assert.equal(await page.locator('#parentBirthDay').evaluate(e=>e.validity.customError),true);

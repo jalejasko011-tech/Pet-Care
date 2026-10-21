@@ -1,6 +1,6 @@
-# Google Play owner submission — 1.8.5
+# Google Play owner submission — 1.8.6
 
-**Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 16, target API 36. Developer display name must match the owner’s current Console choice; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.
+**Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 17, target API 36. Developer display name must match the owner’s current Console choice; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.
 
 ## Prepared materials
 
@@ -36,7 +36,7 @@ Official references checked 16 October 2026:
 
 ## Current owner handoff (21 October 2026)
 
-Use `RELEASE_1_8_4.md`, `PHONE_ACCEPTANCE_1_8_4_SR.md` and
+Use `RELEASE_1_8_6.md`, `RELEASE_1_8_4.md`, `PHONE_ACCEPTANCE_1_8_4_SR.md` and
 `FAMILY_MODE_REQUIREMENTS_SR.md` for this build. Local family mode is implemented;
 production moderator authorization and physical-phone acceptance remain pending.
 Earlier 1.8.3 Console-answer documents are historical and must be reviewed against

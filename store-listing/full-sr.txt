@@ -1,7 +1,7 @@
 Pet Care World okuplja svakodnevnu brigu o ljubimcima na jednom mestu.
 
 LOKALNI PORODIČNI PRIKAZ
-Aplikacija počinje u ograničenom porodičnom prikazu sa imenima ljubimaca i velikim dugmadima za igru i odmor. Odrasla osoba postavlja privatan kod za pristup evidenciji, deljenju i internet funkcijama. Pre predaje uređaja detetu zaključajte Porodični prikaz. Novi tekst ovog prikaza dostupan je na srpskom i engleskom; na drugim jezicima prikazuje se engleski.
+Aplikacija počinje u ograničenom porodičnom prikazu sa imenima ljubimaca i velikim dugmadima za igru i odmor. Privatan kod nije potreban. Za pristup evidenciji, deljenju i internet funkcijama odrasla osoba unosi datum rođenja koji se proverava lokalno. Pre predaje uređaja detetu zaključajte Porodični prikaz. Novi tekst ovog prikaza dostupan je na srpskom i engleskom; na drugim jezicima prikazuje se engleski.
 
 Napravite profile pasa, mačaka, ptica, kunića, prasadi i drugih kućnih ljubimaca. Vodite evidenciju vakcina, tretmana, težine, dnevnih beleški, hrane, troškova i važnih datuma.
 

@@ -147,12 +147,12 @@ jobs:
         run: |
           python - <<'PYTHON'
           import json, os, pathlib, shutil, subprocess, zipfile
-          root=pathlib.Path('release/Play-Submission-1.8.5')
+          root=pathlib.Path('release/Play-Submission-1.8.6')
           root.mkdir(parents=True)
-          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.5.aab')
+          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.6.aab')
           shutil.copytree('store-listing',root/'store-listing')
           (root/'docs').mkdir()
-          for name in ['RELEASE_1_8_STATUS.md','PHONE_ACCEPTANCE_TEST.md','PLAY_STORE_RELEASE_CHECKLIST.md','GOOGLE_PLAY_DATA_SAFETY_REVIEW.md','CHAT_PUSH_ACTIVATION.md','CHAT_MEDIA_ACTIVATION.md','LANGUAGES.md','PHONE_ACCEPTANCE_1_8_4_SR.md','RELEASE_1_8_4.md','FAMILY_MODE_REQUIREMENTS_SR.md','RELEASE_1_8_5.md']:
+          for name in ['RELEASE_1_8_STATUS.md','PHONE_ACCEPTANCE_TEST.md','PLAY_STORE_RELEASE_CHECKLIST.md','GOOGLE_PLAY_DATA_SAFETY_REVIEW.md','CHAT_PUSH_ACTIVATION.md','CHAT_MEDIA_ACTIVATION.md','LANGUAGES.md','PHONE_ACCEPTANCE_1_8_4_SR.md','RELEASE_1_8_4.md','FAMILY_MODE_REQUIREMENTS_SR.md','RELEASE_1_8_5.md','RELEASE_1_8_6.md']:
               shutil.copy(pathlib.Path('docs')/name,root/'docs'/name)
           repo=os.environ['GITHUB_REPOSITORY']
           runs=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs?head_sha={os.environ["GITHUB_SHA"]}&per_page=30']))['workflow_runs']
@@ -167,25 +167,25 @@ jobs:
                   entry=next(i for i in z.infolist() if pathlib.PurePosixPath(i.filename).name==name)
                   if entry.file_size>8*1024*1024: raise SystemExit('Screenshot exceeds size limit')
                   (shots/name).write_bytes(z.read(entry))
-          (root/'BUILD.txt').write_text(f'Version 1.8.5 (16)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
-          shutil.make_archive('release/Play-Submission-1.8.5','zip','release','Play-Submission-1.8.5')
+          (root/'BUILD.txt').write_text(f'Version 1.8.6 (17)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
+          shutil.make_archive('release/Play-Submission-1.8.6','zip','release','Play-Submission-1.8.6')
           PYTHON
-      - name: Publish version 1.8.5 downloads
+      - name: Publish version 1.8.6 downloads
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view v1.8.5 >/dev/null 2>&1; then
-            echo 'Version 1.8.5 already exists; preserving existing release.'
+          if gh release view v1.8.6 >/dev/null 2>&1; then
+            echo 'Version 1.8.6 already exists; preserving existing release.'
             exit 0
           fi
-          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.5.apk
+          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.6.apk
           cd release
-          zip Pet-Care-World-1.8.5.zip Pet-Care-World-1.8.5.apk
-          sha256sum Pet-Care-World-1.8.5.apk Pet-Care-World-1.8.5.zip Play-Submission-1.8.5.zip > SHA256SUMS.txt
+          zip Pet-Care-World-1.8.6.zip Pet-Care-World-1.8.6.apk
+          sha256sum Pet-Care-World-1.8.6.apk Pet-Care-World-1.8.6.zip Play-Submission-1.8.6.zip > SHA256SUMS.txt
           cat > release-notes.txt <<'EOF'
-          Pet Care World 1.8.5 makes caregiver birth-date setup easier: choose day and month and type the four-digit year directly, without scrolling a calendar. Invalid dates are rejected and no date is preselected. It retains the local family view, caregiver controls, privacy guards and background reminder fixes from 1.8.4. Existing pet records remain on device.
+          Pet Care World 1.8.6 removes the mandatory private code and confirmation from adult entry. Existing stored code credentials are removed on update. The local family view remains immediately available; adult features use a locally checked birth date, with direct year entry. This is a self-declared age choice, not a password-protected parental lock. Existing pet records remain on device.
           Physical phone reminder acceptance and production Firebase moderator access remain pending. Cloud media and background chat push remain disabled pending owner backend configuration and billing. This download is not a Google Play approval or registration.
           Install over the existing app without uninstalling it. ZIP is an alternative download containing the same APK.
           EOF
-          gh release create v1.8.5 Pet-Care-World-1.8.5.apk Pet-Care-World-1.8.5.zip Play-Submission-1.8.5.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.5 — easier birth-date entry' --notes-file release-notes.txt
+          gh release create v1.8.6 Pet-Care-World-1.8.6.apk Pet-Care-World-1.8.6.zip Play-Submission-1.8.6.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.6 — access without a private code' --notes-file release-notes.txt

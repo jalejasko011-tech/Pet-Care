@@ -1,3 +1,8 @@
+> Izmena u verziji 1.8.6 na zahtev vlasnika: obavezni privatni kod je uklonjen.
+> Stari sačuvani kodovi se uklanjaju pri pokretanju. Deo za odrasle koristi samo
+> lokalnu proveru unetog datuma rođenja; to nije roditeljska brava sa lozinkom.
+> Detalji: RELEASE_1_8_6.md. Ranije zahteve za kod ispod zamenjuje ova odluka.
+
 # Potvrđen zahtev: svi uzrasti, uključujući najmlađe
 
 Vlasnik Jale je 20. oktobra 2026. izričito potvrdio: „Svi svi da mogu da koriste
