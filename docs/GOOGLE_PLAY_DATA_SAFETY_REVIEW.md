@@ -1,4 +1,4 @@
-> Current build: 1.8.7 (18). See RELEASE_1_8_7.md. The local app opens
+> Current build: 1.8.8 (19). See RELEASE_1_8_8.md. The local app opens
 > without a code, birthday, year or account; no entry age is collected or inferred.
 > Family view is optional and is not a parental lock. Public chat separately asks
 > for explicit rules acceptance and an 18+ self-declaration before connection.
@@ -11,7 +11,7 @@ Draft for owner review before submission. Version 1.5 adds optional public Fireb
 
 ## Actual behavior
 
-- Pet records, photos, local community drafts and reminders stay on device unless the user deliberately exports or shares them. Private pet cloud sync is disabled.
+- Pet records, photos, local community drafts and reminders stay on device unless the user deliberately exports or shares them. Automatic private pet cloud sync is disabled. Optional family sharing sends explicitly selected basic pet data and new shared care entries to Firebase.
 - Chat loads Firebase Authentication and Firestore only after explicit join consent. Anonymous authentication creates a technical user ID. The nickname, text, author ID and timestamp are stored in Firestore and visible to participating users.
 - Abuse reports contain reporter ID, referenced message ID, reason and timestamp. They are private to authorized moderators/project administrators.
 - Firebase processes connection information needed to provide its services. Review current Firebase SDK disclosures and project settings for diagnostic/IP processing before completing exact categories.
@@ -59,3 +59,11 @@ Settings offers separate app/chat wallpaper presets, text size, reminders on/off
 - Production dependency audits reported zero known advisories for the app and the updated optional backend (Admin 14.5 / Functions 7.4) at implementation check. This is not a security certification. Re-run audits and review provider disclosures at submission.
 
 Owner must complete Console's actual questionnaire, classification and exceptions using the exact distributed APK/AAB and live backend configuration. Do not auto-fill 'no data collected'.
+
+## Version 1.8.8 — optional shared family care
+
+Family sharing is enabled following production rule/Auth verification and live acceptance. Separate device-bound anonymous IDs are created only after Connect family care. The server stores a family name, chosen display names, basic pet profile (name, species, breed, sex, optional pet birth date), membership roles/technical IDs/times, invitation digests and usage/expiry metadata, and new shared care text with author name/ID/time. Current family members and the project administrator can access these records. HTTPS transport is used, without end-to-end encryption. No human birth date or entry PIN is collected.
+
+Evaluate Names, User IDs and Other user-generated content for actual collection, app functionality, optional participation, Firebase processing and user-directed sharing. Do not declare all pet-care content as local-only or no-data-collected. Do not classify veterinary entries automatically as human health data; review the exact Console definitions and warn users against entering sensitive human details. The final Console selection and applicable service-provider/user-directed-sharing exceptions remain for the owner to review. No Console form has been submitted.
+
+Members may delete their own entries before leaving; leaving retains earlier shared entries. The owner can remove members, revoke invitations, delete any diary entry and delete the whole family's server data. Removing a member revokes the invite used to join; current other members remain. Disconnecting or uninstalling does not delete shared data. Identity and owner access can be lost after clearing app data; account recovery and ownership transfer are not implemented. Deletion requests after lost access require ownership verification through the privacy contact. Family identity/membership and shared records are excluded from local backups. Photos, videos, private medical history and local reminder schedules are not synchronized.

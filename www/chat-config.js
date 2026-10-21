@@ -10,3 +10,6 @@ window.PETCARE_CHAT_CONFIG = {
     "appId": "1:1025562403962:web:7c9461b8b454b985a987c3"
   }
 };
+
+// Production rules/Auth and three independent live clients verified 21 October 2026.
+window.PETCARE_FAMILY_CONFIG = { enabled: true };

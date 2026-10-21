@@ -1,0 +1,28 @@
+name: Shared family production acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/shared-pet-family]
+    paths:
+      - tools/test-shared-family-live.mjs
+      - .github/workflows/shared-family-live.yml
+permissions:
+  contents: read
+concurrency:
+  group: petcare-family-production-acceptance
+  cancel-in-progress: false
+jobs:
+  live-family:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Verify production sharing with disposable fictional families
+        env:
+          PETCARE_LIVE_FAMILY: pet-care-world
+        run: node tools/test-shared-family-live.mjs
