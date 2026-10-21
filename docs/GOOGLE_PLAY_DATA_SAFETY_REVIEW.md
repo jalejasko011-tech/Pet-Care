@@ -1,10 +1,9 @@
-> Current build: 1.8.6 (17). See `RELEASE_1_8_6.md` and
-> `FAMILY_MODE_REQUIREMENTS_SR.md`. The restricted local family view is implemented;
-> physical acceptance and audience/Console review remain pending. Caregiver setup
-> discards the birth date; no private code is required or retained. Family
-> activities are local records and are included in backups. Public chat and external
-> services require adult access. Earlier version notes below are historical review
-> material, not a submitted or completed Console declaration.
+> Current build: 1.8.7 (18). See RELEASE_1_8_7.md. The local app opens
+> without a code, birthday, year or account; no entry age is collected or inferred.
+> Family view is optional and is not a parental lock. Public chat separately asks
+> for explicit rules acceptance and an 18+ self-declaration before connection.
+> Physical acceptance, production moderation and Play audience/declaration review
+> remain pending. Historical notes below are not submitted Console answers.
 
 # Google Play Data safety review — version 1.7
 

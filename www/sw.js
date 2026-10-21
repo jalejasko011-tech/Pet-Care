@@ -1,4 +1,4 @@
-const CACHE_NAME='pet-care-v1.8.6';
+const CACHE_NAME='pet-care-v1.8.7';
 const ASSETS=["./family-policy.js", "./family-mode.js", "./", "./backup-zip.js", "./chat-config.js", "./chat-pets-watercolor.webp", "./chat-privacy.html", "./chat-push.js", "./complete-backup.js", "./delete-chat.html", "./diagnostics.js", "./feeding.js", "./global-chat.css", "./global-chat.js", "./icon.svg", "./index.html", "./locale-data.js", "./localization.js", "./manifest.webmanifest", "./navigation.js", "./pet-breeds.js", "./pet_care_world_original_logo.png", "./petcare_cheerful.wav", "./petcare_chime.wav", "./petcare_silent.wav", "./preferences.js", "./privacy.html", "./reminder-reliability.js", "./settings-memories.js", "./simple-navigation.js", "./ui-language.js"];
 // Preserve the original Pages/PWA launch URL when the app is served from www.
 if(new URL('./',self.location.href).pathname.endsWith('/www/'))ASSETS.push('../','../index.html');

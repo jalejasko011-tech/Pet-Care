@@ -2,7 +2,7 @@
 (async () => {
   // Cloud release is disabled until consent, deletion and restore are verified.
   if (window.PETCARE_CLOUD_ENABLED !== true) return;
-  if (window.petCareFamily?.isAdult() !== true) return;
+  if (window.petCareFamily?.isStandard() !== true) return;
   const cfg = window.PETCARE_FIREBASE_CONFIG;
   if (!cfg?.apiKey || !cfg?.projectId || !cfg?.appId) return;
   try {

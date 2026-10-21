@@ -10,42 +10,32 @@ try{
  const context=await browser.newContext({viewport:{width:360,height:800},serviceWorkers:'block'}),page=await context.newPage(),network=[],errors=[];
  await context.addInitScript(()=>localStorage.setItem('petcare_catalog_feed_url','https://supplier.example/catalog.json'));
  page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:'))network.push(r.url());});page.on('pageerror',e=>errors.push(e.message));
- const lockFamily=async()=>{await Promise.all([page.waitForEvent('load'),page.locator('#familyModeButton').click()]);await page.locator('body.family-view').waitFor();assert.equal(await page.evaluate(()=>petCareFamily.isAdult()),false);};
+ const lockFamily=async()=>{await Promise.all([page.waitForEvent('load'),page.locator('#familyModeButton').click()]);await page.locator('body.family-view').waitFor();assert.equal(await page.evaluate(()=>petCareFamily.isStandard()),false);};
  const url=`http://127.0.0.1:${server.address().port}/`;await page.goto(url);
- await page.locator('body.family-view').waitFor();assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
- assert.equal(await page.locator('#settingsShortcut').isVisible(),false);assert.equal(await page.locator('[data-action=addpet]').isVisible(),false);
- // Direct route restoration, programmatic shortcut, sharing and catalog calls fail closed.
- await page.evaluate(async()=>{petCareUI.open('community');petCareChat.open();await refreshCatalog();window.open('https://shop.example');try{await petCareBackup.saveFile(new Uint8Array([1]),'private.zip');}catch{}});
- await page.locator('#parentPanel').waitFor({state:'visible'});await page.locator('#parentCancel').click();assert.equal(await page.evaluate(()=>tab),'home');
- assert.deepEqual(network,[]);
- // Birth entry supports direct year typing and rejects impossible calendar dates.
- await page.locator('#familyModeButton').click();
- assert.equal(await page.locator('#parentCode,#parentRepeat').count(),0);
- assert.equal(await page.locator('#parentBirthYear').inputValue(),'');
- await page.locator('#parentBirthDay').selectOption('29');await page.locator('#parentBirthMonth').selectOption('02');await page.locator('#parentBirthYear').fill('2001');
- assert.equal(await page.locator('#parentBirthDay').evaluate(e=>e.validity.customError),true);
- assert.equal(await page.locator('#parentBirth').inputValue(),'');
- await page.locator('#parentBirthYear').fill('2000');assert.equal(await page.locator('#parentBirthDay').evaluate(e=>e.validity.customError),false);
- assert.equal(await page.locator('#parentBirth').inputValue(),'2000-02-29');
- await page.locator('#parentCancel').click();
+ assert.equal(await page.locator('#settingsShortcut').isVisible(),true);
+ assert.equal(await page.locator('[data-action=addpet]').isVisible(),true);
+ assert.equal(await page.locator('#parentPanel,#parentBirth,#parentCode').count(),0);
+ assert.equal(await page.evaluate(()=>petCareFamily.isStandard()),true);
+ await page.reload();assert.equal(await page.evaluate(()=>petCareFamily.isStandard()),true);
+ assert.deepEqual(network,[],'No automatic supplier/chat requests on direct startup');
  await unlockAdult(page);await page.locator('[data-action=addpet]').click();await page.locator('#petForm [name=name]').fill('Family pet');await page.locator('#petForm button').last().click();
  const backup=await page.evaluate(async()=>{await petCareBackup.ready;const x=await petCareBackup.build();return [...x.bytes];});
  assert.ok(!(await page.evaluate(()=>JSON.stringify(localStorage))).includes('1980-01-01'));
  await lockFamily();
  await page.locator('[data-family-activity=play]').click();assert.match(await page.locator('#familyActivityStatus').innerText(),/1/);
  assert.ok(await page.locator('[data-family-activity=play]').evaluate(e=>e.getBoundingClientRect().height>=64));
- for(const lang of ['sr','ar','en']){await page.selectOption('#languageSelect',lang);assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);assert.equal(await page.evaluate(()=>petCareFamily.isAdult()),false);}
+ for(const lang of ['sr','ar','en']){await page.selectOption('#languageSelect',lang);assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);assert.equal(await page.evaluate(()=>petCareFamily.isStandard()),false);}
  await page.reload();await page.locator('body.family-view').waitFor();assert.match(await page.locator('#familyActivityStatus').innerText(),/1/);
  const result=await page.evaluate(async bytes=>{try{await petCareBackup.apply(petCareBackup.parse(Uint8Array.from(bytes)));return 'unexpected';}catch(e){return e.message;}},backup);assert.equal(result,'PARENT_REQUIRED');
- await page.locator('#parentPanel').waitFor({state:'visible'});await page.locator('#parentCancel').click();
  await unlockAdult(page);assert.equal(await page.evaluate(async()=>petCareBackup.parse((await petCareBackup.build()).bytes).data.bonding.filter(x=>x.source==='family').length),1);await page.evaluate(async bytes=>{await petCareBackup.apply(petCareBackup.parse(Uint8Array.from(bytes)));},backup);
  await lockFamily();assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
  // Another unlocked tab must reload into family view when this tab locks.
  await unlockAdult(page);const second=await context.newPage();await second.goto(url);await unlockAdult(second);
- await Promise.all([second.waitForEvent('load'),lockFamily()]);await second.locator('body.family-view').waitFor();assert.equal(await second.evaluate(()=>petCareFamily.isAdult()),false);
+ await Promise.all([second.waitForEvent('load'),lockFamily()]);await second.locator('body.family-view').waitFor();assert.equal(await second.evaluate(()=>petCareFamily.isStandard()),false);
  assert.equal(await second.locator('#globalChatShortcut').isVisible(),false);await second.close();
  assert.deepEqual(network,[]);assert.deepEqual(errors,[]);
- // A new browsing session cannot reuse the adult session capability.
- const fresh=await browser.newContext({storageState:await context.storageState(),serviceWorkers:'block'}),newPage=await fresh.newPage();await newPage.goto(url);await newPage.locator('body.family-view').waitFor();assert.equal(await newPage.evaluate(()=>petCareFamily.isAdult()),false);await fresh.close();
- console.log('PASS family mobile UI, no external requests, parent setup, large activities, lock/reload/language/route and backup protections.');
+ // A fresh session opens immediately unless family view was explicitly selected.
+ await unlockAdult(page);
+ const fresh=await browser.newContext({storageState:await context.storageState(),serviceWorkers:'block'}),newPage=await fresh.newPage();await newPage.goto(url);assert.equal(await newPage.locator('[data-action=addpet]').isVisible(),true);assert.equal(await newPage.locator('#parentPanel').count(),0);await fresh.close();
+ console.log('PASS family mobile UI, no external requests, direct entry without birthday or PIN, large activities, lock/reload/language/route and backup protections.');
 }finally{await browser.close();await new Promise(r=>server.close(r));}

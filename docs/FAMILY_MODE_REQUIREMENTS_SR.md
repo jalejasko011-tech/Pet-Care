@@ -1,3 +1,9 @@
+> Verzija 1.8.7 na zahtev vlasnika otvara glavni ekran bez koda, datuma i godine.
+> Porodični prikaz je opciona prezentacija, sa povratkom jednim dodirom; nije
+> roditeljska brava. Punoletstvo se ne zaključuje iz pristupa aplikaciji. Javni
+> chat zasebno traži izričito prihvatanje pravila i izjavu 18+ pre povezivanja.
+> RELEASE_1_8_7.md zamenjuje ranije zahteve za ulaz ispod.
+
 > Izmena u verziji 1.8.6 na zahtev vlasnika: obavezni privatni kod je uklonjen.
 > Stari sačuvani kodovi se uklanjaju pri pokretanju. Deo za odrasle koristi samo
 > lokalnu proveru unetog datuma rođenja; to nije roditeljska brava sa lozinkom.

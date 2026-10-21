@@ -13,13 +13,13 @@ try {
  await page.locator('#content').waitFor();
  const familyRequests=[];const appOrigin=new URL(page.url()).origin;
  page.on('request',r=>{if(!['data:','blob:'].includes(new URL(r.url()).protocol)&&new URL(r.url()).origin!==appOrigin)familyRequests.push(r.url());});
- await page.reload();await page.locator('body.family-view').waitFor();
- assert.equal(await page.evaluate(()=>petCareFamily.isAdult()),false);
+ await page.reload();assert.equal(await page.evaluate(()=>petCareFamily.isStandard()),true);assert.equal(await page.locator('#parentPanel,#parentBirth,#parentCode').count(),0);
+ await Promise.all([page.waitForEvent('load'),page.locator('#familyModeButton').click()]);await page.locator('body.family-view').waitFor();
+ assert.equal(await page.evaluate(()=>petCareFamily.isStandard()),false);
  assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
  await page.evaluate(async()=>{petCareChat.open();await refreshCatalog();});
- await page.locator('#parentPanel').waitFor();await page.locator('#parentCancel').click();
  assert.deepEqual(familyRequests,[],'Restricted Android WebView must not load chat or supplier SDK/network');
- console.log('PASS Android family startup: locked UI and no WebView off-device requests before parent unlock.');
+ console.log('PASS Android direct entry without date/code; optional family view makes no external requests.');
  await unlockAdult(page);
  await page.selectOption('#languageSelect','en');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));

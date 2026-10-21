@@ -11,24 +11,17 @@ function load(local=storage(),session=storage()){
  runInNewContext(source,{window,document:{documentElement:{dataset:{}},addEventListener(){}},navigator,localStorage:local,sessionStorage:session,location:{href:'https://app.test/index.html',origin:'https://app.test'},URL,TextEncoder,Uint8Array,Event,Date,crypto:webcrypto});
  return {p:window.petCareFamily,window,navigator,local,session,counts:()=>({requests,opens,shares})};
 }
-const f=load();assert.equal(f.p.isAdult(),false);assert.equal('hasCode' in f.p,false);
+const f=load();assert.equal(f.p.isStandard(),true,'Fresh installs open immediately');assert.equal('setup' in f.p,false);
+f.p.lock();assert.equal(f.p.isStandard(),false);
 await assert.rejects(f.window.fetch('https://supplier.test/catalog'),/PARENT_REQUIRED/);
 assert.equal(f.window.open('https://shop.test'),null);await assert.rejects(f.navigator.share({text:'private'}),/PARENT_REQUIRED/);
 assert.deepEqual(f.counts(),{requests:0,opens:0,shares:0});
-await assert.rejects(f.p.setup('2020-01-01'),/FAMILY_VIEW/);
-await assert.rejects(f.p.setup('1980-02-31'),/FAMILY_VIEW/);
-assert.deepEqual(f.local.dump(),[],'Neither child date nor invalid setup is persisted');
-await f.p.setup('1980-01-01');assert.equal(f.p.isAdult(),true);
-assert.ok(!JSON.stringify(f.local.dump()).includes('1980-01-01'));assert.ok(!JSON.stringify(f.local.dump()).includes('hash'));assert.ok(!JSON.stringify(f.local.dump()).includes('salt'));
-await f.window.fetch('https://supplier.test/catalog');f.window.open('https://shop.test');await f.navigator.share({text:'chosen'});
-assert.deepEqual(f.counts(),{requests:1,opens:1,shares:1});
-const restarted=load(f.local);assert.equal(restarted.p.isAdult(),false,'A fresh session must be locked');
-await restarted.p.setup('1980-01-01');assert.equal(restarted.p.isAdult(),true);restarted.p.lock();assert.equal(restarted.p.isAdult(),false);
-assert.equal(load(f.local,f.session).p.isAdult(),false,'Family lock overrides an older unlocked tab');
-// Existing installations migrate away from PIN state without retaining credentials.
-const legacy=storage(),oldSession=storage();legacy.setItem('petcare_parent_control_v1',JSON.stringify({v:1,salt:'ab'.repeat(16),hash:'cd'.repeat(32),locked:false}));oldSession.setItem('petcare_parent_session_v1',Date.now()+900000);
-const migrated=load(legacy,oldSession);assert.equal(migrated.p.isAdult(),false);assert.deepEqual(legacy.dump(),[]);assert.deepEqual(oldSession.dump(),[]);await migrated.p.setup('1980-01-01');assert.equal(migrated.p.isAdult(),true);
+f.p.open();assert.equal(f.p.isStandard(),true);assert.deepEqual(JSON.parse(f.local.getItem('petcare_parent_control_v1')),{v:3,mode:'standard'});
+await f.window.fetch('https://supplier.test/catalog');assert.equal(f.counts().requests,1);
+assert.equal(load(f.local).p.isStandard(),true,'A fresh session needs no entry form');
+f.p.lock();assert.equal(load(f.local).p.isStandard(),false,'Explicit family selection survives reload');
+for(const v of [1,2]){const local=storage(),session=storage();local.setItem('petcare_parent_control_v1',JSON.stringify({v,locked:true,salt:'old',hash:'old'}));session.setItem('petcare_parent_session_v1',Date.now()+900000);const migrated=load(local,session);assert.equal(migrated.p.isStandard(),true);assert.deepEqual(local.dump(),[]);assert.deepEqual(session.dump(),[]);}
 // Backup allowlist must never restore parent credentials or an unlocked session.
 const backup=readFileSync('www/complete-backup.js','utf8');assert.ok(!backup.includes('petcare_parent_control_v1'));assert.ok(!backup.includes('petcare_parent_session_v1'));
-assert.match(readFileSync('www/global-chat.js','utf8'),/async function sdk\(\)\{\s*if\(!window\.petCareFamily\?\.requireAdult\(\)\)/);
-console.log('PASS child/unknown age offline gates, invalid DOB, PIN-free adult entry, legacy migration, restart/lock and backup exclusion.');
+assert.match(readFileSync('www/global-chat.js','utf8'),/async function sdk\(\)\{\s*if\(!window\.petCareFamily\?\.requireStandard\(\)\)/);
+console.log('PASS immediate entry, optional family gates, legacy migration and backup exclusion.');

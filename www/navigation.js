@@ -3,7 +3,7 @@
  const key='petcareRouteV1',api=window.Capacitor?.getPlatform?.()==='android'?window.Capacitor?.Plugins?.App:null;
  const validTabs=new Set([...document.querySelectorAll('#nav [data-tab]')].map(b=>b.dataset.tab));
  let restoring=false,pending=false,lastRootBack=0;
- function normalize(s){const active=data.pets.some(p=>p.id===s?.activePet)?s.activePet:data.pets[0]?.id||null;let mode=typeof s?.formMode==='string'?s.formMode:null;if(mode?.startsWith('editpet:')&&!data.pets.some(p=>'editpet:'+p.id===mode))mode=null;return {tab:window.petCareFamily?.isAdult()===true&&validTabs.has(s?.tab)?s.tab:'home',formMode:mode,activePet:active,memoryEditor:typeof s?.memoryEditor==='string'?s.memoryEditor:null};}
+ function normalize(s){const active=data.pets.some(p=>p.id===s?.activePet)?s.activePet:data.pets[0]?.id||null;let mode=typeof s?.formMode==='string'?s.formMode:null;if(mode?.startsWith('editpet:')&&!data.pets.some(p=>'editpet:'+p.id===mode))mode=null;return {tab:window.petCareFamily?.isStandard()===true&&validTabs.has(s?.tab)?s.tab:'home',formMode:mode,activePet:active,memoryEditor:typeof s?.memoryEditor==='string'?s.memoryEditor:null};}
  const snapshot=()=>normalize({tab,formMode,activePet,memoryEditor:window.petCareMemories?.getEditor?.()});
  const signature=s=>JSON.stringify(normalize(s));
  const initial=history.state?.[key];let depth=Number.isInteger(initial?.depth)&&initial.depth>=0?initial.depth:0,current=normalize(initial?.screen||snapshot());
