@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {initializeTestEnvironment,assertSucceeds,assertFails} from '@firebase/rules-unit-testing';
 import {readFile} from 'node:fs/promises';
 import {doc,setDoc,getDoc,getDocs,collection,query,where,limit,writeBatch,serverTimestamp,Timestamp,deleteDoc,updateDoc,runTransaction,increment} from 'firebase/firestore';
-const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile('firestore.rules','utf8')}});
+const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile(process.env.PETCARE_RULES_FILE||'firestore.rules','utf8')}});
 const pet={name:'Shared test dog',type:'Dog',breed:'Mixed',sex:'',birth:''},hash='a'.repeat(64),fid='sharedRulesFamily';
 try{
  const owner=env.authenticatedContext('familyOwner').firestore(),alice=env.authenticatedContext('familyAlice').firestore(),bob=env.authenticatedContext('familyBob').firestore(),outsider=env.authenticatedContext('familyOutsider').firestore(),anon=env.unauthenticatedContext().firestore();
