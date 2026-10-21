@@ -10,6 +10,7 @@ try{
  const context=await browser.newContext({viewport:{width:360,height:800},serviceWorkers:'block'}),page=await context.newPage(),network=[],errors=[];
  await context.addInitScript(()=>localStorage.setItem('petcare_catalog_feed_url','https://supplier.example/catalog.json'));
  page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:'))network.push(r.url());});page.on('pageerror',e=>errors.push(e.message));
+ const lockFamily=async()=>{await Promise.all([page.waitForEvent('load'),page.locator('#familyModeButton').click()]);await page.locator('body.family-view').waitFor();assert.equal(await page.evaluate(()=>petCareFamily.isAdult()),false);};
  const url=`http://127.0.0.1:${server.address().port}/`;await page.goto(url);
  await page.locator('body.family-view').waitFor();assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
  assert.equal(await page.locator('#settingsShortcut').isVisible(),false);assert.equal(await page.locator('[data-action=addpet]').isVisible(),false);
@@ -20,7 +21,7 @@ try{
  await unlockAdult(page);await page.locator('[data-action=addpet]').click();await page.locator('#petForm [name=name]').fill('Family pet');await page.locator('#petForm button').last().click();
  const backup=await page.evaluate(async()=>{await petCareBackup.ready;const x=await petCareBackup.build();return [...x.bytes];});
  assert.ok(!(await page.evaluate(()=>JSON.stringify(localStorage))).includes('1980-01-01'));
- await page.locator('#familyModeButton').click();await page.waitForFunction(()=>!petCareFamily.isAdult()&&document.body.classList.contains('family-view'));
+ await lockFamily();
  await page.locator('[data-family-activity=play]').click();assert.match(await page.locator('#familyActivityStatus').innerText(),/1/);
  assert.ok(await page.locator('[data-family-activity=play]').evaluate(e=>e.getBoundingClientRect().height>=64));
  for(const lang of ['sr','ar','en']){await page.selectOption('#languageSelect',lang);assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);assert.equal(await page.evaluate(()=>petCareFamily.isAdult()),false);}
@@ -28,10 +29,10 @@ try{
  const result=await page.evaluate(async bytes=>{try{await petCareBackup.apply(petCareBackup.parse(Uint8Array.from(bytes)));return 'unexpected';}catch(e){return e.message;}},backup);assert.equal(result,'PARENT_REQUIRED');
  await page.locator('#parentPanel').waitFor({state:'visible'});await page.locator('#parentCancel').click();
  await unlockAdult(page);assert.equal(await page.evaluate(async()=>petCareBackup.parse((await petCareBackup.build()).bytes).data.bonding.filter(x=>x.source==='family').length),1);await page.evaluate(async bytes=>{await petCareBackup.apply(petCareBackup.parse(Uint8Array.from(bytes)));},backup);
- await page.locator('#familyModeButton').click();await page.waitForFunction(()=>!petCareFamily.isAdult()&&document.body.classList.contains('family-view'));assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
+ await lockFamily();assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
  // Another unlocked tab must reload into family view when this tab locks.
  await unlockAdult(page);const second=await context.newPage();await second.goto(url);await unlockAdult(second);
- await page.locator('#familyModeButton').click();await second.waitForFunction(()=>!petCareFamily.isAdult()&&document.body.classList.contains('family-view'));
+ await Promise.all([second.waitForEvent('load'),lockFamily()]);await second.locator('body.family-view').waitFor();assert.equal(await second.evaluate(()=>petCareFamily.isAdult()),false);
  assert.equal(await second.locator('#globalChatShortcut').isVisible(),false);await second.close();
  assert.deepEqual(network,[]);assert.deepEqual(errors,[]);
  // A new browsing session cannot reuse the adult session capability.
