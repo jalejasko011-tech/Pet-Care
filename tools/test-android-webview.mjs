@@ -22,6 +22,7 @@ try {
  console.log('PASS Android direct entry without date/code; optional family view makes no external requests.');
  await unlockAdult(page);
  await page.selectOption('#languageSelect','en');
+ await page.locator('#nav > button[data-tab="family"]').click();assert.equal(await page.locator('#familyConnect').isVisible(),true);assert.equal(await page.locator('#nav > button[data-tab="family"]').getAttribute('aria-current'),'page');await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  await page.locator('[data-action="addpet"]').click();
  await page.locator('#petForm [name=name]').fill('Android test pet');

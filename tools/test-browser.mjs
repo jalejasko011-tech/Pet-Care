@@ -26,6 +26,12 @@ try {
  page.on('dialog',d=>d.accept());
  await page.goto(`http://127.0.0.1:${server.address().port}/`);await unlockAdult(page);
  await page.selectOption('#languageSelect','en');
+ // Main family navigation stays reachable without More or a local pet.
+ assert.deepEqual(await page.locator('#nav > button').evaluateAll(bs=>bs.map(b=>b.dataset.tab||'more')),['home','pets','health','memories','family','more']);
+ for(const width of [320,360,390,768]){await page.setViewportSize({width,height:800});for(const lang of ['sr','en','ar']){await page.selectOption('#languageSelect',lang);const targets=await page.locator('#nav > button').evaluateAll(bs=>bs.map(b=>{const r=b.getBoundingClientRect();return {x:r.x,right:r.right,width:r.width,height:r.height};}));assert.ok(targets.every(r=>r.x>=0&&r.right<=width+1&&r.width>=44&&r.height>=44),'Visible touch targets: '+width+'/'+lang);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));}}
+ await page.setViewportSize({width:360,height:800});await page.selectOption('#languageSelect','sr');
+ const familyNav=page.locator('#nav > button[data-tab="family"]');assert.match(await familyNav.innerText(),/Porodična briga/);await familyNav.click();assert.equal(await familyNav.getAttribute('aria-current'),'page');assert.equal(await page.locator('#moreSectionsShortcut').evaluate(b=>b.classList.contains('active')),false);assert.equal(await page.locator('#familyConnect').isVisible(),true);assert.equal(await page.locator('#familyForm').count(),0);assert.ok(!(await page.locator('#content').innerText()).includes('Prvo dodajte ljubimca.'));await page.goBack();await page.waitForFunction(()=>tab==='home');await page.selectOption('#languageSelect','en');
+ console.log('PASS direct family navigation without a local pet, Back, selection and 44px targets at 320–768px in SR/EN/RTL.');
  // Capacitor's injected legacy bridge returns a synchronous listener handle.
  const nativeLike=await context.newPage();await nativeLike.addInitScript(()=>{window.Capacitor={getPlatform:()=>'android',Plugins:{App:{addListener:(name,callback)=>{window.testAndroidBack=callback;return {remove:async()=>{}};},exitApp:async()=>{}}}};});
  await nativeLike.goto(`http://127.0.0.1:${server.address().port}/`);await unlockAdult(nativeLike);
@@ -171,7 +177,7 @@ try {
  for(let n=0;n<65;n++)await page.evaluate(i=>petCareUI.open(i%2?'health':'home'),n);
  await page.evaluate(()=>petCareNavigation.back({canGoBack:false}));assert.equal(await page.evaluate(()=>petCareNavigation.getState().depth),0);assert.equal(await page.evaluate(()=>tab),'home');
  await page.evaluate(()=>petCareUI.open('family'));assert.equal(await page.locator('#familyConnect').isVisible(),true);assert.equal(await page.evaluate(()=>petCareSharedFamily.status().connected),false);await page.evaluate(()=>petCareUI.open('settings'));
- const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.8');assert.equal(support.chatPushActive,false);
+ const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.9');assert.equal(support.chatPushActive,false);
  assert.ok(!JSON.stringify(support).includes('private-png-bytes'));assert.ok(!Object.hasOwn(support,'pets'));
  await openSection('diagnostics');assert.match(await page.locator('#content').innerText(),/Pomoć|Help/);
  console.log('PASS forward/back through section history and support report without pet or chat data.');
