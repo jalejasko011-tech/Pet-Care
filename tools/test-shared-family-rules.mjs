@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {initializeTestEnvironment,assertSucceeds,assertFails} from '@firebase/rules-unit-testing';
 import {readFile} from 'node:fs/promises';
 import {doc,setDoc,getDoc,getDocs,collection,query,where,limit,writeBatch,serverTimestamp,Timestamp,deleteDoc,updateDoc,runTransaction} from 'firebase/firestore';
-const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile('firestore.rules','utf8')}});
+const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:(await readFile('firestore.rules','utf8')).replace("return hash is string && hash.matches","return debug({'before':before,'after':after,'uid':uid,'family':id,'time':request.time}).before.familyId == id && hash is string && hash.matches")}});
 const pet={name:'Shared test dog',type:'Dog',breed:'Mixed',sex:'',birth:''},hash='a'.repeat(64),fid='sharedRulesFamily';
 try{
  const owner=env.authenticatedContext('familyOwner').firestore(),alice=env.authenticatedContext('familyAlice').firestore(),bob=env.authenticatedContext('familyBob').firestore(),outsider=env.authenticatedContext('familyOutsider').firestore(),anon=env.unauthenticatedContext().firestore();
@@ -20,7 +20,7 @@ try{
  await assertFails(updateDoc(doc(alice,'petFamilyInvites',hash),{uses:1,lastJoined:'familyAlice',lastUsedAt:serverTimestamp()}));
  const join=(db,uid,name,code=hash)=>runTransaction(db,async tx=>{const ref=doc(db,'petFamilyInvites',code),snap=await tx.get(ref);tx.set(doc(db,'petFamilies',fid,'members',uid),member(name,'member',code));tx.update(ref,{uses:snap.data().uses+1,lastJoined:uid,lastUsedAt:serverTimestamp()});});
  // One family code admits multiple people, including concurrent joins.
- await Promise.all([assertSucceeds(join(alice,'familyAlice','Alice')),assertSucceeds(join(bob,'familyBob','Bob'))]);
+ console.log('TEST reusable family code joins');await Promise.all([assertSucceeds(join(alice,'familyAlice','Alice')),assertSucceeds(join(bob,'familyBob','Bob'))]);
  assert.equal((await getDoc(doc(owner,'petFamilyInvites',hash))).data().uses,2);
  await assertSucceeds(getDoc(doc(alice,'petFamilies',fid)));await assertSucceeds(getDoc(doc(bob,'petFamilies',fid)));
  await assertFails(updateDoc(doc(alice,'petFamilies',fid),{ownerId:'familyAlice'}));

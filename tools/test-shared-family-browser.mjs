@@ -1,4 +1,6 @@
 import {chromium} from 'playwright';
+import {initializeApp} from 'firebase-admin/app';
+import {getFirestore} from 'firebase-admin/firestore';
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -28,6 +30,11 @@ try{
  const fourth=await browser.newContext({serviceWorkers:'block'}),stranger=await fourth.newPage();await stranger.goto(url);await stranger.selectOption('#languageSelect','en');await family(stranger,'No invitation');await stranger.locator('#familyInviteInput').fill(code);await stranger.locator('#sharedFamilyJoin button').click();await stranger.locator('#familyShareStatus').filter({hasText:/code expired|server did not confirm/}).waitFor();assert.equal(await stranger.locator('#sharedPetName').count(),0);await fourth.close();
  // Member removal terminates access and clears the shared view on that phone.
  const aliceUid=await alice.evaluate(()=>petCareSharedFamily.status().uid);await owner.locator(`[data-remove-member="${aliceUid}"]`).click();await alice.locator('#sharedPetName').waitFor({state:'detached',timeout:30000});
+ // Resume a paused deletion and remove old entries beyond the 100-row feed.
+ const admin=getFirestore(initializeApp({projectId:'demo-petcare-chat'})),familyId=await owner.evaluate(()=>petCareSharedFamily.status().selected),ownerUid=await owner.evaluate(()=>petCareSharedFamily.status().uid);
+ const seed=admin.batch();for(let i=0;i<103;i++)seed.set(admin.doc(`petFamilies/${familyId}/entries/old-${i}`),{kind:'note',text:'Old diary '+i,authorId:ownerUid,authorName:'Caregiver A',createdAt:new Date()});await seed.commit();
+ await admin.doc(`petFamilies/${familyId}`).update({active:false});await owner.getByText('Family deletion has started.',{exact:false}).waitFor();
  await owner.locator('#familyDelete').click();await owner.locator('#sharedPetName').waitFor({state:'detached',timeout:30000});await bob.locator('#sharedPetName').waitFor({state:'detached',timeout:30000});
+ await owner.locator('#familyShareStatus').filter({hasText:'Confirmed by the server.'}).waitFor();assert.equal((await admin.doc(`petFamilies/${familyId}`).get()).exists,false);assert.equal((await admin.collection(`petFamilies/${familyId}/entries`).get()).empty,true);assert.equal((await admin.collection(`petFamilies/${familyId}/members`).get()).empty,true);
  assert.deepEqual(errors,[]);console.log('PASS three phones: shared code, live pet/diary, safe text, revoked invite, removed member and complete family deletion.');
 }finally{await browser.close();await new Promise(r=>server.close(r));}

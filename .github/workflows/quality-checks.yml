@@ -104,4 +104,4 @@ jobs:
       - name: Install chat browser
         run: npx playwright install --with-deps chromium
       - name: Verify global chat access and moderation rules
-        run: npx firebase emulators:exec --only auth,firestore,storage --project demo-petcare-chat 'node tools/test-chat-rules.mjs && node tools/test-shared-family-rules.mjs && node tools/test-chat-browser.mjs && node tools/test-shared-family-browser.mjs'
+        run: npx firebase emulators:exec --only auth,firestore,storage --project demo-petcare-chat 'node tools/test-chat-rules.mjs && node tools/test-shared-family-rules.mjs && node tools/test-chat-browser.mjs && node tools/test-shared-family-browser.mjs' || { tail -n 160 firestore-debug.log; exit 1; }
