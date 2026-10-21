@@ -11,5 +11,5 @@ window.PETCARE_CHAT_CONFIG = {
   }
 };
 
-// Remains off until production rules and real-device acceptance are confirmed.
-window.PETCARE_FAMILY_CONFIG = { enabled: false };
+// Production rules/Auth and three independent live clients verified 21 October 2026.
+window.PETCARE_FAMILY_CONFIG = { enabled: true };

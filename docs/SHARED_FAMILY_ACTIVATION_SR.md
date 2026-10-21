@@ -1,9 +1,23 @@
 # Zajednički ljubimac — porodični pozivni kod
 
-Ova grana priprema stvarno deljenje profila i dnevnika preko Firebase-a.
-Produkcijsko povezivanje još nije aktivno: `PETCARE_FAMILY_CONFIG.enabled` je
-`false`. Bez objavljenih pravila i provere stvarnih telefona ne prikazivati
-funkciju kao gotovu. Ulaz u lokalnu aplikaciju ostaje bez koda, datuma i naloga.
+Verzija 1.8.8 (19) aktivira deljenje profila i dnevnika preko Firebase-a.
+Produkcijska pravila i Anonymous Authentication su provereni u vlasnikovoj
+konzoli 21. oktobra 2026. Ceo objavljeni kod odgovara fajlu
+`firebase/production-family-candidate.rules`; stara chat pravila su sačuvana.
+Tri nezavisna pregledačka identiteta uspešno su proverena na stvarnom serveru:
+https://github.com/jalejasko011-tech/Pet-Care/actions/runs/39614002015
+Ovo nije test tri fizička telefona. Ulaz u lokalnu aplikaciju ostaje bez koda,
+datuma i naloga; porodični kod služi samo dobrovoljnom povezivanju.
+
+## Kako povezati telefone
+
+1. Na prvom telefonu dodajte/izaberite ljubimca i otvorite Porodica.
+2. Izaberite Poveži porodičnu brigu, unesite svoje ime i naziv porodice,
+   napravite zajednički profil i potvrdite deljenje osnovnih podataka.
+3. Izaberite Napravi porodični kod i pošaljite kod samo svojim članovima.
+4. Na ostalim telefonima sa verzijom 1.8.8 ili novijom otvorite Porodica,
+   povežite brigu, unesite svoje ime i isti kod pa izaberite Poveži se sa ljubimcem.
+5. Novi zapisi u zajedničkom dnevniku vidljivi su povezanim članovima.
 
 ## Ponašanje
 
@@ -30,22 +44,21 @@ funkciju kao gotovu. Ulaz u lokalnu aplikaciju ostaje bez koda, datuma i naloga.
   aplikacije/identiteta može izgubiti pristup vlasnika; kod nije rezervna kopija
   identiteta. Ne obećavati oporavak naloga između uređaja u ovoj verziji.
 
-## Aktivacija koju treba završiti
+## Objavljena konfiguracija i preostala provera
 
-1. Povezati vlasnički Firebase nalog i potvrditi projekat `pet-care-world`,
-   bazu, stanje Anonymous Authentication i postojeća produkcijska pravila.
-2. Pregledati promenu **korenskog** `firestore.rules` (to je putanja iz
-   `firebase.json`). Ne objavljivati stari `firebase/firestore.rules` koji nije
-   aktivna konfiguracija ovog projekta. Sačuvati prethodnu verziju pravila.
-3. Pokrenuti CI sa emulatorima; objaviti pregledana pravila samo za Firestore.
-   Ova promena ne traži uključivanje Functions, Storage, Blaze ili naplate.
-   Firestore/Auth kvote i stvarno stanje projekta proverava vlasnik.
-4. Testirati vlasnika i najmanje dva člana na stvarnim uređajima: isti kod,
-   zajednički profil, novi zapis u oba smera, ponovno povezivanje, opoziv koda,
-   uklanjanje člana, istekao/potrošen kod, izolacija druge porodice, brisanje.
-5. Ažurirati politiku privatnosti, tačne Data Safety odgovore i prevode za
-   stvarno aktiviranu verziju. Tek zatim uključiti zastavicu i napraviti novo
-   potpisano izdanje. Trenutni PR ne menja javne izjave u tvrdnju da deljenje radi.
+- Aktivni produkcijski fajl je **firebase/production-family-candidate.rules**.
+  Ne objavljivati širi korenski `firestore.rules`: on priprema i medije/push koji
+  još nisu aktivirani. Sačuvan povratak je
+  `firebase/production-chat-baseline-2026-10-21.rules`.
+- Nisu uključeni Functions, Storage, Blaze niti naplata.
+- Live provera je potvrdila paralelan ulaz dva člana istim kodom, dnevnik u oba
+  smera, izmenu profila, ponovno povezivanje, izolaciju druge porodice, uklanjanje,
+  opoziv koda i potpuno brisanje probnih porodica. Probni anonimni identiteti su
+  obrisani; postojeći korisnički podaci nisu menjani.
+- Politika privatnosti i nacrt Data Safety su ažurirani za opcione podatke.
+  Nacrt nije potvrda da je upitnik poslat Google-u.
+- Na fizičkim telefonima proveriti povezivanje u novom APK-u, povratak nakon
+  zatvaranja i prijem lokalnih podsetnika. Ovo se ne može potvrditi simulatorom.
 
 ## Automatske provere
 
