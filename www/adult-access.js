@@ -14,7 +14,7 @@
   email.id='adultEmail';email.type='email';email.autocomplete='username';email.required=true;email.value=auth.currentUser?.email||'';
   password.id='adultPassword';password.type='password';password.autocomplete='current-password';password.required=true;password.minLength=12;
   for(const [input,label]of [[email,t('Email odrasle osobe','Adult email')],[password,t('Lozinka odrasle osobe','Adult password')]]){const l=n('label',label);l.htmlFor=input.id;form.append(l,input);}
-  ack.id='adultAcknowledgement';ack.type='checkbox';ack.required=true;ack.style.width='auto';const label=n('label');label.append(ack,document.createTextNode(t(' Ja sam odrasla osoba i upravljam ovim povezivanjem.',' I am an adult and control this connection.')));form.append(label);
+  ack.id='adultAcknowledgement';ack.type='checkbox';ack.required=true;ack.style.width='auto';const label=n('label');label.append(ack,document.createTextNode(t(' Ja sam odrasla osoba, upravljam povezivanjem i prihvatam pravila: bez privatnih podataka, pretnji, uznemiravanja, nezakonitog sadržaja i spama.',' I am an adult, control this connection and accept the rules: no private information, threats, harassment, illegal content or spam.')));form.append(label);const policy=n('a',t('Pravila i privatnost deljenja','Sharing rules and privacy'));policy.href='privacy.html';policy.target='_blank';policy.rel='noopener noreferrer';form.append(policy);
   const button=(id,label,fn)=>{const b=n('button',label);b.id=id;b.type='button';b.className='btn secondary';b.onclick=fn;form.append(b);return b;};
   let working=false,finished=false,resolveResult;
   const result=new Promise(resolve=>resolveResult=resolve);

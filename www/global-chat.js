@@ -73,9 +73,9 @@
       if(snapshot.exists())await api.updateDoc(profile,{nickname});
       else await api.setDoc(profile,{nickname,banned:false,lastSent:api.Timestamp.fromMillis(0),sequence:0});
       if(token!==generation)return;
-      window.dispatchEvent(new Event('petcare:chat-connected'));
       localStorage.setItem('petcare_chat_nickname_v1',nickname);el('chatJoin').hidden=true;el('chatConnected').hidden=false;
       stop=api.onSnapshot(api.query(api.collection(db,'globalMessages'),api.orderBy('createdAt','desc'),api.limit(100)),snap=>{rows=snap.docs.map(d=>({id:d.id,...d.data()})).reverse();paint();status(tr('Povezano • javni razgovor','Connected • public conversation'));},()=>{status(tr('Veza je prekinuta ili pristup nije dozvoljen. Pokušajte ponovo.','Connection interrupted or access denied. Try again.'));el('chatSend').querySelector('button[type="submit"]').disabled=true;});
+      window.dispatchEvent(new Event('petcare:chat-connected'));
     }catch{status(tr('Povezivanje nije uspelo. Proverite internet ili pokušajte kasnije.','Could not connect. Check your connection or try later.'));}
     finally{joining=false;if(el('chatJoin'))el('chatJoin').querySelector('button').disabled=false;}
   }
