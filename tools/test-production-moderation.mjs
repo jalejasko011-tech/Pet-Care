@@ -31,9 +31,19 @@ try{
  await assertFails(setDoc(doc(mod,'moderationAudit','invalid-action'),{...entry,action:'grant-admin'}));
  await assertFails(getDoc(doc(ordinary,'moderationAudit','permission-test')));await assertFails(getDoc(doc(anon,'moderationAudit','permission-test')));
  await assertFails(updateDoc(doc(mod,'moderationAudit','permission-test'),{targetId:'altered'}));await assertFails(deleteDoc(doc(mod,'moderationAudit','permission-test')));
+ if(process.env.PETCARE_REVIEW_RULES){
+  const roleUser=env.authenticatedContext('assignedAdult',adultClaims).firestore();
+  await assertFails(setDoc(doc(roleUser,'moderators','assignedAdult'),{active:true}));
+  await env.withSecurityRulesDisabled(c=>setDoc(doc(c.firestore(),'moderators','assignedAdult'),{active:true}));
+  await assertSucceeds(getDoc(doc(roleUser,'moderators','assignedAdult')));
+  await assertFails(getDoc(doc(ordinary,'moderators','assignedAdult')));
+  await assertSucceeds(setDoc(doc(roleUser,'moderationAudit','server-role-test'),{...entry,actorId:'assignedAdult'}));
+  await assertFails(updateDoc(doc(roleUser,'moderators','assignedAdult'),{active:false}));
+ }
+
  const app=initializeApp({projectId:'demo-petcare-chat'}),admin=getFirestore(app),auth=getAuth(app),password='EmulatorOnlyPassword42',fixture=process.env.PETCARE_REVIEW_RULES?'adult':'legacy';
  const owner=await auth.createUser({email:`review-moderator-${fixture}@example.test`,password,emailVerified:true}),normal=await auth.createUser({email:`review-ordinary-${fixture}@example.test`,password,emailVerified:true});
- await auth.setCustomUserClaims(owner.uid,{moderator:true});
+ if(process.env.PETCARE_REVIEW_RULES)await admin.doc('moderators/'+owner.uid).set({active:true});else await auth.setCustomUserClaims(owner.uid,{moderator:true});
  await admin.doc('chatProfiles/reviewAuthor').set({nickname:'Fictional author',banned:false,lastSent:new Date(0),sequence:1});
  await admin.doc('globalMessages/reviewAuthor_1').set({authorId:'reviewAuthor',nickname:'Fictional author',text:'Fictional reported text',createdAt:new Date()});
  await admin.doc('chatReports/reviewReporter_reviewAuthor_1').set({reporterId:'reviewReporter',messageId:'reviewAuthor_1',reason:'Production rules acceptance report',createdAt:new Date()});

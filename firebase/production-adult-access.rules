@@ -9,7 +9,15 @@ service cloud.firestore {
 
     function moderator() {
       return signedIn()
-        && request.auth.token.get('moderator', false) == true;
+        && (request.auth.token.get('moderator', false) == true
+          || exists(/databases/$(database)/documents/moderators/$(request.auth.uid))
+          && get(/databases/$(database)/documents/moderators/$(request.auth.uid)).data.active == true);
+    }
+
+    // Only the project administrator (Console/Admin SDK) can assign this role.
+    match /moderators/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
     }
 
     function active() {
