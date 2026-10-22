@@ -183,11 +183,16 @@ service cloud.firestore {
         allow list: if familyOwner(id) && request.query.limit != null && request.query.limit <= 100;
         allow create: if familyMember(id) && familyActive(id)
           && request.resource.data.keys().hasAll(['reporterId','entryId','reason','createdAt'])
-          && request.resource.data.keys().hasOnly(['reporterId','entryId','reason','createdAt'])
+          && request.resource.data.keys().hasOnly(['reporterId','entryId','memberId','reason','createdAt'])
           && request.resource.data.reporterId == request.auth.uid
-          && request.resource.data.entryId is string && request.resource.data.entryId.size() > 0 && request.resource.data.entryId.size() <= 128
-          && reportId == request.auth.uid + '_' + request.resource.data.entryId
-          && exists(/databases/$(database)/documents/petFamilies/$(id)/entries/$(request.resource.data.entryId))
+          && ((request.resource.data.keys().hasOnly(['reporterId','entryId','reason','createdAt'])
+            && request.resource.data.entryId is string && request.resource.data.entryId.size() > 0 && request.resource.data.entryId.size() <= 128
+            && reportId == request.auth.uid + '_' + request.resource.data.entryId
+            && exists(/databases/$(database)/documents/petFamilies/$(id)/entries/$(request.resource.data.entryId)))
+          || (request.resource.data.keys().hasAll(['memberId']) && request.resource.data.entryId == ''
+            && request.resource.data.memberId is string && request.resource.data.memberId.size() > 0 && request.resource.data.memberId.size() <= 128
+            && reportId == request.auth.uid + '_member_' + request.resource.data.memberId
+            && exists(/databases/$(database)/documents/petFamilies/$(id)/members/$(request.resource.data.memberId))))
           && request.resource.data.reason is string && request.resource.data.reason.size() > 0 && request.resource.data.reason.size() <= 300
           && request.resource.data.createdAt == request.time;
         allow update: if false;

@@ -35,6 +35,7 @@ try{
  await bob.locator(`[data-block-member="${aliceBlockUid}"]`).click();assert.equal(await bob.locator('#sharedCareEntries article').filter({hasText:text}).count(),0);
  await bob.locator(`[data-block-member="${aliceBlockUid}"]`).click();await bob.locator('#sharedCareEntries article').filter({hasText:text}).waitFor();
  await owner.locator('[data-resolve-report]').click();await owner.locator('[data-resolve-report]').waitFor({state:'detached'});
+ await bob.locator(`[data-report-member="${aliceBlockUid}"]`).click();await owner.locator('#familyReports').getByText('Please review this family entry',{exact:true}).waitFor();await owner.locator('[data-resolve-report]').click();await owner.locator('[data-resolve-report]').waitFor({state:'detached'});
  // A revoked invitation cannot admit a fourth device, while existing members keep access.
  await owner.locator('[data-revoke-invite]').first().click();await owner.locator('[data-revoke-invite]').waitFor({state:'detached'});
  const fourth=await browser.newContext({serviceWorkers:'block'}),stranger=await fourth.newPage();await stranger.goto(url);await stranger.selectOption('#languageSelect','en');await family(stranger,'No invitation');await stranger.locator('#familyInviteInput').fill(code);await stranger.locator('#sharedFamilyJoin button').click();await stranger.locator('#familyShareStatus').filter({hasText:/code expired|server did not confirm/}).waitFor();assert.equal(await stranger.locator('#sharedPetName').count(),0);await fourth.close();

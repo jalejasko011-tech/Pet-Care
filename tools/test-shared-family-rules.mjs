@@ -39,6 +39,10 @@ try{
   await assertFails(setDoc(doc(bob,'petFamilies',fid,'reports','forged'),{...payload,reporterId:'familyAlice'}));
   await assertFails(setDoc(doc(bob,'petFamilies',fid,'reports','familyBob_missing'),{...payload,entryId:'missing'}));
   await assertSucceeds(deleteDoc(doc(owner,'petFamilies',fid,'reports','familyBob_meal')));
+  await assertSucceeds(setDoc(doc(bob,'petFamilies',fid,'reports','familyBob_member_familyAlice'),{...payload,entryId:'',memberId:'familyAlice'}));
+  await assertFails(setDoc(doc(bob,'petFamilies',fid,'reports','familyBob_member_missing'),{...payload,entryId:'',memberId:'missing'}));
+  await assertFails(setDoc(doc(bob,'petFamilies',fid,'reports','familyBob_member_familyAlice'),{...payload,entryId:'',memberId:'familyAlice'}));
+  await assertSucceeds(deleteDoc(doc(owner,'petFamilies',fid,'reports','familyBob_member_familyAlice')));
   const unverified=env.authenticatedContext('familyOwner',{email_verified:false,firebase:{sign_in_provider:'password'}}).firestore(),anonymous=env.authenticatedContext('familyOwner',{firebase:{sign_in_provider:'anonymous'}}).firestore();
   await assertFails(getDoc(doc(unverified,'petFamilies',fid)));await assertFails(getDoc(doc(anonymous,'petFamilies',fid)));
   const profile={nickname:'Adult',banned:false,lastSent:Timestamp.fromMillis(0),sequence:0};
