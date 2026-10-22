@@ -60,3 +60,13 @@ korenski preview koji uključuje neaktivirane medije/push.
 Sledeći korak: završiti gore navedene tehničke i publika/moderacija uslove;
 registracija i interni test nisu isto što i javna objava. Ne menjati ciljnu
 publiku niti isključivati tražene funkcije bez dogovora sa vlasnikom.
+
+## Dopuna — 22. oktobar 2026.
+
+Vlasnik je potvrdio prijem kratkog probnog obaveštenja. Običan podsetnik zakazan
+za deset minuta, posle restarta, prvog otključavanja i ponovnog zaključavanja,
+stigao je oko tri do četiri minuta kasnije. Provera tačnosti na telefonu NIJE
+prošla. Dozvola za precizne alarme posle restarta i stanje ograničenja baterije
+još nisu očitani; uzrok nije potvrđen. Nova verzija 1.8.12 (23) olakšava unos
+datuma i vremena i prolazi automatizovane provere, ali to nije dokaz da je
+kašnjenje na vlasnikovom telefonu rešeno.

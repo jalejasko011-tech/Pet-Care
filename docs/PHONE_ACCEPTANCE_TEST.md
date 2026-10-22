@@ -1,4 +1,4 @@
-# Physical-phone acceptance record — not yet executed
+# Physical-phone acceptance record — partial owner observations; acceptance incomplete
 
 Run on at least one current Google Play Android device and the owner's Huawei/Honor device. Record manufacturer, model, Android version, app version, date, tester and each result. Do not record pet data or credentials in a public issue.
 
@@ -15,3 +15,17 @@ Result: PENDING physical devices and Play Console access. Automated emulator res
 ## Owner phone observations — 18 October 2026
 
 Version 1.8.0 installed. Owner reported background/sound test and locked-screen reminder succeeded after Huawei manual App launch settings (all three options on). A later reminder after reboot/first unlock/relock arrived only when unlocked again: FAILED reboot/locked-screen acceptance. Exact-alarm access and native scheduling changes in 1.8.1 require a new physical-device test. No pass is inferred from emulator tests.
+
+## Owner phone observations — 22 October 2026
+
+The owner confirmed the short diagnostic notification was received. For the
+separate ordinary reminder set ten minutes ahead, the owner rebooted, unlocked
+once and relocked the phone. The notification arrived approximately three to
+four minutes late. Result: FAILED delivery-time acceptance after reboot.
+The exact installed app version, exact-alarm permission after reboot and
+manufacturer battery/background settings have not been confirmed for this run.
+Do not infer a cause from the delay alone or mark this case passed based on CI.
+
+Version 1.8.12 (23) adds easier reminder date/time input and initializes it on
+restored screens. That release is not a confirmed fix for this phone's delay.
+Next diagnostic fact: read Exact alarms in More → Help and checks on the phone.
