@@ -1,78 +1,33 @@
-> Candidate 1.8.14 (25), 22 October 2026. Not deployed or submitted.
-> Verified adult email/password access replaces new anonymous online joins.
-> Email addresses and account IDs are processed by Firebase Authentication for optional account management.
-> Family reports contain reporter ID, entry ID, reason and time and are private to that family's owner.
-> Blocking hides a family author's name/entries on the device; it does not stop their reading.
-> Chat-profile deletion retains the email account; full account/server-data deletion is requested in-app or on delete-chat.html and handled by the owner after verification.
-> Adult action does not prove age or parental relationship. Review actual audience, deletion operations, current Firebase disclosures and Console categories before submission.
-> Historical notes below describe older builds and are not current Console answers.
+# Data safety pregled — 1.8.14 (25), 22. oktobar 2026.
 
-> Current build: 1.8.13 (24). See RELEASE_1_8_13.md. The local app opens
-> without a code, birthday, year or account; no entry age is collected or inferred.
-> Family view is optional and is not a parental lock. Public chat separately asks
-> for explicit rules acceptance and an 18+ self-declaration before connection.
-> Physical acceptance, production moderation and Play audience/declaration review
-> remain pending. Historical notes below are not submitted Console answers.
+Ovo je pregled stvarnog ponašanja za vlasnika, ne popunjen ili poslat Play Console upitnik. Ranije izjave o anonimnom chatu nisu važeće za nove prijave u ovoj verziji.
 
-# Google Play Data safety review — version 1.7
+| Podaci | Kada se obrađuju i kome su dostupni | Svrha |
+| --- | --- | --- |
+| Email i Firebase identifikator naloga | Dobrovoljna prijava odrasle osobe za online funkcije; Firebase Authentication. Email nije javan učesnicima. | Upravljanje nalogom i pristupom |
+| Javni nadimak, tekst poruke, autorov ID i vreme | Posle prihvatanja pravila i otključavanja chata potvrđenim emailom i lozinkom; vide učesnici i ovlašćeni moderator. | Razgovor i bezbednost zajednice |
+| Naziv porodice, izabrani osnovni profil ljubimca, prikazna imena i ID članova, novi zajednički zapisi i vreme | Posle zasebnog povezivanja i namerne radnje deljenja; vide članovi te porodice i administrator projekta. Ne šalje se automatski privatna istorija. | Porodična briga |
+| Hash pozivnice, porodica/vlasnik, rok i broj korišćenja, poslednji novi član i vreme | Pri pravljenju i korišćenju pozivnog koda; upravljanje pozivnicama je vlasničko. | Kontrola članstva |
+| Javna chat prijava: prijavilac, poruka, razlog i vreme | Dobrovoljna prijava moderatoru; nije javna. | Obrada zloupotrebe |
+| Porodična prijava: prijavilac, ID zapisa ili člana, razlog i vreme | Dobrovoljna prijava vlasniku te porodice; drugi članovi ne mogu da listaju prijave. | Moderacija zatvorene grupe |
+| Moderatorska evidencija: izvršilac, radnja, ciljni ID i vreme | Pri moderatorskim radnjama; privatna, neizmenjiva kroz klijentsku aplikaciju. | Bezbednosna evidencija |
+| Tehnički podaci o vezi | Firebase/Google obrađuje podatke neophodne za servis. Pre predaje proveriti aktuelna SDK obelodanjivanja i projektna podešavanja. | Funkcionisanje i bezbednost servisa |
 
-Draft for owner review before submission. Version 1.5 adds optional public Firebase chat; previous “no data collected” declarations are no longer appropriate. Do not submit this document as a completed Console declaration.
+Osnovna lokalna evidencija radi bez naloga, koda ili datuma rođenja korisnika. Privatni zdravstveni zapisi ljubimaca, slike, uspomene, troškovi i lokalni alarmi ne šalju se automatski u Firebase. Korisnik zasebno bira izvoz/deljenje kopije. Porodični profil može sadržati opcioni datum rođenja ljubimca, ne korisnika. Lozinka se koristi kroz Firebase Authentication, ne upisuje se u aplikacionu kopiju ili korisnički profil.
 
-## Actual behavior
+Nema aktivnih oglasa, Analytics inicijalizacije, chat medija ili pozadinskog chat push-a. Transport je HTTPS; chat i porodica nisu end-to-end šifrovani. Blokiranje sakriva autora na uređaju, ne sprečava njegovo čitanje grupe.
 
-- Pet records, photos, local community drafts and reminders stay on device unless the user deliberately exports or shares them. Automatic private pet cloud sync is disabled. Optional family sharing sends explicitly selected basic pet data and new shared care entries to Firebase.
-- Chat loads Firebase Authentication and Firestore only after explicit join consent. Anonymous authentication creates a technical user ID. The nickname, text, author ID and timestamp are stored in Firestore and visible to participating users.
-- Abuse reports contain reporter ID, referenced message ID, reason and timestamp. They are private to authorized moderators/project administrators.
-- Firebase processes connection information needed to provide its services. Review current Firebase SDK disclosures and project settings for diagnostic/IP processing before completing exact categories.
-- No advertising SDK or Analytics initialization is included. Chat has no end-to-end encryption. Transport uses HTTPS.
+## Brisanje
 
-## Proposed categories to evaluate in Console
+U chatu se samostalno brišu javne poruke i chat profil. Email nalog namerno ostaje zbog mogućeg porodičnog pristupa. Potpuno brisanje email naloga i povezanih serverskih podataka traži se preko veze iz aplikacije ili javne stranice `www/delete-chat.html`, emailom vlasniku. Vlasnik proverava vlasništvo i mora stvarno obraditi zahtev; slanje zahteva nije trenutno automatsko brisanje. Porodice imaju zasebne kontrole za brisanje zapisa, napuštanje i vlasničko brisanje cele grupe. Deinstalacija ne briše serverske podatke.
 
-| Data | Purpose | Optional | Treatment |
-| --- | --- | --- | --- |
-| Technical user identifier | Account management, app functionality, abuse prevention | Yes, chat is optional | Stored in Authentication and chat documents |
-| Nickname and public text messages | App functionality | Yes | Public to chat participants; evaluate Messages/other user-generated content and nickname/name classification |
-| Abuse report text and identifiers | Safety and abuse prevention | Yes | Stored privately for owner review |
-| Provider connection/diagnostic information | Service operation/security | Verify provider behavior | Review current Firebase documentation and exact Console definitions |
+Pre predaje vlasnik mora proveriti obradu stvarnog probnog zahteva, obuhvat povezanih podataka, postupak za vlasničke porodice, rok odgovora i opravdano zadržavanje bezbednosnih prijava/evidencije. Javno objavljena politika opisuje moguće zadržavanje prijava i evidencije; ne tvrditi automatsko brisanje ili izmišljen rok.
 
-Evaluate “sharing” using Google's current user-initiated public-content and service-provider definitions; public visibility must still be clearly disclosed. Do not simply claim no sharing without that review. Data is not used for advertising by this app.
+## Console odluke koje vlasnik još proverava
 
-## Deletion and retention
+- Označiti email, korisničke identifikatore i odgovarajuće kategorije poruka/drugog korisničkog sadržaja prema tačnim aktuelnim definicijama forme. Ne birati „nema prikupljanja podataka“.
+- Proveriti definiciju deljenja za namerno javno objavljivanje i obradu od strane provajdera. Javna vidljivost mora ostati jasno obelodanjena.
+- Online funkcije su dobrovoljne; nisu uslov za lokalnu brigu. Potvrda emaila je radnja odrasle osobe, ne dokaz hronološkog uzrasta ili roditeljskog odnosa.
+- Odgovori o ciljnoj publici, društvenim funkcijama i oceni sadržaja moraju odgovarati stvarnom izdanju. Ne birati sve uzraste samo zato što ulazak nema datum.
 
-Chat supports deleting one's messages and device-bound anonymous identity. The deletion page is `www/delete-chat.html`; publish it at an accessible web URL for the Play listing. Lost-device/banned-identity requests go to jalejasko011@gmail.com and require authorship verification. Private reports can be retained for abuse investigation; establish an operational retention schedule before submission. Do not promise a fixed deletion deadline that has not been implemented.
-
-## Remaining submission work
-
-Verify the live privacy/deletion URLs, Console answers, Firebase provider disclosures, owner moderation process and content-rating/target-audience answers. The chat requires users to attest they are 18 or older; this is self-attestation, not verified age checking. Play account setup/payment and final submission remain pending.
-
-## Version 1.6 additions
-
-Meal logs and schedules are local. A three-note original chime is bundled in Android res/raw and selected through channel `petcare_care_v2`. Existing phone notification settings and DND remain in control.
-
-Photo/video code is present but `media.enabled` remains false and the bucket is empty in the shipped config. Before activation, review Photos and videos collection/public sharing, embedded metadata, Firebase Storage processing and deletion. Publish updated declarations for the activated build. Tests use local emulators, not the paid production storage service.
-
-## Version 1.7 additions
-
-Private Memories stores per-pet stories, dates, photos and videos in local IndexedDB. No memories or appearance settings enter cloud sync or public chat. The separate user-initiated memories backup includes media, is unencrypted, and excludes the existing Gallery. Deletion of a pet removes associated memories. Standard pet-record export continues to exclude both sets of media. Local device access is not protected by a separate app account or biometric lock.
-
-Settings offers separate app/chat wallpaper presets, text size, reminders on/off, sound and vibration choices. The selected original 1.8-second Cheerful Greeting is bundled as `petcare_cheerful.wav`; channel `petcare_cheerful_v1` is the new default. Stable alternative channels are used for explicit sound/vibration choices. Android notification permissions, volume and DND remain under device-owner control.
-
-## Version 1.8.0 shipped configuration (supersedes earlier version notes)
-
-- Complete ZIP export adds Gallery + Memories + records + private drafts + settings; it is user initiated, unencrypted and local until deliberately shared. Standard records-only JSON and separate Memories backup remain available with narrower coverage.
-- Native FCM plugin/public client configuration are bundled with messaging auto-init and analytics collection explicitly disabled. `push.enabled:false` prevents registration before activation and user opt-in. Prepared Functions are not evidence of production deployment.
-- `media.enabled:false` and empty client bucket still prevent chat photo/video uploads. Private local photos/videos do not become cloud collection merely because the media code exists.
-- After push activation, evaluate the messaging registration token as a technical device/user identifier, stored subscription preferences/blocked IDs, notification delivery processing and deletion. After media activation, evaluate Photos and videos and public content sharing. Update the declaration for the activated release before distribution.
-- Moderator console collects administrator email/password through Firebase Authentication only on explicit sign-in; the private queue/audit uses server-issued roles. Action records include actor/target technical IDs and action time. Decide administrative-data retention, staff access and user support before launch.
-- No ads SDK, integrated purchase or pet-record cloud sync is active. The adult chat uses self-attestation; do not claim verified age screening or a child-safe public room.
-- Production dependency audits reported zero known advisories for the app and the updated optional backend (Admin 14.5 / Functions 7.4) at implementation check. This is not a security certification. Re-run audits and review provider disclosures at submission.
-
-Owner must complete Console's actual questionnaire, classification and exceptions using the exact distributed APK/AAB and live backend configuration. Do not auto-fill 'no data collected'.
-
-## Version 1.8.8 — optional shared family care
-
-Family sharing is enabled following production rule/Auth verification and live acceptance. Separate device-bound anonymous IDs are created only after Connect family care. The server stores a family name, chosen display names, basic pet profile (name, species, breed, sex, optional pet birth date), membership roles/technical IDs/times, invitation digests and usage/expiry metadata, and new shared care text with author name/ID/time. Current family members and the project administrator can access these records. HTTPS transport is used, without end-to-end encryption. No human birth date or entry PIN is collected.
-
-Evaluate Names, User IDs and Other user-generated content for actual collection, app functionality, optional participation, Firebase processing and user-directed sharing. Do not declare all pet-care content as local-only or no-data-collected. Do not classify veterinary entries automatically as human health data; review the exact Console definitions and warn users against entering sensitive human details. The final Console selection and applicable service-provider/user-directed-sharing exceptions remain for the owner to review. No Console form has been submitted.
-
-Members may delete their own entries before leaving; leaving retains earlier shared entries. The owner can remove members, revoke invitations, delete any diary entry and delete the whole family's server data. Removing a member revokes the invite used to join; current other members remain. Disconnecting or uninstalling does not delete shared data. Identity and owner access can be lost after clearing app data; account recovery and ownership transfer are not implemented. Deletion requests after lost access require ownership verification through the privacy contact. Family identity/membership and shared records are excluded from local backups. Photos, videos, private medical history and local reminder schedules are not synchronized.
+Primarni izvori: https://support.google.com/googleplay/android-developer/answer/10787469 ; https://support.google.com/googleplay/android-developer/answer/13327111 ; https://support.google.com/googleplay/android-developer/answer/10144311 ; https://support.google.com/googleplay/android-developer/answer/9893335

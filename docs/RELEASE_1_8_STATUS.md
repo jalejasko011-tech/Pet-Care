@@ -1,3 +1,5 @@
+> Aktuelno potpisano izdanje: 1.8.14 (25), 22. oktobar 2026. Web i nova Firebase pravila su aktivni, obe CI provere i potpisana gradnja su uspešne. Tačan dokaz je u ACTIVATION_1_8_14_SR.md. Pravi moderatorski nalog, provera konkretnog telefona i Play postupak još nisu završeni. Starije beleške ispod su istorijske.
+
 > Historical 1.8.0 status. For the current build use `RELEASE_1_8_10.md`, `SHARED_FAMILY_ACTIVATION_SR.md` and `PHONE_ACCEPTANCE_1_8_4_SR.md`.
 
 # Pet Care World 1.8.0 readiness
