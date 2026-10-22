@@ -70,5 +70,8 @@
   details.addEventListener('toggle',()=>{if(details.open)picker.value=date.value;});
   form.addEventListener('submit',event=>{if(!validDate()||!validTime()){event.preventDefault();event.stopImmediatePropagation();form.reportValidity();}},true);
  }
- const previous=render;render=function(){previous();document.querySelectorAll('#reminderForm,#routineForm').forEach(enhance);};
+ const update=()=>document.querySelectorAll('#reminderForm,#routineForm').forEach(enhance);
+ const previous=render;render=function(){previous();update();};
+ // Route history can restore a form before this deferred enhancement loads.
+ update();
 })();

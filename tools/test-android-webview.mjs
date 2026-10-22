@@ -87,6 +87,8 @@ try {
  const easyPending=await page.evaluate(()=>Capacitor.Plugins.LocalNotifications.getPending());
  assert.ok(easyPending.notifications.some(n=>n.body?.includes('PETCARE_EASY_TIME_UI')||n.title?.includes('PETCARE_EASY_TIME_UI')),'Reminder from numeric form did not reach native scheduler');
  await page.evaluate(()=>{tab='reminders';formMode='reminder';render();});
+ await page.reload();await page.locator('#reminderFormDay').waitFor();
+ await page.waitForFunction(()=>window.petCareNative.lastSchedule?.state==='scheduled');
  await page.locator('#reminderForm').screenshot({path:'android-test-evidence/reminder-date-time.png'});
  console.log('PASS Android numeric date/time form and quick shortcut save the selected local date/time and reach native notification scheduling.');
  const result=await page.evaluate(async()=>{
