@@ -76,7 +76,7 @@ bind('weightForm',f=>{let o=Object.fromEntries(new FormData(f));data.weights.pus
 bind('foodForm',f=>{data.food.push({...Object.fromEntries(new FormData(f)),id:uid(),petId:activePet});formMode=null;save();render();toast('Ishrana je sačuvana.')});
 bind('costForm',f=>{data.costs.push({...Object.fromEntries(new FormData(f)),id:uid(),petId:activePet});formMode=null;save();render();toast('Trošak je sačuvan.')});
 bind('bondingForm',f=>{const o=Object.fromEntries(new FormData(f));data.bonding.push({...o,id:uid(),petId:activePet});formMode=null;save();render();toast('Vreme sa ljubimcem je sačuvano.')});
- bind('reminderForm',async f=>{const values=Object.fromEntries(new FormData(f));const at=new Date(values.nextDate+'T'+(values.time||'09:00')+':00');if(!Number.isFinite(at.getTime())||at.getTime()<=Date.now()){toast(currentLang()==='sr'?'Izaberite budući datum i vreme.':'Choose a future date and time.');return;}data.reminders.push({...values,id:uid(),petId:activePet});formMode=null;save();render();try{const result=await window.petCareNative.sync([...data.reminders,...data.health.filter(h=>h.nextDate).map(h=>({...h,title:h.title||h.category||'Health reminder',time:'09:00'}))],data.pets);toast(currentLang()==='sr'?(result.native&&result.permission&&result.count>0?'Sačuvano i zakazano na telefonu.':'Sačuvano. Obaveštenje na telefonu nije zakazano; otvorite Pomoć i provere.'):(result.native&&result.permission&&result.count>0?'Saved and scheduled on your phone.':'Saved. Phone notification not scheduled; open Help and device checks.'));}catch{toast(currentLang()==='sr'?'Sačuvano, ali zakazivanje nije uspelo. Otvorite Pomoć i provere.':'Saved, but scheduling failed. Open Help and device checks.');}})}
+ bind('reminderForm',async f=>{const values=Object.fromEntries(new FormData(f));const at=new Date(values.nextDate+'T'+(values.time||'09:00')+':00');if(!Number.isFinite(at.getTime())||at.getTime()<=Date.now()){toast(currentLang()==='sr'?'Izaberite budući datum i vreme.':'Choose a future date and time.');return;}data.reminders.push({...values,id:uid(),petId:activePet});formMode=null;save();render();try{const result=await window.petCareNative.sync([...data.reminders,...data.health.filter(h=>h.nextDate).map(h=>({...h,title:h.title||h.category||'Health reminder',time:'09:00'}))],data.pets);toast(window.petCareNative.scheduleNotice(result));}catch{toast(currentLang()==='sr'?'Sačuvano, ali zakazivanje nije uspelo. Otvorite Pomoć i provere.':'Saved, but scheduling failed. Open Help and device checks.');}})}
 function bind(id,fn){let f=document.getElementById(id);if(f)f.onsubmit=e=>{e.preventDefault();fn(f)}}
 function del(k,id){if(confirm('Obrisati ovaj unos?')){data[k]=data[k].filter(x=>x.id!==id);save();render();toast('Unos je obrisan.')}}
 async function enableNotifications(){if(window.Capacitor?.Plugins?.LocalNotifications){try{const ok=await window.petCareNative.enable();if(ok){await window.petCareNative.sync([...data.reminders,...data.health.filter(h=>h.nextDate).map(h=>({...h,title:h.title||h.category||'Health reminder',time:'09:00'}))],data.pets);toast('Obaveštenja na telefonu su uključena.')}else toast('Dozvola nije odobrena.')}catch(e){toast('Obaveštenja nisu dostupna: '+e.message)}return}if(!('Notification'in window)){toast('Ovaj pregledač ne podržava obaveštenja.');return}let p=await Notification.requestPermission();if(p==='granted'){new Notification('Pet Care',{body:'Obaveštenja su uključena dok pregledač podržava ovu stranicu.'});toast('Dozvola za obaveštenja je uključena.')}else toast('Dozvola nije odobrena.')}
@@ -246,7 +246,7 @@ window.petCareNative = {
    }
    scheduled.sort((a,b)=>a.schedule.at-b.schedule.at);
    if(scheduled.length)await call('schedule',{notifications:scheduled.slice(0,64)});
-   return {native:true,permission:true,count:Math.min(scheduled.length,64)};
+   return {native:true,permission:true,count:Math.min(scheduled.length,64),limited:scheduled.length>64};
  }
 };
 </script>
@@ -385,4 +385,5 @@ render();
 <script src="shared-family.js"></script>
 <script src="family-mode.js"></script>
 <script src="reminder-date-time.js"></script>
+<script src="reminder-access.js"></script>
 </body></html>

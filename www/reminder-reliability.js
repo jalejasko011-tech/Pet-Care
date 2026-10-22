@@ -9,7 +9,7 @@
   const snapshot=JSON.parse(JSON.stringify({reminders,pets}));
   const run=queue.catch(()=>{}).then(async()=>{
    native.lastSchedule={state:'scheduling'};
-   try{const result=await sync(snapshot.reminders,snapshot.pets);native.lastSchedule={state:result.native&&result.permission?'scheduled':'notScheduled',...result};return result;}
+   try{const before=await native.exactStatus(),result=await sync(snapshot.reminders,snapshot.pets),after=await native.exactStatus();const precision=!result.native||!result.permission||!result.count?'notScheduled':before==='granted'&&after==='granted'?'exact':after==='denied'?'approximate':after==='notApplicable'?'notApplicable':'unknown';const outcome={...result,exactAlarms:after,precision};native.lastSchedule={state:result.native&&result.permission&&result.count>0?'scheduled':'notScheduled',...outcome};return outcome;}
    catch(error){native.lastSchedule={state:'error'};throw error;}
   });queue=run;
   // Report a stalled bridge without starting a competing native mutation. The
@@ -18,22 +18,22 @@
   return Promise.race([run,deadline]).finally(()=>clearTimeout(timer));
  };
  native.exactStatus=async()=>{
-  if(window.Capacitor?.getPlatform?.()!=='android'||!api()?.checkExactNotificationSetting)return 'notApplicable';
+  if(window.Capacitor?.getPlatform?.()!=='android')return 'notApplicable';
+  if(!api()?.checkExactNotificationSetting)return 'unknown';
   try{return (await api().checkExactNotificationSetting()).exact_alarm;}catch{return 'unknown';}
  };
  const resync=()=>native.sync([...data.reminders,...data.health.filter(h=>h.nextDate).map(h=>({...h,title:h.title||h.category||'Health reminder',time:'09:00'}))],data.pets);
  native.requestExact=async()=>{
-  if(await native.exactStatus()!=='granted')await api()?.changeExactNotificationSetting?.();
+  if(await native.exactStatus()!=='granted'){if(!api()?.changeExactNotificationSetting)throw Error('Exact alarm settings unavailable');await api().changeExactNotificationSetting();}
   return resync();
  };
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.readyState==='complete')resync().catch(()=>{});});
- const previous=render;
- render=function(){previous();if(!['reminders','diagnostics'].includes(tab)||window.Capacitor?.getPlatform?.()!=='android')return;
-  const section=document.createElement('section');section.className='card';section.style.marginBottom='14px';
-  const message=document.createElement('p');message.textContent=t('Za podsetnike u izabrano vreme dozvolite „Alarmi i podsetnici“. Bez te dozvole Android može odložiti obaveštenje. Posle restarta prvo jednom otključajte telefon. Huawei može zahtevati i ručno upravljanje radom u pozadini.','Allow “Alarms & reminders” for reminders at your chosen time. Without access Android may delay delivery. Unlock once after restarting the phone. Huawei may also require manual background management.');
-  const status=document.createElement('p');status.setAttribute('role','status');
-  const button=document.createElement('button');button.className='btn secondary';button.textContent=t('Podesi precizne podsetnike','Set up precise reminders');button.onclick=async()=>{try{await native.requestExact();status.textContent=t('Vratite se iz podešavanja i ponovite proveru.','Return from Settings and run checks again.');}catch{status.textContent=t('Podešavanje nije otvoreno. Proverite Alarme i podsetnike u podešavanjima telefona.','Could not open Settings. Check Alarms & reminders in phone settings.');}};
-  section.append(message,status,button);document.getElementById('content').prepend(section);
-  native.exactStatus().then(value=>{if(!section.isConnected)return;status.textContent=t('Precizni podsetnici: ','Precise reminders: ')+(value==='granted'?t('dozvoljeni','allowed'):value==='denied'?t('nisu dozvoljeni; moguće kašnjenje','not allowed; delays possible'):value);button.hidden=value==='granted';});
+ native.resync=resync;
+ native.scheduleNotice=result=>{
+  if(!result.native||!result.permission||!result.count)return t('Sačuvano. Obaveštenje na telefonu nije zakazano; otvorite Pomoć i provere.','Saved. Phone notification not scheduled; open Help and device checks.');
+  if(result.limited)return t('Sačuvano. Zakazano je prvih 64 budućih podsetnika; nisu svi zakazani. Smanjite broj aktivnih podsetnika.','Saved. Only the first 64 upcoming reminders were scheduled. Reduce the number of active reminders.');
+  if(result.precision==='approximate')return t('Sačuvano. Podsetnik je približan i može kasniti. Dozvolite precizne alarme.','Saved. Reminder timing is approximate and may be delayed. Allow exact alarms.');
+  if(result.precision!=='exact')return t('Sačuvano. Tačnost podsetnika nije potvrđena; proverite dozvolu za precizne alarme.','Saved. Reminder timing is not confirmed; check exact alarm access.');
+  return t('Sačuvano i zakazano uz dozvolu za precizne alarme.','Saved and scheduled with exact alarm access.');
  };
 })();
