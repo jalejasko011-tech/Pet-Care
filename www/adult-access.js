@@ -24,9 +24,11 @@
   async function login(){
    if(!form.reportValidity())return;
    const previous=auth.currentUser;
-   if(previous?.isAnonymous){info.textContent=t('Ovaj uređaj ima stari identitet. Za očuvanje porodičnog pristupa prvo izaberite „Napravi nalog / sačuvaj identitet“. Prijava drugim postojećim nalogom ne prenosi stare porodice.','This device has a legacy identity. Use “Create account / preserve identity” first to retain family access. Signing in with another existing account does not transfer old families.');return;}
    let user;
-   if(previous){if(previous.email?.toLowerCase()!==email.value.trim().toLowerCase())throw Error('ACCOUNT_MISMATCH');user=(await api.reauthenticateWithCredential(previous,credential())).user;}
+   if(previous?.isAnonymous){
+    if(!confirm(t('Prijava drugim postojećim nalogom ne prenosi stare porodice i poruke. Stari anonimni pristup ne možete vratiti lozinkom. Ako želite da ga sačuvate, otkažite i izaberite „Napravi nalog / sačuvaj identitet“ sa novim emailom. Nastaviti samo ako vam stari pristup nije potreban? Lokalna evidencija ostaje na uređaju.','Signing in with another existing account does not transfer legacy families or messages. The old anonymous access cannot be recovered with a password. To retain it, cancel and use “Create account / preserve identity” with a new email. Continue only if you no longer need the old access? Local care records stay on the device.')))return;
+    user=(await api.signInWithEmailAndPassword(auth,email.value.trim(),password.value)).user;
+   }else if(previous){if(previous.email?.toLowerCase()!==email.value.trim().toLowerCase())throw Error('ACCOUNT_MISMATCH');user=(await api.reauthenticateWithCredential(previous,credential())).user;}
    else user=(await api.signInWithEmailAndPassword(auth,email.value.trim(),password.value)).user;
    await api.reload(user);await api.getIdToken(user,true);
    if(!user.emailVerified){password.value='';info.textContent=t('Potvrdite email preko poruke, zatim ponovo unesite lozinku i pritisnite Poveži.','Verify your email using the message, then enter your password again and press Connect.');return;}

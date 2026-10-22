@@ -4,7 +4,7 @@ This is an implementation/review candidate, not an installed APK, deployed Fireb
 
 - Local care still opens without an account, entry PIN, birthday or year.
 - Optional chat/family connections require adult acknowledgement, email/password and verified email; every connection requires password entry. No new anonymous sign-in is performed. Email verification is an adult action, not proof of age or parenthood.
-- Legacy anonymous users can link a NEW email credential on their original device while preserving UID. A different existing account does not inherit legacy data. Do not delete old identities to work around a linking conflict; use support.
+- Legacy anonymous users can link a NEW email credential on their original device while preserving UID. A different existing account does not inherit legacy data. Replacing a legacy session requires an explicit warning confirmation and is only for users who no longer need that access; cancellation preserves the identity. Do not delete old identities to work around a linking conflict; use support.
 - Leaving/closing public chat, Disconnect, backgrounding or Family view closes online subscriptions. Opening Full app does not unlock online access.
 - Family diary entries and members can be reported privately to the owner. Owners can remove reported entries and resolve reports. Other members cannot enumerate reports. Local member blocking hides that author's name/entries; support and Leave remain available for an abusive owner.
 - Removing a member revokes all current codes for that family, including codes not used by that member. Family deletion also clears reports.
