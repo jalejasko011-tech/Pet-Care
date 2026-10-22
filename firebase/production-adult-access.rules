@@ -1,0 +1,249 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.get('email_verified', false) == true
+        && request.auth.token.firebase.sign_in_provider == 'password';
+    }
+
+    function moderator() {
+      return signedIn()
+        && (request.auth.token.get('moderator', false) == true
+          || exists(/databases/$(database)/documents/moderators/$(request.auth.uid))
+          && get(/databases/$(database)/documents/moderators/$(request.auth.uid)).data.active == true);
+    }
+
+    // Only the project administrator (Console/Admin SDK) can assign this role.
+    match /moderators/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+
+    function active() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/chatProfiles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.banned == false;
+    }
+
+    match /chatProfiles/{uid} {
+      allow get: if
+        (signedIn() && request.auth.uid == uid) || moderator();
+      allow list: if moderator();
+
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(
+          ['nickname', 'banned', 'lastSent', 'sequence'])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 2
+        && request.resource.data.nickname.size() <= 30
+        && request.resource.data.banned == false
+        && request.resource.data.lastSent == timestamp.value(0)
+        && request.resource.data.sequence == 0;
+
+      allow update: if moderator() || (
+        signedIn()
+        && request.auth.uid == uid
+        && resource.data.banned == false
+        && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly(['nickname', 'lastSent', 'sequence'])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 2
+        && request.resource.data.nickname.size() <= 30
+        && (
+          (
+            request.resource.data.lastSent == resource.data.lastSent
+            && request.resource.data.sequence == resource.data.sequence
+          )
+          ||
+          (
+            request.resource.data.lastSent == request.time
+            && request.resource.data.sequence == resource.data.sequence + 1
+            && resource.data.lastSent <= request.time - duration.value(5, 's')
+          )
+        )
+      );
+
+      allow delete: if moderator() || (
+        signedIn()
+        && request.auth.uid == uid
+        && resource.data.banned == false
+      );
+    }
+
+    match /globalMessages/{messageId} {
+      allow get: if active() || moderator();
+
+      allow list: if (active() || moderator())
+        && request.query.limit != null
+        && request.query.limit <= 100;
+
+      allow create: if active()
+        && request.resource.data.keys().hasOnly(
+          ['authorId', 'nickname', 'text', 'createdAt'])
+        && messageId == request.auth.uid + '_'
+          + string(getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.sequence)
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.nickname ==
+          getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.nickname
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 1000
+        && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.lastSent == request.time
+        && get(/databases/$(database)/documents/chatProfiles/$(request.auth.uid)).data.lastSent
+          <= request.time - duration.value(5, 's');
+
+      allow update: if false;
+
+      allow delete: if moderator() || (
+        signedIn() && resource.data.authorId == request.auth.uid
+      );
+    }
+
+    match /chatReports/{reportId} {
+      allow read, delete: if moderator();
+
+      allow create: if active()
+        && request.resource.data.keys().hasOnly(
+          ['reporterId', 'messageId', 'reason', 'createdAt'])
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.messageId is string
+        && reportId == request.auth.uid + '_'
+          + request.resource.data.messageId
+        && exists(/databases/$(database)/documents/globalMessages/$(request.resource.data.messageId))
+        && request.resource.data.reason is string
+        && request.resource.data.reason.size() > 0
+        && request.resource.data.reason.size() <= 300
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if false;
+    }
+
+    match /moderationAudit/{id} {
+      allow read: if moderator();
+      allow create: if moderator() && request.resource.data.keys().hasOnly(['actorId','action','targetId','createdAt'])
+        && request.resource.data.actorId == request.auth.uid
+        && request.resource.data.action in ['remove-message','ban','unban','resolve-report']
+        && request.resource.data.targetId is string && request.resource.data.targetId.size() <= 200
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+    // Family profiles are private to current members. Invitation codes carry
+    // 80 random bits; only a SHA-256 digest is stored as an invitation ID.
+    function familyOwner(id) {
+      return signedIn() && get(/databases/$(database)/documents/petFamilies/$(id)).data.ownerId == request.auth.uid;
+    }
+    function familyMember(id) {
+      return signedIn() && (familyOwner(id) || exists(/databases/$(database)/documents/petFamilies/$(id)/members/$(request.auth.uid)));
+    }
+    function familyActive(id) { return get(/databases/$(database)/documents/petFamilies/$(id)).data.active == true; }
+    function validFamilyPet(p) {
+      return p is map && p.keys().hasAll(['name','type','breed','sex','birth']) && p.keys().hasOnly(['name','type','breed','sex','birth'])
+        && p.name is string && p.name.size() > 0 && p.name.size() <= 80
+        && p.type is string && p.type.size() > 0 && p.type.size() <= 60
+        && p.breed is string && p.breed.size() <= 100 && p.sex is string && p.sex.size() <= 30
+        && p.birth is string && p.birth.size() <= 10;
+    }
+    function validFamilyPerson(p) {
+      return p.keys().hasAll(['name','role','inviteHash','joinedAt']) && p.keys().hasOnly(['name','role','inviteHash','joinedAt'])
+        && p.name is string && p.name.size() >= 2 && p.name.size() <= 40 && p.joinedAt == request.time;
+    }
+    function joiningFamily(id,uid,hash) {
+      let before=get(/databases/$(database)/documents/petFamilyInvites/$(hash)).data;
+      let after=getAfter(/databases/$(database)/documents/petFamilyInvites/$(hash)).data;
+      return hash is string && hash.matches('^[a-f0-9]{64}$') && familyActive(id)
+        && before.familyId == id && before.ownerId == get(/databases/$(database)/documents/petFamilies/$(id)).data.ownerId
+        && before.expiresAt > request.time && before.uses < before.maxUses
+        && after.uses == before.uses + 1 && after.lastJoined == uid && after.lastUsedAt == request.time;
+    }
+    match /petFamilies/{id} {
+      allow get: if familyMember(id);
+      allow list: if false;
+      allow create: if signedIn() && request.resource.data.keys().hasAll(['name','pet','ownerId','active','createdAt'])
+        && request.resource.data.keys().hasOnly(['name','pet','ownerId','active','createdAt'])
+        && request.resource.data.ownerId == request.auth.uid && request.resource.data.active == true
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 60
+        && validFamilyPet(request.resource.data.pet) && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/petFamilies/$(id)/members/$(request.auth.uid)).data.role == 'owner';
+      allow update: if familyOwner(id) && resource.data.active == true
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pet','name','active'])
+        && validFamilyPet(request.resource.data.pet) && request.resource.data.name is string
+        && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 60 && request.resource.data.active is bool;
+      allow delete: if familyOwner(id) && resource.data.active == false;
+      match /members/{uid} {
+        // A join transaction may inspect only its own membership before joining.
+        allow get: if signedIn() && (request.auth.uid == uid || familyMember(id));
+        allow list: if familyMember(id) && request.query.limit != null && request.query.limit <= 100;
+        allow create: if signedIn() && uid == request.auth.uid && validFamilyPerson(request.resource.data)
+          && ((request.resource.data.role == 'owner' && request.resource.data.inviteHash == ''
+            && !exists(/databases/$(database)/documents/petFamilies/$(id))
+            && getAfter(/databases/$(database)/documents/petFamilies/$(id)).data.ownerId == uid)
+          || (request.resource.data.role == 'member' && joiningFamily(id,uid,request.resource.data.inviteHash)));
+        allow update: if false;
+        allow delete: if signedIn() && (familyOwner(id) && (uid != request.auth.uid || !familyActive(id))
+          || uid == request.auth.uid && resource.data.role == 'member');
+      }
+      // Reports are private to the family owner. Members cannot enumerate them.
+      match /reports/{reportId} {
+        allow get: if familyOwner(id) || familyMember(id) && resource.data.reporterId == request.auth.uid;
+        allow list: if familyOwner(id) && request.query.limit != null && request.query.limit <= 100;
+        allow create: if familyMember(id) && familyActive(id)
+          && request.resource.data.keys().hasAll(['reporterId','entryId','reason','createdAt'])
+          && request.resource.data.keys().hasOnly(['reporterId','entryId','memberId','reason','createdAt'])
+          && request.resource.data.reporterId == request.auth.uid
+          && ((request.resource.data.keys().hasOnly(['reporterId','entryId','reason','createdAt'])
+            && request.resource.data.entryId is string && request.resource.data.entryId.size() > 0 && request.resource.data.entryId.size() <= 128
+            && reportId == request.auth.uid + '_' + request.resource.data.entryId
+            && exists(/databases/$(database)/documents/petFamilies/$(id)/entries/$(request.resource.data.entryId)))
+          || (request.resource.data.keys().hasAll(['memberId']) && request.resource.data.entryId == ''
+            && request.resource.data.memberId is string && request.resource.data.memberId.size() > 0 && request.resource.data.memberId.size() <= 128
+            && reportId == request.auth.uid + '_member_' + request.resource.data.memberId
+            && exists(/databases/$(database)/documents/petFamilies/$(id)/members/$(request.resource.data.memberId))))
+          && request.resource.data.reason is string && request.resource.data.reason.size() > 0 && request.resource.data.reason.size() <= 300
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if familyOwner(id);
+      }
+      match /entries/{entry} {
+        allow get: if familyMember(id);
+        allow list: if familyMember(id) && request.query.limit != null && request.query.limit <= 100;
+        allow create: if familyMember(id) && familyActive(id)
+          && request.resource.data.keys().hasAll(['kind','text','authorId','authorName','createdAt'])
+          && request.resource.data.keys().hasOnly(['kind','text','authorId','authorName','createdAt'])
+          && request.resource.data.kind in ['meal','walk','medicine','note']
+          && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 500
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.authorName == get(/databases/$(database)/documents/petFamilies/$(id)/members/$(request.auth.uid)).data.name
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if familyOwner(id) || familyMember(id) && resource.data.authorId == request.auth.uid;
+      }
+    }
+    match /petFamilyInvites/{hash} {
+      // Knowledge of a random code allows lookup. Enumeration is owner-only.
+      allow get: if signedIn();
+      allow list: if signedIn() && resource.data.ownerId == request.auth.uid && request.query.limit != null && request.query.limit <= 100;
+      allow create: if signedIn() && hash.matches('^[a-f0-9]{64}$')
+        && request.resource.data.keys().hasAll(['familyId','ownerId','createdAt','expiresAt','uses','maxUses','lastJoined','lastUsedAt'])
+        && request.resource.data.keys().hasOnly(['familyId','ownerId','createdAt','expiresAt','uses','maxUses','lastJoined','lastUsedAt'])
+        && request.resource.data.ownerId == request.auth.uid && familyOwner(request.resource.data.familyId) && familyActive(request.resource.data.familyId)
+        && request.resource.data.createdAt == request.time && request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt > request.time && request.resource.data.expiresAt <= request.time + duration.value(24,'h')
+        && request.resource.data.uses == 0 && request.resource.data.maxUses == 10
+        && request.resource.data.lastJoined == '' && request.resource.data.lastUsedAt == timestamp.value(0);
+      allow update: if signedIn() && resource.data.expiresAt > request.time && resource.data.uses < resource.data.maxUses
+        && familyActive(resource.data.familyId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['uses','lastJoined','lastUsedAt'])
+        && request.resource.data.uses == resource.data.uses + 1 && request.resource.data.lastJoined == request.auth.uid && request.resource.data.lastUsedAt == request.time
+        && !exists(/databases/$(database)/documents/petFamilies/$(resource.data.familyId)/members/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/petFamilies/$(resource.data.familyId)/members/$(request.auth.uid)).data.inviteHash == hash
+        && getAfter(/databases/$(database)/documents/petFamilies/$(resource.data.familyId)/members/$(request.auth.uid)).data.role == 'member';
+      allow delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

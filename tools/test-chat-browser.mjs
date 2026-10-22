@@ -1,3 +1,4 @@
+import {adultAccount,onlineLogin} from './online-test-helper.mjs';
 import {unlockAdult} from './family-test-helper.mjs';
 import {chromium} from 'playwright';
 import {initializeApp} from 'firebase-admin/app';
@@ -28,7 +29,8 @@ try{
  const alice=await a.newPage(),bob=await b.newPage(),errors=[];
  for(const page of [alice,bob]){page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.type()==='prompt'?d.accept('Automated emulator test report'):d.accept());}
  const url=`http://127.0.0.1:${server.address().port}/`;
- async function join(page,nick){await page.goto(url);await unlockAdult(page);await page.selectOption('#languageSelect','en');await page.locator('#globalChatShortcut').click();await page.locator('#chatNickname').fill(nick);await page.locator('#chatConsent').check();await page.locator('#chatJoin button').click();await page.locator('#chatStatus').filter({hasText:'Connected'}).waitFor({timeout:45000});}
+ const chatAdults=new Map();
+ async function join(page,nick){const account=await adultAccount(nick.replaceAll(' ','-'));chatAdults.set(page,account.email);await page.goto(url);await unlockAdult(page);await page.selectOption('#languageSelect','en');await page.locator('#globalChatShortcut').click();await page.locator('#chatNickname').fill(nick);await page.locator('#chatConsent').check();await page.locator('#chatJoin button').click();await onlineLogin(page,account.email);await page.locator('#chatStatus').filter({hasText:'Connected'}).waitFor({timeout:45000});}
  await join(alice,'Chat test A');await join(bob,'Chat test B');
  const text='<img src=x onerror=alert(1)> Emulator greeting';
  await alice.locator('#chatText').fill(text);await alice.locator('#chatSend button[type=submit]').click();
@@ -76,9 +78,9 @@ try{
  assert.ok((await adminDb.collection('moderationAudit').get()).size>=5);
  await moderation.close();
  console.log('PASS moderator login/role denial, report review, ban/unban, attachment removal and immutable action history.');
- await bob.getByRole('button',{name:'Close',exact:true}).click();await bob.locator('#globalChatShortcut').click();await bob.locator('#chatConsent').check();await bob.locator('#chatJoin button').click();await bob.locator('#chatStatus').filter({hasText:'Connected'}).waitFor();
- await bob.getByRole('button',{name:'Delete chat identity and my messages',exact:true}).click();await bob.locator('#chatStatus').filter({hasText:'Chat identity and messages deleted'}).waitFor();
- await alice.getByRole('button',{name:'Delete chat identity and my messages',exact:true}).click();await alice.locator('#chatStatus').filter({hasText:'Chat identity and messages deleted'}).waitFor();
+ await bob.getByRole('button',{name:'Close',exact:true}).click();await bob.locator('#globalChatShortcut').click();await bob.locator('#chatConsent').check();await bob.locator('#chatJoin button').click();await onlineLogin(bob,chatAdults.get(bob));await bob.locator('#chatStatus').filter({hasText:'Connected'}).waitFor();
+ await bob.getByRole('button',{name:'Delete chat profile and my messages',exact:true}).click();await bob.locator('#chatStatus').filter({hasText:'Chat profile and messages deleted'}).waitFor();
+ await alice.getByRole('button',{name:'Delete chat profile and my messages',exact:true}).click();await alice.locator('#chatStatus').filter({hasText:'Chat profile and messages deleted'}).waitFor();
  assert.deepEqual(errors,[]);
  console.log('PASS two isolated chat clients: consent, realtime send/reply, XSS-safe rendering, rate limit, report, block/unblock, own deletion, reconnect and identity deletion, authenticated photo/video upload and playback. Emulator only.');
 }finally{await browser.close();await new Promise(r=>server.close(r));}
