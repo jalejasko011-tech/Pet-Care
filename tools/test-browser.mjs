@@ -130,7 +130,11 @@ try {
  ]){
   const before=await page.evaluate(k=>data[k].length,key);
   await page.evaluate(([t,m])=>{tab=t;formMode=m;render()},[tab,mode]);
-  for(const [field,value] of Object.entries(values))await page.locator(`#${form} [name="${field}"]`).fill(value);
+  for(const [field,value] of Object.entries(values)){
+   if(form==='reminderForm'&&field==='nextDate'){
+    const [year,month,day]=value.split('-');await page.locator('#reminderFormDay').fill(String(+day));await page.locator('#reminderFormMonth').selectOption(String(+month));await page.locator('#reminderFormYear').fill(year);
+   }else await page.locator(`#${form} [name="${field}"]`).fill(value);
+  }
   await page.locator(`#${form} button`).last().click();
   assert.equal(await page.evaluate(k=>data[k].length,key),before+1,form);
  }
@@ -177,7 +181,7 @@ try {
  for(let n=0;n<65;n++)await page.evaluate(i=>petCareUI.open(i%2?'health':'home'),n);
  await page.evaluate(()=>petCareNavigation.back({canGoBack:false}));assert.equal(await page.evaluate(()=>petCareNavigation.getState().depth),0);assert.equal(await page.evaluate(()=>tab),'home');
  await page.evaluate(()=>petCareUI.open('family'));assert.equal(await page.locator('#familyConnect').isVisible(),true);assert.equal(await page.evaluate(()=>petCareSharedFamily.status().connected),false);await page.evaluate(()=>petCareUI.open('settings'));
- const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.10');assert.equal(support.chatPushActive,false);
+ const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,JSON.parse(await readFile('package.json','utf8')).version);assert.equal(support.chatPushActive,false);
  assert.ok(!JSON.stringify(support).includes('private-png-bytes'));assert.ok(!Object.hasOwn(support,'pets'));
  await openSection('diagnostics');assert.match(await page.locator('#content').innerText(),/Pomoć|Help/);
  console.log('PASS forward/back through section history and support report without pet or chat data.');

@@ -77,6 +77,18 @@ try {
  await openSection('feeding');await page.screenshot({path:'android-test-evidence/store-feeding.png'});
  await openSection('memories');await page.screenshot({path:'android-test-evidence/store-memories.png'});
  await page.locator('#settingsShortcut').click();await page.screenshot({path:'android-test-evidence/store-settings.png'});
+ await page.evaluate(()=>{tab='reminders';formMode='reminder';render();});
+ await page.locator('#reminderForm [name=title]').fill('PETCARE_EASY_TIME_UI');
+ await page.getByRole('button',{name:'In 10 min',exact:true}).click();
+ const selected=await page.locator('#reminderForm').evaluate(f=>({date:f.elements.nextDate.value,time:f.elements.time.value}));
+ await page.locator('#reminderForm button').last().click();
+ await page.waitForFunction(()=>window.petCareNative.lastSchedule?.state==='scheduled');
+ assert.deepEqual(await page.evaluate(()=>({date:data.reminders.at(-1).nextDate,time:data.reminders.at(-1).time})),selected);
+ const easyPending=await page.evaluate(()=>Capacitor.Plugins.LocalNotifications.getPending());
+ assert.ok(easyPending.notifications.some(n=>n.body?.includes('PETCARE_EASY_TIME_UI')||n.title?.includes('PETCARE_EASY_TIME_UI')),'Reminder from numeric form did not reach native scheduler');
+ await page.evaluate(()=>{tab='reminders';formMode='reminder';render();});
+ await page.locator('#reminderForm').screenshot({path:'android-test-evidence/reminder-date-time.png'});
+ console.log('PASS Android numeric date/time form and quick shortcut save the selected local date/time and reach native notification scheduling.');
  const result=await page.evaluate(async()=>{
   const api=window.Capacitor?.Plugins?.LocalNotifications;
   if(!api)throw Error('Native notifications plugin missing');
