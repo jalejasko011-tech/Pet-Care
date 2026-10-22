@@ -29,3 +29,9 @@ Do not infer a cause from the delay alone or mark this case passed based on CI.
 Version 1.8.12 (23) adds easier reminder date/time input and initializes it on
 restored screens. That release is not a confirmed fix for this phone's delay.
 Next diagnostic fact: read Exact alarms in More → Help and checks on the phone.
+
+The owner subsequently read Exact alarms as `denied`. This is a confirmed
+configuration problem, not proof of the sole cause of the delay. Grant access
+through Android settings and repeat the reboot/first-unlock/relock timing test.
+Version 1.8.13 improves the permission entry point and honest timing feedback;
+physical timing acceptance remains failed until a new observed result.

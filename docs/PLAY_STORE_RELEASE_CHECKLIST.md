@@ -1,6 +1,6 @@
-# Google Play owner submission — 1.8.10
+# Google Play owner submission — 1.8.13
 
-**Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 21, target API 36. Developer display name must match the owner’s current Console choice; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.
+**Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 24, target API 36. Developer display name must match the owner’s current Console choice; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.
 
 ## Prepared materials
 
@@ -34,10 +34,10 @@ Official references checked 16 October 2026:
 - https://support.google.com/googleplay/android-developer/answer/10787469
 - https://support.google.com/googleplay/android-developer/answer/9876937
 
-## Current owner handoff (21 October 2026)
+## Current owner handoff (22 October 2026)
 
-Use `RELEASE_1_8_10.md`, `SHARED_FAMILY_ACTIVATION_SR.md` and
-`PHONE_ACCEPTANCE_1_8_4_SR.md` for this build. Shared family care is active with
+Use `RELEASE_1_8_13.md`, `SHARED_FAMILY_ACTIVATION_SR.md` and
+`PHONE_ACCEPTANCE_TEST.md` for this build. Shared family care is active with
 production browser acceptance;
 production moderator authorization and physical-phone acceptance remain pending.
 Earlier 1.8.3 Console-answer documents are historical and must be reviewed against
