@@ -147,12 +147,12 @@ jobs:
         run: |
           python - <<'PYTHON'
           import json, os, pathlib, shutil, subprocess, zipfile
-          root=pathlib.Path('release/Play-Submission-1.8.13')
+          root=pathlib.Path('release/Play-Submission-1.8.14')
           root.mkdir(parents=True)
-          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.13.aab')
+          shutil.copy('release/Pet-Care-World-release.aab',root/'Pet-Care-World-1.8.14.aab')
           shutil.copytree('store-listing',root/'store-listing')
           (root/'docs').mkdir()
-          for name in ['RELEASE_1_8_STATUS.md','PHONE_ACCEPTANCE_TEST.md','PLAY_STORE_RELEASE_CHECKLIST.md','GOOGLE_PLAY_DATA_SAFETY_REVIEW.md','CHAT_PUSH_ACTIVATION.md','CHAT_MEDIA_ACTIVATION.md','LANGUAGES.md','PHONE_ACCEPTANCE_1_8_4_SR.md','RELEASE_1_8_4.md','FAMILY_MODE_REQUIREMENTS_SR.md','RELEASE_1_8_5.md','RELEASE_1_8_6.md','RELEASE_1_8_7.md','RELEASE_1_8_8.md','RELEASE_1_8_9.md','RELEASE_1_8_10.md','RELEASE_1_8_11.md','RELEASE_1_8_12.md','RELEASE_1_8_13.md','PLAY_READINESS_2026_10_21_SR.md','SHARED_FAMILY_ACTIVATION_SR.md']:
+          for name in ['RELEASE_1_8_STATUS.md','PHONE_ACCEPTANCE_TEST.md','PLAY_STORE_RELEASE_CHECKLIST.md','GOOGLE_PLAY_DATA_SAFETY_REVIEW.md','CHAT_PUSH_ACTIVATION.md','CHAT_MEDIA_ACTIVATION.md','LANGUAGES.md','PHONE_ACCEPTANCE_1_8_4_SR.md','RELEASE_1_8_4.md','FAMILY_MODE_REQUIREMENTS_SR.md','RELEASE_1_8_5.md','RELEASE_1_8_6.md','RELEASE_1_8_7.md','RELEASE_1_8_8.md','RELEASE_1_8_9.md','RELEASE_1_8_10.md','RELEASE_1_8_11.md','RELEASE_1_8_12.md','RELEASE_1_8_14.md','PLAY_READINESS_2026_10_21_SR.md','SHARED_FAMILY_ACTIVATION_SR.md']:
               shutil.copy(pathlib.Path('docs')/name,root/'docs'/name)
           repo=os.environ['GITHUB_REPOSITORY']
           runs=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs?head_sha={os.environ["GITHUB_SHA"]}&per_page=30']))['workflow_runs']
@@ -167,25 +167,25 @@ jobs:
                   entry=next(i for i in z.infolist() if pathlib.PurePosixPath(i.filename).name==name)
                   if entry.file_size>8*1024*1024: raise SystemExit('Screenshot exceeds size limit')
                   (shots/name).write_bytes(z.read(entry))
-          (root/'BUILD.txt').write_text(f'Version 1.8.13 (24)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
-          shutil.make_archive('release/Play-Submission-1.8.13','zip','release','Play-Submission-1.8.13')
+          (root/'BUILD.txt').write_text(f'Version 1.8.14 (25)\nCommit {os.environ["GITHUB_SHA"]}\nQuality run {run["id"]}\nPhysical phone testing and Play publication pending.\n')
+          shutil.make_archive('release/Play-Submission-1.8.14','zip','release','Play-Submission-1.8.14')
           PYTHON
-      - name: Publish version 1.8.13 downloads
+      - name: Publish version 1.8.14 downloads
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view v1.8.13 >/dev/null 2>&1; then
-            echo 'Version 1.8.13 already exists; preserving existing release.'
+          if gh release view v1.8.14 >/dev/null 2>&1; then
+            echo 'Version 1.8.14 already exists; preserving existing release.'
             exit 0
           fi
-          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.13.apk
+          cp release/Pet-Care-World-release.apk release/Pet-Care-World-1.8.14.apk
           cd release
-          zip Pet-Care-World-1.8.13.zip Pet-Care-World-1.8.13.apk
-          sha256sum Pet-Care-World-1.8.13.apk Pet-Care-World-1.8.13.zip Play-Submission-1.8.13.zip > SHA256SUMS.txt
+          zip Pet-Care-World-1.8.14.zip Pet-Care-World-1.8.14.apk
+          sha256sum Pet-Care-World-1.8.14.apk Pet-Care-World-1.8.14.zip Play-Submission-1.8.14.zip > SHA256SUMS.txt
           cat > release-notes.txt <<'EOF'
-          Pet Care World 1.8.13 fixes the exact-alarm permission panel in Help and checks and other reminder screens, refreshes access after native resume without losing a form draft, and reschedules future reminders after the owner grants access in Android settings. Saving now distinguishes approximate timing, unknown access and the 64-reminder limit instead of implying precise delivery. Easier numeric date/time entry remains included.
+          Pet Care World 1.8.14 adds verified-email adult password access for online chat and family sharing, private family reports and local author blocking. Removing a member revokes every active invitation for that family. Local care opens without an entry code or birthday. Exact-alarm settings and numeric date/time entry remain included.
           The owner reported a reminder arriving 3–4 minutes late after reboot and then confirmed exact-alarm access was denied. Device timing acceptance has not passed; the user must grant access and repeat the physical-phone test. Production Firebase moderator access remains unconfirmed. Cloud media and background chat push remain disabled pending owner backend configuration and billing. This download is not a Google Play approval or registration.
           Install over the existing app without uninstalling it. ZIP is an alternative download containing the same APK.
           EOF
-          gh release create v1.8.13 Pet-Care-World-1.8.13.apk Pet-Care-World-1.8.13.zip Play-Submission-1.8.13.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.13 — exact reminder access and timing feedback' --notes-file release-notes.txt
+          gh release create v1.8.14 Pet-Care-World-1.8.14.apk Pet-Care-World-1.8.14.zip Play-Submission-1.8.14.zip SHA256SUMS.txt --target "$GITHUB_SHA" --title 'Pet Care World 1.8.14 — adult online access and family reports' --notes-file release-notes.txt

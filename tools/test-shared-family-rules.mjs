@@ -5,7 +5,8 @@ import {doc,setDoc,getDoc,getDocs,collection,query,where,limit,writeBatch,server
 const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile(process.env.PETCARE_RULES_FILE||'firestore.rules','utf8')}});
 const pet={name:'Shared test dog',type:'Dog',breed:'Mixed',sex:'',birth:''},hash='a'.repeat(64),fid='sharedRulesFamily';
 try{
- const owner=env.authenticatedContext('familyOwner').firestore(),alice=env.authenticatedContext('familyAlice').firestore(),bob=env.authenticatedContext('familyBob').firestore(),outsider=env.authenticatedContext('familyOutsider').firestore(),anon=env.unauthenticatedContext().firestore();
+ const ctx=uid=>env.authenticatedContext(uid,process.env.PETCARE_ADULT_RULES?{email_verified:true,firebase:{sign_in_provider:'password'}}:{});
+ const owner=ctx('familyOwner').firestore(),alice=ctx('familyAlice').firestore(),bob=ctx('familyBob').firestore(),outsider=ctx('familyOutsider').firestore(),anon=env.unauthenticatedContext().firestore();
  const member=(name,role='member',inviteHash=hash)=>({name,role,inviteHash,joinedAt:serverTimestamp()});
  const group={name:'Test family',pet,ownerId:'familyOwner',active:true,createdAt:serverTimestamp()};
  await assertFails(setDoc(doc(owner,'petFamilies','noOwnerMember'),group));
@@ -29,6 +30,19 @@ try{
  const entry={kind:'meal',text:'Meal given once',authorId:'familyAlice',authorName:'Alice',createdAt:serverTimestamp()};
  await assertSucceeds(setDoc(doc(alice,'petFamilies',fid,'entries','meal'),entry));
  await assertSucceeds(getDocs(query(collection(bob,'petFamilies',fid,'entries'),limit(100))));
+ if(process.env.PETCARE_ADULT_RULES){
+  const report=doc(bob,'petFamilies',fid,'reports','familyBob_meal'),payload={reporterId:'familyBob',entryId:'meal',reason:'Review this entry',createdAt:serverTimestamp()};
+  await assertSucceeds(setDoc(report,payload));await assertSucceeds(getDoc(doc(owner,'petFamilies',fid,'reports','familyBob_meal')));
+  await assertFails(getDoc(doc(alice,'petFamilies',fid,'reports','familyBob_meal')));
+  await assertFails(getDocs(query(collection(bob,'petFamilies',fid,'reports'),limit(100))));
+  await assertFails(updateDoc(report,{reason:'Altered'}));await assertFails(deleteDoc(report));
+  await assertFails(setDoc(doc(bob,'petFamilies',fid,'reports','forged'),{...payload,reporterId:'familyAlice'}));
+  await assertFails(setDoc(doc(bob,'petFamilies',fid,'reports','familyBob_missing'),{...payload,entryId:'missing'}));
+  await assertSucceeds(deleteDoc(doc(owner,'petFamilies',fid,'reports','familyBob_meal')));
+  const unverified=env.authenticatedContext('familyOwner',{email_verified:false,firebase:{sign_in_provider:'password'}}).firestore(),anonymous=env.authenticatedContext('familyOwner',{firebase:{sign_in_provider:'anonymous'}}).firestore();
+  await assertFails(getDoc(doc(unverified,'petFamilies',fid)));await assertFails(getDoc(doc(anonymous,'petFamilies',fid)));
+ }
+
  await assertFails(setDoc(doc(bob,'petFamilies',fid,'entries','forged'),entry));
  await assertFails(getDoc(doc(outsider,'petFamilies',fid,'entries','meal')));
  await assertFails(updateDoc(doc(alice,'petFamilies',fid,'entries','meal'),{text:'Rewrite'}));
@@ -42,7 +56,7 @@ try{
   await assertFails(join(outsider,'familyOutsider','Outsider',key));
  }
  // With one invitation slot left, concurrent joins cannot exceed its cap.
- const last='d'.repeat(64),dana=env.authenticatedContext('familyDana').firestore();
+ const last='d'.repeat(64),dana=ctx('familyDana').firestore();
  await env.withSecurityRulesDisabled(async c=>setDoc(doc(c.firestore(),'petFamilyInvites',last),{...invitation,createdAt:Timestamp.now(),uses:9}));
  const outcomes=await Promise.allSettled([join(outsider,'familyOutsider','Outsider',last),join(dana,'familyDana','Dana',last)]);assert.equal(outcomes.filter(x=>x.status==='fulfilled').length,1);assert.equal((await getDoc(doc(owner,'petFamilyInvites',last))).data().uses,10);
  await assertFails(deleteDoc(doc(owner,'petFamilies',fid,'members','familyOwner')));

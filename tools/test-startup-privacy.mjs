@@ -25,7 +25,7 @@ async function check({checked=true,open=true,valid=true,pause=null}={}){
  const elements={chatNickname:{value:'Tester'},chatJoin:{reportValidity:()=>valid,querySelector:()=>({disabled:false})},chatConsent:{checked},chatConnected:{}};
  const c={dialog:{open},joining:false,generation:0,user:null,auth:{currentUser:null,authStateReady:()=>step('authReady')},db:{},
   el:id=>elements[id],status(){},tr:(s,e)=>e,sdk:()=>step('sdk'),
-  window:{petCareFamily:{requireStandard:()=>true},dispatchEvent(){}},Event:class {},localStorage:{setItem(){calls.push('remember');}},paint(){},
+  window:{petCareAdult:{authorize:async()=>{await step('signIn');return {uid:'tester'};}},petCareFamily:{requireStandard:()=>true},dispatchEvent(){}},Event:class {},localStorage:{setItem(){calls.push('remember');}},paint(){},
   api:{signInAnonymously:async()=>{await step('signIn');return {user:{uid:'tester'}};},
    doc:()=>({}),getDoc:async()=>{await step('profileRead');return {exists:()=>false};},
    setDoc:async()=>step('profileWrite'),Timestamp:{fromMillis:x=>x},

@@ -9,9 +9,9 @@ import {initializeApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 if(!process.env.FIRESTORE_EMULATOR_HOST||!process.env.FIREBASE_AUTH_EMULATOR_HOST)throw Error('Emulators required');
-const baseline=await readFile('firebase/production-family-candidate.rules','utf8'),rules=await readFile('firebase/production-review-current.rules','utf8'),preview=await readFile('firestore.rules','utf8');
+const baseline=await readFile('firebase/production-family-candidate.rules','utf8'),rules=await readFile(process.env.PETCARE_REVIEW_RULES||'firebase/production-review-current.rules','utf8'),preview=await readFile('firestore.rules','utf8');
 const audit=preview.slice(preview.indexOf('    match /moderationAudit/'),preview.indexOf('    // Family profiles'));
-assert.equal(rules,baseline.replace('    // Family profiles',()=>audit+'    // Family profiles'),'Only the existing moderator audit block may be added');
+if(!process.env.PETCARE_REVIEW_RULES)assert.equal(rules,baseline.replace('    // Family profiles',()=>audit+'    // Family profiles'),'Only the existing moderator audit block may be added');
 const env=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules}});
 await env.clearFirestore();
 const root=resolve('www'),server=createServer(async(req,res)=>{try{
@@ -22,7 +22,8 @@ const root=resolve('www'),server=createServer(async(req,res)=>{try{
 }catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch();
 try{
- const mod=env.authenticatedContext('reviewMod',{moderator:true}).firestore(),ordinary=env.authenticatedContext('ordinary').firestore(),anon=env.unauthenticatedContext().firestore();
+ const adultClaims=process.env.PETCARE_REVIEW_RULES?{email_verified:true,firebase:{sign_in_provider:'password'}}:{};
+ const mod=env.authenticatedContext('reviewMod',{...adultClaims,moderator:true}).firestore(),ordinary=env.authenticatedContext('ordinary',adultClaims).firestore(),anon=env.unauthenticatedContext().firestore();
  const entry={actorId:'reviewMod',action:'ban',targetId:'fictional-author',createdAt:serverTimestamp()};
  await assertSucceeds(setDoc(doc(mod,'moderationAudit','permission-test'),entry));
  await assertFails(setDoc(doc(ordinary,'moderationAudit','forbidden'),{...entry,actorId:'ordinary'}));

@@ -1,3 +1,5 @@
+> Candidate 1.8.14 (25): see RELEASE_1_8_14.md for the exact activation order and remaining gates. Production currently remains on the previous rules/client until coordinated activation. A tested candidate is not a deployed revision. Historical notes below do not establish Play readiness.
+
 # Google Play owner submission — 1.8.13
 
 **Prepared, not submitted or approved.** Android package `com.petcare.companion`, code 24, target API 36. Developer display name must match the owner’s current Console choice; support jalejasko011@gmail.com. Release signing uses the existing certificate; keep upload/app-signing arrangements consistent with existing installs.

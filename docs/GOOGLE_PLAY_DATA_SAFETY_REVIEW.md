@@ -1,3 +1,12 @@
+> Candidate 1.8.14 (25), 22 October 2026. Not deployed or submitted.
+> Verified adult email/password access replaces new anonymous online joins.
+> Email addresses and account IDs are processed by Firebase Authentication for optional account management.
+> Family reports contain reporter ID, entry ID, reason and time and are private to that family's owner.
+> Blocking hides a family author's name/entries on the device; it does not stop their reading.
+> Chat-profile deletion retains the email account; full account/server-data deletion is requested in-app or on delete-chat.html and handled by the owner after verification.
+> Adult action does not prove age or parental relationship. Review actual audience, deletion operations, current Firebase disclosures and Console categories before submission.
+> Historical notes below describe older builds and are not current Console answers.
+
 > Current build: 1.8.13 (24). See RELEASE_1_8_13.md. The local app opens
 > without a code, birthday, year or account; no entry age is collected or inferred.
 > Family view is optional and is not a parental lock. Public chat separately asks
