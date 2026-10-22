@@ -1,6 +1,21 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {resolve} from 'node:path';
+// A real emulator-issued token must change provider without changing the legacy UID.
+import {initializeApp} from 'firebase/app';
+import {getAuth,connectAuthEmulator,signInAnonymously,linkWithCredential,EmailAuthProvider,reauthenticateWithCredential,getIdTokenResult,signOut} from 'firebase/auth';
+import {initializeApp as adminApp} from 'firebase-admin/app';
+import {getAuth as adminAuth} from 'firebase-admin/auth';
+if(!process.env.FIREBASE_AUTH_EMULATOR_HOST)throw Error('Auth emulator required');
+const migrationAuth=getAuth(initializeApp({apiKey:'demo-key',projectId:'demo-petcare-chat'},'legacy-adult-migration'));
+connectAuthEmulator(migrationAuth,'http://'+process.env.FIREBASE_AUTH_EMULATOR_HOST,{disableWarnings:true});
+const legacy=(await signInAnonymously(migrationAuth)).user,originalUid=legacy.uid;
+const migrationCredential=EmailAuthProvider.credential('legacy-migration-'+Date.now()+'@example.test','EmulatorOnlyPassword42');
+await linkWithCredential(legacy,migrationCredential);assert.equal(legacy.uid,originalUid);
+await adminAuth(adminApp({projectId:'demo-petcare-chat'})).updateUser(originalUid,{emailVerified:true});
+await reauthenticateWithCredential(legacy,migrationCredential);const migratedToken=await getIdTokenResult(legacy,true);
+assert.equal(migratedToken.claims.email_verified,true);assert.equal(migratedToken.claims.firebase.sign_in_provider,'password');assert.equal(legacy.uid,originalUid);await signOut(migrationAuth);
+console.log('PASS real Auth emulator: legacy UID retained and verified-password token issued after linking and reauthentication.');
 const browser=await chromium.launch();
 try{
  const page=await browser.newPage({viewport:{width:320,height:740}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
