@@ -181,7 +181,7 @@ try {
  for(let n=0;n<65;n++)await page.evaluate(i=>petCareUI.open(i%2?'health':'home'),n);
  await page.evaluate(()=>petCareNavigation.back({canGoBack:false}));assert.equal(await page.evaluate(()=>petCareNavigation.getState().depth),0);assert.equal(await page.evaluate(()=>tab),'home');
  await page.evaluate(()=>petCareUI.open('family'));assert.equal(await page.locator('#familyConnect').isVisible(),true);assert.equal(await page.evaluate(()=>petCareSharedFamily.status().connected),false);await page.evaluate(()=>petCareUI.open('settings'));
- const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,'1.8.10');assert.equal(support.chatPushActive,false);
+ const support=await page.evaluate(()=>petCareDiagnostics.inspect());assert.equal(support.version,JSON.parse(await readFile('package.json','utf8')).version);assert.equal(support.chatPushActive,false);
  assert.ok(!JSON.stringify(support).includes('private-png-bytes'));assert.ok(!Object.hasOwn(support,'pets'));
  await openSection('diagnostics');assert.match(await page.locator('#content').innerText(),/Pomoć|Help/);
  console.log('PASS forward/back through section history and support report without pet or chat data.');
