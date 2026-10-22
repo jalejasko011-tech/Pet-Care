@@ -53,6 +53,8 @@ try {
  await open('routine');assert.equal(await page.locator('#routineFormHour').inputValue(),'09');assert.equal(await page.locator('#routineFormMinute').inputValue(),'00');
  await page.locator('#routineForm [name=title]').fill('Walk');await page.getByRole('button',{name:'Za 10 min',exact:true}).click();await page.locator('#routineForm button').last().click();
  assert.equal(await page.evaluate(()=>data.reminders.at(-1).time),'00:05');assert.equal(await page.evaluate(()=>data.reminders.at(-1).nextDate),'2029-01-01');
+ await page.reload();await page.locator('#routineFormDay').waitFor();
+ await open();await page.reload();await page.locator('#reminderFormYear').waitFor();
  assert.deepEqual(errors,[]);await context.close();
- console.log('PASS reminder and routine numeric entry, leap-day/time validation, optional time, language draft preservation, local-midnight/year rollover shortcuts, calendar, persistence and 320–768px SR/EN/RTL targets.');
+ console.log('PASS reminder and routine numeric entry, leap-day/time validation, optional time, language draft preservation, local-midnight/year rollover shortcuts, calendar, persistence, restored-form reload and 320–768px SR/EN/RTL targets.');
 }finally{await browser.close();await new Promise(r=>server.close(r));}
