@@ -31,8 +31,8 @@ try{
  await assertFails(setDoc(doc(mod,'moderationAudit','invalid-action'),{...entry,action:'grant-admin'}));
  await assertFails(getDoc(doc(ordinary,'moderationAudit','permission-test')));await assertFails(getDoc(doc(anon,'moderationAudit','permission-test')));
  await assertFails(updateDoc(doc(mod,'moderationAudit','permission-test'),{targetId:'altered'}));await assertFails(deleteDoc(doc(mod,'moderationAudit','permission-test')));
- const app=initializeApp({projectId:'demo-petcare-chat'}),admin=getFirestore(app),auth=getAuth(app),password='EmulatorOnlyPassword42';
- const owner=await auth.createUser({email:'review-moderator@example.test',password,emailVerified:true}),normal=await auth.createUser({email:'review-ordinary@example.test',password,emailVerified:true});
+ const app=initializeApp({projectId:'demo-petcare-chat'}),admin=getFirestore(app),auth=getAuth(app),password='EmulatorOnlyPassword42',fixture=process.env.PETCARE_REVIEW_RULES?'adult':'legacy';
+ const owner=await auth.createUser({email:`review-moderator-${fixture}@example.test`,password,emailVerified:true}),normal=await auth.createUser({email:`review-ordinary-${fixture}@example.test`,password,emailVerified:true});
  await auth.setCustomUserClaims(owner.uid,{moderator:true});
  await admin.doc('chatProfiles/reviewAuthor').set({nickname:'Fictional author',banned:false,lastSent:new Date(0),sequence:1});
  await admin.doc('globalMessages/reviewAuthor_1').set({authorId:'reviewAuthor',nickname:'Fictional author',text:'Fictional reported text',createdAt:new Date()});
