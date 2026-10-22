@@ -130,7 +130,11 @@ try {
  ]){
   const before=await page.evaluate(k=>data[k].length,key);
   await page.evaluate(([t,m])=>{tab=t;formMode=m;render()},[tab,mode]);
-  for(const [field,value] of Object.entries(values))await page.locator(`#${form} [name="${field}"]`).fill(value);
+  for(const [field,value] of Object.entries(values)){
+   if(form==='reminderForm'&&field==='nextDate'){
+    const [year,month,day]=value.split('-');await page.locator('#reminderFormDay').fill(String(+day));await page.locator('#reminderFormMonth').selectOption(String(+month));await page.locator('#reminderFormYear').fill(year);
+   }else await page.locator(`#${form} [name="${field}"]`).fill(value);
+  }
   await page.locator(`#${form} button`).last().click();
   assert.equal(await page.evaluate(k=>data[k].length,key),before+1,form);
  }

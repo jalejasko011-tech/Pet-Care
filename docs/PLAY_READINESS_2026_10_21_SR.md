@@ -37,7 +37,8 @@ korenski preview koji uključuje neaktivirane medije/push.
 2. Moderacija: potrebno je potvrditi odraslu odgovornu osobu/nalog i serversku
    ulogu, kao i stvarni rad prijave, uklanjanja i zabrane sa aktivnim pravilima.
    Automatski test sa izmišljenim nalogom nije ljudski moderator.
-3. Pravi telefon: potvrditi zakazan podsetnik posle zatvaranja aplikacije,
+3. Pravi telefon: vlasnik je potvrdio da je kratki test obaveštenja stigao.
+   To je potvrda tog pojedinačnog testa; još potvrditi zakazan podsetnik posle zatvaranja aplikacije,
    ugašenog ekrana i ponovnog pokretanja na korisnikovom uređaju. Emulator nije
    dokaz ponašanja konkretnog HONOR/Huawei uređaja i njegovih podešavanja baterije.
 4. Play nalog: registracija, stvarni identitet i jednokratnih 25 USD su radnje
