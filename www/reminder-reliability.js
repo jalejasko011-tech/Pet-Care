@@ -6,8 +6,10 @@
  const sync=native.sync.bind(native);
  native.lastSchedule={state:'unknown'};
  native.sync=(reminders,pets)=>{
+  if(window.petCareRecords?.isBlocked?.()){native.lastSchedule={state:'error',reason:'recordRecovery'};return Promise.reject(Error('Record recovery required before changing alarms'));}
   const snapshot=JSON.parse(JSON.stringify({reminders,pets}));
   const run=queue.catch(()=>{}).then(async()=>{
+   if(window.petCareRecords?.isBlocked?.())throw Error('Record recovery required before changing alarms');
    native.lastSchedule={state:'scheduling'};
    try{const before=await native.exactStatus(),result=await sync(snapshot.reminders,snapshot.pets),after=await native.exactStatus();const precision=!result.native||!result.permission||!result.count?'notScheduled':before==='granted'&&after==='granted'?'exact':after==='denied'?'approximate':after==='notApplicable'?'notApplicable':'unknown';const outcome={...result,exactAlarms:after,precision};native.lastSchedule={state:result.native&&result.permission&&result.count>0?'scheduled':'notScheduled',...outcome};return outcome;}
    catch(error){native.lastSchedule={state:'error'};throw error;}

@@ -2,14 +2,14 @@
 (() => {
  'use strict';
  const key='petcare_parent_control_v1',sessionKey='petcare_parent_session_v1';
- const read=()=>{try{return JSON.parse(localStorage.getItem(key)||'{}');}catch{return {};}};
+ const read=()=>{try{const x=JSON.parse(localStorage.getItem(key)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{};}catch{return {};}};
  let state=read();
  // Older entry gates must not block an update. No PIN, birthday or age is stored.
- if(state.v!==3){localStorage.removeItem(key);state={};}sessionStorage.removeItem(sessionKey);
+ if(state.v!==3){try{localStorage.removeItem(key);}catch{}state={};}try{sessionStorage.removeItem(sessionKey);}catch{}
  const isStandard=()=>state.mode!=='family';
  const mark=()=>document.documentElement.dataset.petcareMode=isStandard()?'standard':'family';mark();
  const requireStandard=()=>{if(isStandard())return true;window.dispatchEvent(new Event('petcare:full-view-required'));return false;};
- const setMode=mode=>{state={v:3,mode};localStorage.setItem(key,JSON.stringify(state));mark();window.dispatchEvent(new Event(mode==='family'?'petcare:family-locked':'petcare:full-view-opened'));};
+ const setMode=mode=>{const next={v:3,mode};localStorage.setItem(key,JSON.stringify(next));state=next;mark();window.dispatchEvent(new Event(mode==='family'?'petcare:family-locked':'petcare:full-view-opened'));};
  const open=()=>setMode('standard'),lock=()=>setMode('family');
  window.petCareFamily=Object.freeze({isStandard,requireStandard,open,lock});
  // Defense in depth for third-party fetches and browser/system sharing. SDK imports

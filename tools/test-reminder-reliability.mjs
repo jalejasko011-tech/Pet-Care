@@ -27,3 +27,5 @@ const following=ns.sync([],[]);await new Promise(setImmediate);assert.equal(star
 unblock();await following;assert.equal(started,2);assert.equal(ns.lastSchedule.state,'notScheduled','An empty schedule must not claim a phone notification exists');
 const before=calls.length;context.document.readyState='loading';listeners.visibilitychange();await new Promise(setImmediate);assert.equal(calls.length,before,'Do not schedule through a bridge while the document is loading');
 console.log('PASS serialized sync, immutable snapshots, native-failure recovery, stalled-bridge deadline without overlap, startup readiness and exact-alarm access.');
+
+const beforeRecovery=calls.length;context.window.petCareRecords={isBlocked:()=>true};await assert.rejects(n.sync([],[]),/Record recovery/);assert.equal(calls.length,beforeRecovery,'Unreadable records must not cancel existing native alarms');context.window.petCareRecords.isBlocked=()=>false;
