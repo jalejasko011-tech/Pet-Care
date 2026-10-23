@@ -43,6 +43,6 @@ try{
  await page.locator('#refreshHeld').click();await page.locator('#heldMessages').getByText('Another https://example.org',{exact:true}).waitFor();
  await page.getByRole('button',{name:'Reject message',exact:true}).first().click();await page.locator('#heldMessages').getByText('No held messages.',{exact:true}).waitFor();
  assert.equal((await db.doc('globalMessages/'+rejected.id).get()).exists,false);assert.equal((await db.doc('chatSubmissions/'+rejected.id).get()).data().status,'rejected');
- await page.locator('#moderatorSignOut').click();assert.equal(await page.locator('#automaticModeration').isVisible(),false);assert.equal(await page.locator('#heldMessages').textContent(),'');assert.deepEqual(errors,[]);
+ await page.locator('#moderatorSignOut').click();await page.locator('#moderatorLogin').waitFor();assert.equal(await page.locator('#automaticModeration').isVisible(),false);assert.equal(await page.locator('#heldMessages').textContent(),'');assert.deepEqual(errors,[]);
  console.log('PASS actual mobile moderator UI: verified role, private queue, approval/publication, rejection/nonpublication, sign-out clearing; local callable adapter with token verification.');
 }finally{await browser.close();await new Promise(r=>server.close(r));await auth.deleteUser(mod.uid);await env.cleanup();}
