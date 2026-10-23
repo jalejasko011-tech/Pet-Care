@@ -1,6 +1,6 @@
 # Pet Care World 1.8.15 (26) — pregled 23. oktobra 2026.
 
-Izvor ispravki lokalne evidencije je spojen u PR 30 i objavljen za web. Potpisana gradnja je u završnoj proveri. Paket `com.petcare.companion`, target API 36, isti postojeći potpis. Produkcijska pravila, naplata i instalirani APK nisu promenjeni samom pripremom izvora.
+Izvor ispravki lokalne evidencije je spojen u PR 30 i objavljen za web. Potpisana gradnja, provera sertifikata/sadržaja i objava su završene; potvrde su u `ACTIVATION_1_8_15_SR.md`. Paket `com.petcare.companion`, target API 36, isti postojeći potpis. Produkcijska pravila, naplata i instalirani APK nisu promenjeni samom pripremom izvora.
 
 ## Potvrđeni i ispravljeni propusti
 

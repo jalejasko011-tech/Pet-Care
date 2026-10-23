@@ -1,6 +1,6 @@
 # Play Store — izdanje 1.8.15 (26)
 
-23. oktobar 2026. Paket `com.petcare.companion`, target API 36. Web izvor je objavljen, a potpisana gradnja APK/AAB sa postojećim sertifikatom je u završnoj proveri. Ovo nije Play registracija, popunjen Console upitnik ili Google odobrenje.
+23. oktobar 2026. Paket `com.petcare.companion`, target API 36. Web izvor i potpisani APK/AAB su objavljeni i provereni postojećim sertifikatom. Potvrde: `ACTIVATION_1_8_15_SR.md`. Ovo nije Play registracija, popunjen Console upitnik ili Google odobrenje.
 
 ## Završene tehničke izmene
 
