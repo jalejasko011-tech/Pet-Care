@@ -1,4 +1,4 @@
-> Aktuelno potpisano izdanje: 1.8.14 (25), 22. oktobar 2026. Web i nova Firebase pravila su aktivni, obe CI provere i potpisana gradnja su uspešne. Tačan dokaz je u ACTIVATION_1_8_14_SR.md. Vlasnik je 23. oktobra potvrdio da alarmi rade i posle restarta njegovog telefona; ta provera je završena. Pravi moderatorski nalog, ostale nepotvrđene provere uređaja i Play postupak još nisu završeni. Starije beleške ispod su istorijske.
+> Aktuelni web izvor i kandidat potpisanog izdanja: 1.8.15 (26), 23. oktobar 2026. Ispravljeni su čuvanje pri punoj memoriji, uvoz evidencije i oporavak. CI 39965555530 je prošao, uključujući ponovljeni Android posao; potpisani fajlovi su u završnoj proveri. Vlasnik je potvrdio alarm i posle restarta telefona. Firebase pravila ostaju potvrđena revizija od 22. oktobra. Automatska moderacija je pripremljena u PR 29, ali nije aktivirana. Pravi moderatorski nalog, deklaracije i Play postupak ostaju otvoreni. Starije beleške ispod su istorijske.
 
 > Historical 1.8.0 status. For the current build use `RELEASE_1_8_10.md`, `SHARED_FAMILY_ACTIVATION_SR.md` and `PHONE_ACCEPTANCE_1_8_4_SR.md`.
 

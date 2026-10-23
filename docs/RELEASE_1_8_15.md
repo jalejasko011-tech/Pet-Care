@@ -1,6 +1,6 @@
 # Pet Care World 1.8.15 (26) — pregled 23. oktobra 2026.
 
-Kandidat za ispravke lokalne evidencije. Paket `com.petcare.companion`, target API 36, isti postojeći potpis. Produkcijska pravila, naplata i instalirani APK nisu promenjeni samom pripremom izvora.
+Izvor ispravki lokalne evidencije je spojen u PR 30 i objavljen za web. Potpisana gradnja je u završnoj proveri. Paket `com.petcare.companion`, target API 36, isti postojeći potpis. Produkcijska pravila, naplata i instalirani APK nisu promenjeni samom pripremom izvora.
 
 ## Potvrđeni i ispravljeni propusti
 
@@ -14,12 +14,14 @@ Obrađeni su profili, zdravlje, beleške/težina, ishrana, troškovi, podsetnici
 
 ## Provere i granice nalaza
 
-Lokalno prolaze regresioni testovi za čuvanje/uvoz, sintaksu i privatnost, redosled zakazivanja i porodični režim. Novi browser test proverava stvarni obrazac pri punoj memoriji, ponavljanje, restart stranice, odbijanje oblikovane JSON kopije i oporavak nečitljivog originala validnom kopijom. Puni postojeći browser/Android/Firebase CI treba da potvrdi kandidat pre spajanja. Lokalni Chromium nije bio dostupan; njegov download je vraćao neispravan ZIP, pa lokalni browser prolaz nije izmišljen.
+Lokalno prolaze regresioni testovi za čuvanje/uvoz, sintaksu i privatnost, redosled zakazivanja i porodični režim. Novi browser test proverava stvarni obrazac pri punoj memoriji, ponavljanje, restart stranice, odbijanje oblikovane JSON kopije i oporavak nečitljivog originala validnom kopijom. Puni postojeći browser/Android/Firebase CI `39965555530` je prošao pre spajanja. Prvi Android posao je zastao pri povezivanju testnog WebView-a posle zabeleženog pada emulatorovog pokretača; snimak je pokazao zdrav početni ekran. Ponovljen je samo neuspešan posao, koji je zatim prošao i iste tvrdnje nisu preskočene. Lokalni Chromium nije bio dostupan; njegov download je vraćao neispravan ZIP, pa lokalni browser prolaz nije izmišljen.
 
 Alarmi su prema potvrdi vlasnika 23. oktobra radili i posle restarta njegovog telefona. Ta provera je završena i ne traži se ponavljanje bez novog problema. Automatizovani emulator test nije predstavljen kao fizički telefon.
 
 Ovo nije tvrdnja da aplikacija nema nijednu grešku. Posebno ostaju stvarni moderatorski nalog i operativna moderacija/brisanje, provera ciljane publike i Data safety, Play nalog i stvarni Play test/postupak. Automatska moderacija je odvojeno pripremljena u PR 29; nije aktivirana ovim izdanjem. Za njene serverske funkcije potreban je vlasnikov izbor Blaze obračuna i živa provera. Ne aktivirati širi korenski Firebase preview, medije, push ili novu naplatu bez dogovora.
 
 Pregledani su i tokovi rezervnih kopija/oporavka, lokalnih medija, navigacije/nazad, jezika, opt-in mrežnog pristupa, porodičnih prava/pozivnica, prijava/blokiranja, moderatorskih prava/evidencije i Android konfiguracije. Postojeći testovi pokrivaju te tokove; stvarna Play Console pitanja, odgovorna osoba i ponašanje svakog fizičkog uređaja nisu zamenjeni CI-jem.
+
+U postupku objavljivanja ispravljene su i zastarele oznake 1.8.14: nazivi paketa, tag i BUILD zapis sada se izvode iz stvarne verzije aplikacije, a beleške iz odgovarajućeg dokumenta izdanja. Postojeća objavljena izdanja se ne prepisuju.
 
 Tehnički izvori: https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem ; https://developer.android.com/develop/background-work/services/alarms

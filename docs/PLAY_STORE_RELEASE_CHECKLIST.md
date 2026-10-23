@@ -1,8 +1,10 @@
-# Play Store — izdanje 1.8.14 (25)
+# Play Store — izdanje 1.8.15 (26)
 
-22. oktobar 2026. Paket `com.petcare.companion`, target API 36. Potpisani APK i AAB su pripremljeni postojećim sertifikatom. Ovo nije Play registracija, popunjen Console upitnik ili Google odobrenje.
+23. oktobar 2026. Paket `com.petcare.companion`, target API 36. Web izvor je objavljen, a potpisana gradnja APK/AAB sa postojećim sertifikatom je u završnoj proveri. Ovo nije Play registracija, popunjen Console upitnik ili Google odobrenje.
 
 ## Završene tehničke izmene
+
+- Ispravljeno lažno čuvanje pri punoj memoriji, validacija lokalne evidencije/uvoza i oporavak nečitljivog originala bez otkazivanja postojećih alarma. Detalji: `RELEASE_1_8_15.md`.
 
 - Direktan ulazak u lokalnu aplikaciju bez koda i korisničkog datuma rođenja; jednostavniji unos datuma/vremena podsetnika.
 - Vidljiva kontrola preciznih alarma, stvarni status granted/denied i jasno obaveštenje o približnom rasporedu; bez lažnog obećanja precizne isporuke.
@@ -13,7 +15,7 @@
 - Serverski zaštićene moderatorske uloge, neizmenjiva evidencija i testovi prijave, uklanjanja, zabrane i vraćanja pristupa u emulatoru.
 - Odvojeno brisanje chat profila i zahtev za potpuno brisanje email naloga/povezanih podataka. Politika i javna stranica za brisanje ažurirane.
 
-Tačan status aktivacije i testova je u `ACTIVATION_1_8_14_SR.md`. Aktivna produkcijska pravila određuje `firebase/ACTIVE_RULES.md`; širi korenski preview se ne objavljuje.
+Aktuelne ispravke i provere su u `RELEASE_1_8_15.md`; prethodna Firebase aktivacija je u `ACTIVATION_1_8_14_SR.md`. Aktivna produkcijska pravila određuje `firebase/ACTIVE_RULES.md`; širi korenski preview se ne objavljuje.
 
 ## Potvrda vlasnika — 23. oktobar 2026.
 
