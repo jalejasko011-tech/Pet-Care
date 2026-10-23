@@ -1,6 +1,6 @@
-// Public Firebase client configuration. No administrator credentials.
+// Public chat retired in 1.8.16. Firebase configuration is retained for optional family sharing.
 window.PETCARE_CHAT_CONFIG = {
-  "enabled": true,
+  "enabled": false,
   "media": {"enabled": false, "bucket": ""},
   "push": {"enabled": false},
   "firebase": {

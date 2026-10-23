@@ -9,16 +9,13 @@ OBROCI I PODSETNICI
 Izaberite vreme hranjenja, zabeležite obrok i pogledajte koliko je prošlo od poslednjeg unosa. Opcioni podsetnik na razmak između obroka koristi vaš raspored. Aplikacija prati unose, ne otkriva da li je ljubimac zaista jeo i ne propisuje medicinsku ishranu. Android obaveštenja zahtevaju dozvolu i poštuju podešavanja zvuka i baterije telefona.
 
 PRIVATNE USPOMENE
-Pišite priče o svakom ljubimcu i čuvajte slike i snimke u privatnoj zbirci na uređaju. Birajte pozadine aplikacije i chata, veličinu teksta, zvuk i vibraciju.
+Pišite priče o svakom ljubimcu i čuvajte slike i snimke u privatnoj zbirci na uređaju. Birajte pozadinu aplikacije, veličinu teksta, zvuk i vibraciju.
 
 VAŠI PODACI OSTAJU KOD VAS
 Privatni profili, zdravlje, Galerija i Uspomene čuvaju se na uređaju, osim osnovnog profila koji izričito podelite kroz porodičnu brigu. U Podešavanjima napravite potpunu ZIP kopiju i vratite je dodavanjem novih zapisa, uz zadržavanje postojećih. Kopija uključuje medije u okviru prikazanih ograničenja veličine i nije šifrovana. Sačuvajte je privatno, izvan podataka aplikacije.
 
 OPCIONA ZAJEDNIČKA PORODIČNA BRIGA
-Povežite više osoba sa istim ljubimcem privatnim pozivnim kodom. Delite osnovni profil i nove obroke, šetnje, tretmane i beleške u zajedničkom dnevniku. Vlasnik upravlja članovima i pozivnicama. Kod važi do 24 sata za do 10 novih članova. Privatna istorija, slike i lokalni alarmi ne sinhronizuju se automatski. Identitet je vezan za uređaj; brisanje podataka aplikacije može izgubiti pristup vlasnika. Zajednički podaci nisu deo lokalne kopije. Novi tekst povezivanja dostupan je na srpskom i engleskom, sa engleskim prikazom na drugim jezicima.
-
-OPCIONI JAVNI CHAT ZA PUNOLETNE
-Prečicom Chat pristupate javnom tekstualnom razgovoru uz nadimak, prihvatanje pravila i potvrdu da imate najmanje 18 godina. Poruke vide učesnici. Možete prijaviti sadržaj, blokirati autore, obrisati svoje poruke ili identitet vezan za uređaj. Potreban je internet. Chat nema šifrovanje od kraja do kraja. Slanje slika i snimaka i chat obaveštenja u pozadini nisu aktivirani u ovoj verziji.
+Povežite više osoba sa istim ljubimcem privatnim pozivnim kodom. Delite osnovni profil i nove obroke, šetnje, tretmane i beleške u zajedničkom dnevniku. Vlasnik upravlja članovima i pozivnicama. Kod važi do 24 sata za do 10 novih članova. Privatna istorija, slike i lokalni alarmi ne sinhronizuju se automatski. Povezivanje uključuje odrasla osoba potvrđenim emailom i lozinkom. Nalog se vraća preko emaila; čuvajte lozinku od dece. Zajednički podaci nisu deo lokalne kopije. Novi tekst povezivanja dostupan je na srpskom i engleskom, sa engleskim prikazom na drugim jezicima.
 
 JASNO PRIKAZANE MOGUĆNOSTI
 Pretrage prodavnica i veterinara otvaraju spoljne servise. Nacrti objava i ranije porodične liste ostaju lokalni. Zajednički javni feed nije dostupan. Ova verzija nema ugrađenu naplatu ni plaćenu pretplatu.

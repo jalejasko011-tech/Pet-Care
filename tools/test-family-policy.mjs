@@ -23,7 +23,6 @@ f.p.lock();assert.equal(load(f.local).p.isStandard(),false,'Explicit family sele
 for(const v of [1,2]){const local=storage(),session=storage();local.setItem('petcare_parent_control_v1',JSON.stringify({v,locked:true,salt:'old',hash:'old'}));session.setItem('petcare_parent_session_v1',Date.now()+900000);const migrated=load(local,session);assert.equal(migrated.p.isStandard(),true);assert.deepEqual(local.dump(),[]);assert.deepEqual(session.dump(),[]);}
 // Backup allowlist must never restore parent credentials or an unlocked session.
 const backup=readFileSync('www/complete-backup.js','utf8');assert.ok(!backup.includes('petcare_parent_control_v1'));assert.ok(!backup.includes('petcare_parent_session_v1'));
-assert.match(readFileSync('www/global-chat.js','utf8'),/async function sdk\(\)\{\s*if\(!window\.petCareFamily\?\.requireStandard\(\)\)/);
 console.log('PASS immediate entry, optional family gates, legacy migration and backup exclusion.');
 
 for(const raw of ['null','42','[]','\"broken\"']){const local=storage();local.setItem('petcare_parent_control_v1',raw);assert.equal(load(local).p.isStandard(),true,'Malformed mode metadata must not block app startup');}

@@ -45,11 +45,6 @@ try{
   await assertSucceeds(deleteDoc(doc(owner,'petFamilies',fid,'reports','familyBob_member_familyAlice')));
   const unverified=env.authenticatedContext('familyOwner',{email_verified:false,firebase:{sign_in_provider:'password'}}).firestore(),anonymous=env.authenticatedContext('familyOwner',{firebase:{sign_in_provider:'anonymous'}}).firestore();
   await assertFails(getDoc(doc(unverified,'petFamilies',fid)));await assertFails(getDoc(doc(anonymous,'petFamilies',fid)));
-  const profile={nickname:'Adult',banned:false,lastSent:Timestamp.fromMillis(0),sequence:0};
-  await assertFails(setDoc(doc(unverified,'chatProfiles','familyOwner'),profile));await assertFails(setDoc(doc(anonymous,'chatProfiles','familyOwner'),profile));
-  await assertSucceeds(setDoc(doc(owner,'chatProfiles','familyOwner'),profile));
-  await assertFails(getDocs(query(collection(unverified,'globalMessages'),limit(100))));
-  await assertSucceeds(getDocs(query(collection(owner,'globalMessages'),limit(100))));
 
  }
 

@@ -1,3 +1,13 @@
+# Public chat removal — 23 October 2026
+
+Candidate: **production-no-public-chat.rules**. This keeps the adult password/email gate and all family blocks byte-exact, denies all client access to retired public-chat collections and retains default denial for unused media/push paths.
+
+**Not yet published:** the Firebase Console session was signed out on 23 October. A fresh signed-in Console publication and full-text comparison remain required. Do not claim old installed chat clients are blocked until that is verified. No data has been deleted, billing has not been upgraded, and no Functions have been deployed.
+
+Deploy only this candidate using `firebase.no-chat.json` (Firestore only), or paste the entire candidate into Firestore Rules and publish. Do not deploy root `firestore.rules` or an automatic moderation branch.
+
+## Previously verified production revision
+
 # Aktivna Firestore pravila — 22. oktobar 2026.
 
 Projekat: `pet-care-world`. Aktivni fajl: **production-adult-access.rules**.
