@@ -1,0 +1,9 @@
+{
+  "firestore": {
+    "rules": "firebase/production-auto-moderation.rules"
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs22"
+  }
+}

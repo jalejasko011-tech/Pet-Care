@@ -11,3 +11,7 @@ Tekst ima 14.776 znakova; bez belina 11.943, FNV-1a `8af0d049`. Fajl sadrži sam
 Moderatorska uloga može biti serverski claim ili dokument `moderators/UID` sa boolean poljem `active: true`. Klijentske izmene tih dokumenata su zabranjene svim korisnicima, uključujući moderatore. Dokument dodeljuje isključivo administrator projekta kroz Firebase konzolu/Admin SDK. Potvrđen email i password prijava zahtevaju se i moderatoru.
 
 Ne dodeljivati ulogu postojećem anonimnom nalogu. Identifikovati tačan pravi nalog odraslog vlasnika u Authentication, potvrditi da je email njegov, dodeliti dokument tom UID-u, pa proveriti stvarni moderatorski pristup i postupke. Trenutna aktivacija pravila ne znači da je stvarni moderator već napravljen ili potvrđen.
+
+## Pripremljena automatska moderacija — 23. oktobar 2026.
+
+`production-auto-moderation.rules` je novi kandidat, **nije aktivan**. Zahteva prethodno objavljene `submitChatMessage` i `reviewChatSubmission` funkcije i novi klijent. Ne objavljivati ga samostalno: direktno slanje iz starijih APK izdanja tada bi bilo odbijeno. Plan i status su u `docs/AUTO_MODERATION_SR.md`.

@@ -26,3 +26,11 @@ export const notifyChatText=onDocumentCreated({...options,document:'globalMessag
 export const notifyChatMedia=onObjectFinalized({...options,bucket:'pet-care-world.firebasestorage.app'},async event=>{const parts=event.data.name?.split('/');if(parts?.length!==3||parts[0]!=='chatMedia')return;const message=(await db.doc('globalMessages/'+parts[2]).get()).data();if(ownMedia(message,parts[2])===event.data.name&&Number(event.data.size)===message.media.size)await fanout(parts[2],message);});
 export const removeChatMedia=onDocumentDeleted({...options,document:'globalMessages/{messageId}'},async event=>{const path=ownMedia(event.data?.data(),event.params.messageId);if(path)await getStorage().bucket('pet-care-world.firebasestorage.app').file(path).delete({ignoreNotFound:true});});
 export const removeChatSubscription=onDocumentDeleted({...options,document:'chatProfiles/{uid}'},async event=>{await db.doc('chatPushSubscriptions/'+event.params.uid).delete();});
+
+// Deploy these callables explicitly; optional media/push triggers remain separate.
+import {onCall} from 'firebase-functions/v2/https';
+import {moderationService} from './moderation-service.js';
+const moderation=moderationService(db);
+const moderationOptions={region:'europe-west1',maxInstances:2,minInstances:0,concurrency:1,timeoutSeconds:30,memory:'256MiB'};
+export const submitChatMessage=onCall(moderationOptions,request=>moderation.submit(request));
+export const reviewChatSubmission=onCall(moderationOptions,request=>moderation.review(request));

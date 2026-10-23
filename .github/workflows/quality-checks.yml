@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Check web app
-        run: python tools/build-locales.py && git diff --exit-code -- www/locale-data.js && npm run check:web && node tools/test-startup-privacy.mjs && node tools/test-family-policy.mjs && node tools/test-reminder-reliability.mjs && node tools/test-backup-codec.mjs && node tools/test-push-policy.mjs && node tools/test-push-client.mjs
+        run: python tools/build-locales.py && git diff --exit-code -- www/locale-data.js && npm run check:web && node tools/test-startup-privacy.mjs && node tools/test-family-policy.mjs && node tools/test-reminder-reliability.mjs && node tools/test-backup-codec.mjs && node tools/test-push-policy.mjs && node tools/test-push-client.mjs && node tools/test-auto-moderation-policy.mjs && node tools/test-auto-moderation-client.mjs
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high && npm --prefix functions ci && npm --prefix functions audit --omit=dev --audit-level=moderate && node tools/test-functions-config.mjs
       - name: Install browser test runtime
@@ -102,8 +102,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - name: Install Firebase test tools
-        run: npm install --no-save firebase@12.4.0 firebase-admin@14.5.0 @firebase/rules-unit-testing@5 firebase-tools@14 playwright
+        run: npm install --no-save firebase@12.4.0 firebase-admin@14.5.0 @firebase/rules-unit-testing@5 firebase-tools@14 playwright && npm --prefix functions ci
       - name: Install chat browser
         run: npx playwright install --with-deps chromium
       - name: Verify global chat access and moderation rules
-        run: npx firebase emulators:exec --only auth,firestore,storage --project demo-petcare-chat 'node tools/test-chat-rules.mjs && node tools/test-shared-family-rules.mjs && node tools/test-chat-browser.mjs && node tools/test-adult-access-browser.mjs && node tools/test-shared-family-browser.mjs && node tools/test-production-family-rules.mjs && PETCARE_RULES_FILE=firebase/production-family-candidate.rules node tools/test-shared-family-rules.mjs && node tools/test-production-moderation.mjs && PETCARE_RULES_FILE=firebase/production-review-current.rules node tools/test-shared-family-rules.mjs && PETCARE_ADULT_RULES=1 PETCARE_RULES_FILE=firebase/production-adult-access.rules node tools/test-shared-family-rules.mjs && PETCARE_REVIEW_RULES=firebase/production-adult-access.rules node tools/test-production-moderation.mjs' || { tail -n 160 firestore-debug.log; exit 1; }
+        run: npx firebase emulators:exec --only auth,firestore,storage --project demo-petcare-chat 'node tools/test-chat-rules.mjs && node tools/test-shared-family-rules.mjs && node tools/test-chat-browser.mjs && node tools/test-adult-access-browser.mjs && node tools/test-shared-family-browser.mjs && node tools/test-production-family-rules.mjs && PETCARE_RULES_FILE=firebase/production-family-candidate.rules node tools/test-shared-family-rules.mjs && node tools/test-production-moderation.mjs && PETCARE_RULES_FILE=firebase/production-review-current.rules node tools/test-shared-family-rules.mjs && PETCARE_ADULT_RULES=1 PETCARE_RULES_FILE=firebase/production-adult-access.rules node tools/test-shared-family-rules.mjs && PETCARE_REVIEW_RULES=firebase/production-adult-access.rules node tools/test-production-moderation.mjs && node tools/test-auto-moderation.mjs' || { tail -n 160 firestore-debug.log; exit 1; }
