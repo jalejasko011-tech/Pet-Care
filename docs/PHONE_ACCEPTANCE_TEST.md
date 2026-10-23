@@ -1,4 +1,4 @@
-# Physical-phone acceptance record — partial owner observations; acceptance incomplete
+# Physical-phone acceptance record — reminder/reboot passed; other checks incomplete
 
 Run on at least one current Google Play Android device and the owner's Huawei/Honor device. Record manufacturer, model, Android version, app version, date, tester and each result. Do not record pet data or credentials in a public issue.
 
@@ -10,7 +10,7 @@ Run on at least one current Google Play Android device and the owner's Huawei/Ho
 - Text chat: two identities, consent, report/block/unblock, deletion. Media and FCM tests only after approved backend activation, following CHAT_PUSH_ACTIVATION.md.
 - Install through Play internal testing and check pre-launch report, Android permissions, app links, privacy/deletion URLs and Play Protect result. Do not turn off device protection.
 
-Result: PENDING physical devices and Play Console access. Automated emulator results are recorded separately in GitHub Actions, never filled in here as physical passes.
+Current result (23 October 2026): owner-reported reminder and reboot acceptance PASSED on the owner’s phone. Other physical-device checklist items and Play Console checks remain pending unless separately recorded. Automated emulator results are recorded separately in GitHub Actions, never filled in here as physical passes.
 
 ## Owner phone observations — 18 October 2026
 
@@ -35,3 +35,12 @@ configuration problem, not proof of the sole cause of the delay. Grant access
 through Android settings and repeat the reboot/first-unlock/relock timing test.
 Version 1.8.13 improves the permission entry point and honest timing feedback;
 physical timing acceptance remains failed until a new observed result.
+
+## Owner phone observations — 23 October 2026
+
+The owner confirmed: “alrmi su u redu proverio sam i posle restarta”.
+Result: PASSED owner-reported alarms, including operation after a phone reboot.
+This supersedes the earlier failed reminder/reboot acceptance as the current
+status; no repeat is required without a new problem. The owner did not report
+the installed version, exact permission readout, model or measured timing for
+this run. No unrelated checklist item is marked passed by this observation.

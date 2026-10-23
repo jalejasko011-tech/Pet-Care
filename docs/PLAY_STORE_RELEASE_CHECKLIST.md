@@ -15,14 +15,17 @@
 
 Tačan status aktivacije i testova je u `ACTIVATION_1_8_14_SR.md`. Aktivna produkcijska pravila određuje `firebase/ACTIVE_RULES.md`; širi korenski preview se ne objavljuje.
 
+## Potvrda vlasnika — 23. oktobar 2026.
+
+Vlasnik je potvrdio da alarmi rade i posle restarta telefona. Test podsetnika/restarta je prošao prema njegovoj proveri; raniji neuspešan rezultat je istorijski.
+
 ## Pre javne Play objave
 
 1. Vlasnik lično pravi i potvrđuje pravi moderatorski Firebase nalog. Administrator dodeljuje njegovu ulogu, zatim se proveravaju stvarna prijava, uklanjanje, zabrana, podrška i obrada zahteva za brisanje. Izmišljeni emulator nalog nije ljudski moderator.
-2. Na konkretnom HONOR/Huawei telefonu lično uključiti Alarms & reminders, proveriti `granted`, pa ponoviti podsetnik za 10 minuta uz restart, prvo otključavanje i ponovno zaključavanje. Raniji test sa kašnjenjem 3–4 minuta i statusom `denied` nije prošao; emulator ga ne zamenjuje.
-3. Vlasnik registruje Play nalog, potvrđuje identitet i prihvata ugovor/plaćanje. Jednokratna naknada je 25 USD; finansijske i ugovorne radnje ne obavlja agent.
-4. Proveriti stvarnu ciljnu publiku, kontrolu društvenih funkcija, sadržaj, privatnost i Data safety prema `GOOGLE_PLAY_DATA_SAFETY_REVIEW.md`. Nema tvrdnje da potvrda emaila dokazuje uzrast ili roditeljstvo. Nema automatskog izbora svih uzrasta.
-5. Pripremiti interni test. Ako se na novi lični nalog primenjuje uslov za produkcijski pristup, sprovesti zatvoreni test sa najmanje 12 stvarnih kontinuirano prijavljenih testera tokom 14 dana, pa podneti zahtev za pristup produkciji.
-6. Vlasnik proverava i šalje konkretnu Console prijavu i izdanje. Google odlučuje o odobrenju. Ranija istorijska dokumenta i CI nisu dokaz ispunjenih ličnih ili vremenskih uslova.
+2. Vlasnik registruje Play nalog, potvrđuje identitet i prihvata ugovor/plaćanje. Jednokratna naknada je 25 USD; finansijske i ugovorne radnje ne obavlja agent.
+3. Proveriti stvarnu ciljnu publiku, kontrolu društvenih funkcija, sadržaj, privatnost i Data safety prema `GOOGLE_PLAY_DATA_SAFETY_REVIEW.md`. Nema tvrdnje da potvrda emaila dokazuje uzrast ili roditeljstvo. Nema automatskog izbora svih uzrasta.
+4. Pripremiti interni test. Ako se na novi lični nalog primenjuje uslov za produkcijski pristup, sprovesti zatvoreni test sa najmanje 12 stvarnih kontinuirano prijavljenih testera tokom 14 dana, pa podneti zahtev za pristup produkciji.
+5. Vlasnik proverava i šalje konkretnu Console prijavu i izdanje. Google odlučuje o odobrenju. Ranija istorijska dokumenta i CI nisu dokaz ispunjenih ličnih ili vremenskih uslova.
 
 Mediji i pozadinski chat push ostaju neaktivni u ovom izdanju. Ne unositi ih u listing kao uključene funkcije i ne uključivati naplatu/provizionisanje bez posebne odluke vlasnika.
 

@@ -2,6 +2,10 @@
 
 Zabeleženo 2026-10-22T15:19:59+00:00. Ovo nije Play registracija, predaja ili Google odobrenje.
 
+## Ažuriranje — 23. oktobar 2026.
+
+Vlasnik je potvrdio da alarmi rade i posle restarta telefona. Provera podsetnika/restarta je prošla prema njegovoj potvrdi i više nije otvorena prepreka. Raniji nalaz kašnjenja ispod ostaje istorijski. Ostale operativne i Play provere nisu time potvrđene.
+
 ## Potvrđeno
 
 - PR 28 je spojen; aplikacioni izvor izdanja je `951ab3a08facee51f7ea7dd9c892153a5b04f79a`.

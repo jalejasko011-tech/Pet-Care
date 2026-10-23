@@ -1,6 +1,6 @@
 # Release 1.8.14 (25) — 22 October 2026
 
-The matching web source and Firebase rules are deployed. Signed APK/AAB 1.8.14 (25) are built and verified with the existing release certificate. This is not a completed Play submission or physical-phone acceptance. See ACTIVATION_1_8_14_SR.md for exact evidence.
+The matching web source and Firebase rules are deployed. Signed APK/AAB 1.8.14 (25) are built and verified with the existing release certificate. This is not a completed Play submission. The owner confirmed reminder/reboot acceptance on 23 October 2026; other physical-device checks are not implied. See ACTIVATION_1_8_14_SR.md for exact evidence.
 
 - Local care still opens without an account, entry PIN, birthday or year.
 - Optional chat/family connections require adult acknowledgement, email/password and verified email; every connection requires password entry. No new anonymous sign-in is performed. Email verification is an adult action, not proof of age or parenthood.
@@ -20,7 +20,7 @@ The complete tested `firebase/production-adult-access.rules` was published in th
 
 A verified real adult Firebase moderator account, administrator assignment and live human moderation/deletion operations remain unconfirmed. Google project-owner sign-in is separate from an application moderator account. Clients cannot self-assign roles. No service-account key was created or exported.
 
-The owner's phone reported exact alarms `denied` and a reboot reminder 3–4 minutes late. Enable Alarms & reminders personally, verify `granted`, repeat the 10-minute/reboot/unlock/relock test. Do not mark the OEM test passed from an emulator.
+Reminder/reboot gate closed on 23 October 2026: the owner confirmed alarms work, including after a phone reboot. This physical-phone observation supersedes the earlier delayed reminder and `denied` report as the current acceptance result. No repeat is required without a new problem; unrelated device checks remain separate.
 
 Play identity/registration/payment, actual declarations and any required 12-tester/14-day closed test remain owner tasks. No Play approval is claimed.
 
