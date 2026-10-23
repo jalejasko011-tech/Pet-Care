@@ -21,7 +21,7 @@ Use the repository's [Releases page](https://github.com/jalejasko011-tech/Pet-Ca
 
 ## Prepared cloud features
 
-Public chat, its push registration and moderator sign-in are retired. No Blaze upgrade or Functions deployment is part of this release. The family-only Firestore candidate is `firebase/production-no-public-chat.rules`; production publication still requires a working signed-in Firebase Console session. Until publication is verified, older installed versions may access the previous public-chat rules. Do not deploy root preview rules or revive automatic moderation PR #29. Historical activation documents are not the current plan.
+Public chat, its push registration and moderator sign-in are retired. No Blaze upgrade or Functions deployment is part of this release. The family-only Firestore candidate is `firebase/production-no-public-chat.rules`; the owner’s Console screenshot confirms a new active revision with the expected public-chat denial blocks at 19:51 on 23 October. Full-text comparison and an authenticated production-client test remain unverified because the screenshot shows only the beginning. Do not deploy root preview rules or revive automatic moderation PR #29. Historical activation documents are not the current plan.
 
 Pet records remain on device. Community posts and family lists are local drafts/lists, not a shared social feed or synchronized family account. Shop/vet/AI links open external services. Integrated purchases, advertising, paid Premium and embedded AI are not active; they are optional future work, not requirements to use the organizer.
 

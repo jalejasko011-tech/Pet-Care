@@ -1,3 +1,15 @@
+## Potvrda korisnikove konzole — 23. oktobar 2026. u 19:51
+
+Snimak `Screenshot 2026-10-23 195106.png` prikazuje aktivnu, zvezdicom označenu reviziju od danas u 19:51 po vremenu konzole. Vidljivi početak odgovara testiranom fajlu `firebase/production-no-public-chat.rules`: potvrđen email/password uslov, pet blokova `allow read, write: if false` za chatProfiles, globalMessages, chatReports, moderationAudit i moderators, pa početak familyOwner funkcije. Prethodna revizija je juče u 17:07.
+
+**Potvrđena je objava revizije sa vidljivim zabranama javnog chata.** Snimak ne obuhvata ceo tekst: potpuno byte-exact poređenje aktivnih pravila, provera svih preklapajućih allow uslova i produkcijski test prijavljenog klijenta još nisu urađeni. Ne predstavljati ovu potvrdu kao potpunu Firebase reviziju. Testirani lokalni kandidat i svi porodični/emulatorski testovi ostaju isti. Fotografija od 19:43 prikazuje Spark plan i No cost ($0/month); nije uključena nova naplata ili plaćeni backend.
+
+Pristup kroz zvanični dodatak i kontrolisani preglednik i dalje nije potvrđen. Istorijski podaci nisu obrisani. Izvor aplikacije, APK/AAB i prethodno provereni potpisi nisu menjani.
+
+---
+
+## Prethodno zabeležen nalaz
+
 # Aktuelno — 1.8.16 (27), bez javnog chata
 
 23. oktobar 2026: vlasnik je odložio javni chat kako bi izbegao njegove troškove i operativnu moderaciju. Chat, njegovi push/mediji i moderatorska prijava uklonjeni su iz ovog izdanja. Automatsku moderaciju ne aktivirati, Blaze ne uključivati. Porodična briga, potvrđen email/lozinka, prijava/blokiranje članova i kontrola vlasnika ostaju.
