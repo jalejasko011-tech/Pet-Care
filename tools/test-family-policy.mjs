@@ -25,3 +25,5 @@ for(const v of [1,2]){const local=storage(),session=storage();local.setItem('pet
 const backup=readFileSync('www/complete-backup.js','utf8');assert.ok(!backup.includes('petcare_parent_control_v1'));assert.ok(!backup.includes('petcare_parent_session_v1'));
 assert.match(readFileSync('www/global-chat.js','utf8'),/async function sdk\(\)\{\s*if\(!window\.petCareFamily\?\.requireStandard\(\)\)/);
 console.log('PASS immediate entry, optional family gates, legacy migration and backup exclusion.');
+
+for(const raw of ['null','42','[]','\"broken\"']){const local=storage();local.setItem('petcare_parent_control_v1',raw);assert.equal(load(local).p.isStandard(),true,'Malformed mode metadata must not block app startup');}

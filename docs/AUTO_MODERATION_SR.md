@@ -1,6 +1,6 @@
 # Automatska moderacija teksta — priprema 23. oktobra 2026.
 
-Status: implementacija i lokalni testovi; produkcijska aktivacija čeka Blaze obračun i stvarni moderatorski nalog. Aktivna pravila i instalirani APK 1.8.14 nisu promenjeni. Ovo nije završena Play objava.
+Status: implementacija i lokalni testovi; produkcijska aktivacija čeka Blaze obračun i stvarni moderatorski nalog. Aktivna pravila nisu promenjena. Automatska moderacija nije uključena ni u izdanju 1.8.15. Ovo nije završena Play objava.
 
 ## Šta je dodato
 
@@ -23,7 +23,7 @@ Status: implementacija i lokalni testovi; produkcijska aktivacija čeka Blaze ob
 
 Lokalno prolaze policy/client testovi, učitavanje ograničenih Functions v2 izvozâ, web sintaksa/privatnost i npm audit produkcijskih serverskih zavisnosti (0 nalaza). Firestore emulator proverava stvarne transakcije i pravila: privatnost reda, zabranu direktnog objavljivanja, lažne identitete/podatke, zabranu pristupa, ponavljanje, trku pri slanju, odobravanje/odbijanje, brisanje i privatnu evidenciju.
 
-CI dodatno pokreće postojeće browser/Android/Firebase regresije. Lokalni browser testovi nisu mogli da krenu jer Chromium nije instaliran, a preuzimanje je vraćalo neispravnu ZIP arhivu; to nije označeno kao prolaz. Živi callable transport i stvarni nalog proveravaju se posle aktivacije.
+Potpuna CI provera 39963227505 prošla je za ovu moderaciju, uključujući stvarni mobilni moderatorski ekran preko lokalnog callable adaptera sa proverenim emulator tokenima, postojeće browser/Android/Firebase regresije i restart emulatora. Predlog je usklađen sa ispravkama lokalne evidencije iz 1.8.15; nova zajednička CI provera prati ovu reviziju. Lokalni browser testovi nisu mogli da krenu jer Chromium nije instaliran, a preuzimanje je vraćalo neispravnu ZIP arhivu; to nije označeno kao prolaz. Živi callable transport i stvarni nalog proveravaju se posle aktivacije.
 
 ## Konkretna aktivacija posle odluke vlasnika o obračunu
 
