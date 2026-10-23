@@ -6,4 +6,4 @@ The new Firestore candidate denies retired chat access for ordinary, anonymous a
 
 Family sharing still uses Firebase Auth/Firestore quotas and contains closed-group user content. Its reporting, blocking, owner controls, deletion and accurate audience/Data Safety review remain relevant. Removing public chat does not mean Play approval, completion of owner registration or approval for all ages. Owner already confirmed physical phone alarms after reboot on 23 October.
 
-Validation: local syntax, record safety, startup privacy, family mode, reminder scheduling and backup tests; browser/Android and family/rules CI must pass before release publication.
+Validation: local syntax, record safety, startup privacy, family mode, reminder scheduling and backup tests passed. PR #31 quality run 39990823275 passed all three jobs: mobile browser/dependency audit, Android 36 WebView/native backup/closed-process and reboot alarms, and retired-chat denial/adult access/three-caregiver family rules and browser flows. Source merged as 7d75418d6e8e513784c5f1610aa0c37b4466feaf. Exact-source release quality and signed-package verification are recorded in ACTIVATION_1_8_16_SR.md.
