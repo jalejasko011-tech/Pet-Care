@@ -9,7 +9,7 @@ MEALS AND REMINDERS
 Choose your pet's feeding times, record a meal and see how long it has been since your last entry. Optional interval alerts use the schedule you choose. The app records your entries; it cannot detect whether an animal actually ate or recommend a medical diet. Android reminders require notification permission and follow the phone's sound and battery settings.
 
 PRIVATE MEMORIES
-Write stories about each pet and keep photos and videos in a private collection on your device. Personalize the app and chat with wallpaper presets, readable text sizes, notification sounds and vibration settings.
+Write stories about each pet and keep photos and videos in a private collection on your device. Personalize the app with wallpaper presets, readable text sizes, notification sounds and vibration settings.
 
 YOUR RECORDS STAY WITH YOU
 Private pet profiles, health entries, Gallery and Memories stay on your device unless you explicitly share the basic profile through family care. Create a complete ZIP backup in Settings and restore it by merging records without replacing existing entries. The unencrypted backup includes media within the displayed size limits; keep it in a private, safe location outside app storage.

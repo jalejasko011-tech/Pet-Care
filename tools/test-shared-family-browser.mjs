@@ -10,7 +10,7 @@ import {resolve,extname} from 'node:path';
 const rulesEnv=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile('firebase/production-no-public-chat.rules','utf8')}});
 const root=resolve('www'),server=createServer(async(req,res)=>{try{
  const pathname=new URL(req.url,'http://localhost').pathname;
- if(pathname==='/chat-config.js'){res.setHeader('Content-Type','text/javascript');res.end('window.PETCARE_CHAT_CONFIG='+JSON.stringify({enabled:true,media:{enabled:false},push:{enabled:false},firebase:{apiKey:'demo-key',projectId:'demo-petcare-chat',appId:'1:123:web:familytest'}})+';window.PETCARE_FAMILY_CONFIG={enabled:true,emulators:true};');return;}
+ if(pathname==='/chat-config.js'){res.setHeader('Content-Type','text/javascript');res.end('window.PETCARE_CHAT_CONFIG='+JSON.stringify({enabled:false,media:{enabled:false},push:{enabled:false},firebase:{apiKey:'demo-key',projectId:'demo-petcare-chat',appId:'1:123:web:familytest'}})+';window.PETCARE_FAMILY_CONFIG={enabled:true,emulators:true};');return;}
  const path=resolve(root,'.'+(pathname==='/'?'/index.html':pathname));if(!path.startsWith(root+'/')){res.writeHead(403).end();return;}
  res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream');res.end(await readFile(path));
 }catch{res.writeHead(404).end();}});
