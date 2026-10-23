@@ -43,17 +43,13 @@ try {
  assert.equal(await page.locator('.top #exportBtn').count(),0);
  assert.equal(await page.locator('[data-action=addpet]').innerText(),'＋ Add pet');
  assert.equal(await page.locator('#settingsShortcut').evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('[data-action=addpet]').evaluate(e=>getComputedStyle(e).backgroundColor));
- assert.equal(await page.locator('#globalChatShortcut').evaluate(e=>getComputedStyle(e).position),'fixed');
- await page.locator('#globalChatShortcut').click();
- await page.locator('#globalChatDialog').waitFor({state:'visible'});
- assert.equal(await page.locator('#chatUnavailable').count(),0);
- assert.equal(await page.locator('#chatJoin').count(),1);
- assert.equal(await page.locator('#chatConnected').isVisible(),false);
- await page.locator('#globalChatDialog button').first().click();
- assert.equal(await page.locator('#globalChatDialog').isVisible(),false);
- assert.equal(network.length,0,'Chat before consent must make no external requests');
-
- await page.locator('#globalChatShortcut').click();await page.screenshot({path:'chat-wallpaper-preview.png',fullPage:true});await page.locator('#globalChatDialog button').first().click();
+ assert.equal(await page.locator('#globalChatShortcut,#globalChatDialog').count(),0);
+ assert.equal(network.length,0,'Local startup must make no external requests');
+ for(const path of ['moderator.html','chat-privacy.html','delete-chat.html']){
+  const retired=await context.newPage();await retired.goto(`http://127.0.0.1:${server.address().port}/${path}`);
+  assert.equal(await retired.locator('input,script,form').count(),0);
+  assert.match(await retired.locator('body').innerText(),/Public chat has been removed/);await retired.close();
+ }
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  // Browser Back/Forward follows in-app routes and closes one form at a time.
  await page.locator('#settingsShortcut').click();await page.locator('#settingsMemories').click();
@@ -88,9 +84,9 @@ try {
  // Independent, persistent appearance preferences and the selected notification sound.
  await page.locator('#settingsShortcut').click();
  assert.equal(await page.locator('#settingSound').inputValue(),'cheerful');
- await page.selectOption('#appWallpaper','ocean');await page.selectOption('#chatWallpaper','lavender');
+ await page.selectOption('#appWallpaper','ocean');assert.equal(await page.locator('#chatWallpaper,#wallpaperStrength').count(),0);
  await page.selectOption('#settingFont','large');await page.reload();await page.locator('#settingsShortcut').click();
- assert.equal(await page.locator('#appWallpaper').inputValue(),'ocean');assert.equal(await page.locator('#chatWallpaper').inputValue(),'lavender');
+ assert.equal(await page.locator('#appWallpaper').inputValue(),'ocean');
  assert.equal(await page.locator('#settingFont').inputValue(),'large');
  await page.screenshot({path:'settings-preview.png',fullPage:true});
  await page.locator('#resetAppearance').click();

@@ -9,7 +9,7 @@
   const n=(tag,text)=>{const el=document.createElement(tag);if(text)el.textContent=text;return el;};
   const box=n('div');box.className='chat-shell';box.append(n('h2',t('Pristup za odraslu osobu','Adult access')));box.lastChild.id='adultAccessTitle';
   box.append(n('p',t('Samo odrasla osoba uključuje internet deljenje. Ne delite svoju lozinku sa decom. Osnovnu brigu možete koristiti bez prijave.','Only an adult enables online sharing. Keep your password away from children. Local care works without signing in.')));
-  box.append(n('p',t('Ne objavljujte adresu, telefon, školu, lokaciju ili druge privatne podatke. Porodične zapise vide članovi grupe, javni chat svi učesnici.','Do not share addresses, phone numbers, schools, locations or other private information. Family records are visible to group members; public chat to all participants.')));
+  box.append(n('p',t('Ne objavljujte adresu, telefon, školu, lokaciju ili druge privatne podatke. Porodične zapise vide članovi vaše grupe.','Do not share addresses, phone numbers, schools, locations or other private information. Family records are visible to members of your group.')));
   const form=n('form'),email=n('input'),password=n('input'),ack=n('input'),info=n('p');info.id='adultAccessStatus';info.setAttribute('role','status');
   email.id='adultEmail';email.type='email';email.autocomplete='username';email.required=true;email.value=auth.currentUser?.email||'';
   password.id='adultPassword';password.type='password';password.autocomplete='current-password';password.required=true;password.minLength=12;

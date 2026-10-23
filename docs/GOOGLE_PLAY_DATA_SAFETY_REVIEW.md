@@ -1,3 +1,18 @@
+# Aktuelno — 1.8.16 (27), bez javnog chata
+
+23. oktobar 2026: vlasnik je odložio javni chat kako bi izbegao njegove troškove i operativnu moderaciju. Chat, njegovi push/mediji i moderatorska prijava uklonjeni su iz ovog izdanja. Automatsku moderaciju ne aktivirati, Blaze ne uključivati. Porodična briga, potvrđen email/lozinka, prijava/blokiranje članova i kontrola vlasnika ostaju.
+
+Serverski kandidat: `firebase/production-no-public-chat.rules`. Objavljivanje u produkciji još nije potvrđeno jer je Firebase konzola odjavljena. Do tada starije instalacije mogu imati pristup prethodnom chatu. Raniji podaci nisu obrisani; zahtevi za brisanje ostaju preko `jalejasko011@gmail.com`, uz potvrdu vlasništva. Ne slati lozinke. Brisanje Auth naloga može prekinuti pristup porodici.
+
+Data Safety: email/identifikator za dobrovoljni porodični nalog, osnovni deljeni profil ljubimca, naziv porodice, imena/identifikatori članova, dnevnik brige i privatne prijave i dalje se obrađuju na Firebase-u. Privatna evidencija i mediji ostaju lokalni dok ih korisnik sam ne izveze/podeli. Odsustvo javnog chata ne znači odsustvo svih korisničkih sadržaja niti odobrenje za sve uzraste. Konačnu publiku i stvarne izjave vlasnik proverava u Play Console.
+
+Ostaju: objavljivanje/provera serverskih pravila, Play nalog/identitet/ugovor i jednokratna naknada od 25 USD, interni test i uslovni zatvoreni test za novi lični nalog (12 stvarnih testera 14 neprekidnih dana), zahtev za produkciju i Google pregled. Vlasnik je već potvrdio alarme na telefonu posle restarta; ne tražiti ponavljanje bez novog problema. Detalji ovog izdanja: `docs/RELEASE_1_8_16.md`.
+
+---
+## Istorijska dokumentacija pre uklanjanja javnog chata
+
+Sledeći tekst opisuje ranije izdanje; njegove chat funkcije i preduslovi nisu aktuelan plan.
+
 # Data safety pregled — 1.8.14 (25), 22. oktobar 2026.
 
 Ovo je pregled stvarnog ponašanja za vlasnika, ne popunjen ili poslat Play Console upitnik. Ranije izjave o anonimnom chatu nisu važeće za nove prijave u ovoj verziji.

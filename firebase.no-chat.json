@@ -1,0 +1,5 @@
+{
+  "firestore": {
+    "rules": "firebase/production-no-public-chat.rules"
+  }
+}

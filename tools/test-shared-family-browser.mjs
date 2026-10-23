@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {resolve,extname} from 'node:path';
-const rulesEnv=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile('firebase/production-adult-access.rules','utf8')}});
+const rulesEnv=await initializeTestEnvironment({projectId:'demo-petcare-chat',firestore:{rules:await readFile('firebase/production-no-public-chat.rules','utf8')}});
 const root=resolve('www'),server=createServer(async(req,res)=>{try{
  const pathname=new URL(req.url,'http://localhost').pathname;
  if(pathname==='/chat-config.js'){res.setHeader('Content-Type','text/javascript');res.end('window.PETCARE_CHAT_CONFIG='+JSON.stringify({enabled:true,media:{enabled:false},push:{enabled:false},firebase:{apiKey:'demo-key',projectId:'demo-petcare-chat',appId:'1:123:web:familytest'}})+';window.PETCARE_FAMILY_CONFIG={enabled:true,emulators:true};');return;}
