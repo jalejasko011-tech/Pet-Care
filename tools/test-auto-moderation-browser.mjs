@@ -6,11 +6,14 @@ import {createServer} from 'node:http';
 import {resolve,extname} from 'node:path';
 import {createRequire} from 'node:module';
 import {chromium} from 'playwright';
+import {initializeTestEnvironment} from '@firebase/rules-unit-testing';
 import {moderationService} from '../functions/moderation-service.js';
 const require=createRequire(new URL('../functions/package.json',import.meta.url));
 const {initializeApp}=require('firebase-admin/app'),{getFirestore,Timestamp}=require('firebase-admin/firestore'),{getAuth}=require('firebase-admin/auth');
 if(!process.env.FIRESTORE_EMULATOR_HOST||!process.env.FIREBASE_AUTH_EMULATOR_HOST)throw Error('Emulators required');
-const projectId='demo-petcare-auto',app=initializeApp({projectId},'auto-browser'),db=getFirestore(app),auth=getAuth(app),service=moderationService(db);
+const projectId='demo-petcare-chat';
+const env=await initializeTestEnvironment({projectId,firestore:{rules:await readFile('firebase/production-auto-moderation.rules','utf8')}});await env.clearFirestore();
+const app=initializeApp({projectId},'auto-browser'),db=getFirestore(app),auth=getAuth(app),service=moderationService(db);
 const password='EmulatorOnlyReview123!',mod=await auth.createUser({email:'auto-reviewer@example.test',password,emailVerified:true});
 await db.doc('moderators/'+mod.uid).set({active:true});
 await db.doc('chatProfiles/uiAuthor').set({nickname:'Pet owner',banned:false,lastSent:Timestamp.fromMillis(0),sequence:0});
@@ -42,4 +45,4 @@ try{
  assert.equal((await db.doc('globalMessages/'+rejected.id).get()).exists,false);assert.equal((await db.doc('chatSubmissions/'+rejected.id).get()).data().status,'rejected');
  await page.locator('#moderatorSignOut').click();assert.equal(await page.locator('#automaticModeration').isVisible(),false);assert.equal(await page.locator('#heldMessages').textContent(),'');assert.deepEqual(errors,[]);
  console.log('PASS actual mobile moderator UI: verified role, private queue, approval/publication, rejection/nonpublication, sign-out clearing; local callable adapter with token verification.');
-}finally{await browser.close();await new Promise(r=>server.close(r));await auth.deleteUser(mod.uid);}
+}finally{await browser.close();await new Promise(r=>server.close(r));await auth.deleteUser(mod.uid);await env.cleanup();}
