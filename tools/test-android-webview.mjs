@@ -17,7 +17,7 @@ try {
  await Promise.all([page.waitForEvent('load'),page.locator('#familyModeButton').click()]);await page.locator('body.family-view').waitFor();
  assert.equal(await page.evaluate(()=>petCareFamily.isStandard()),false);
  assert.equal(await page.locator('#globalChatShortcut').isVisible(),false);
- await page.evaluate(async()=>{petCareChat.open();await refreshCatalog();});
+ await page.evaluate(async()=>{await refreshCatalog();});
  assert.deepEqual(familyRequests,[],'Restricted Android WebView must not load chat or supplier SDK/network');
  console.log('PASS Android direct entry without date/code; optional family view makes no external requests.');
  await unlockAdult(page);
@@ -45,14 +45,13 @@ try {
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
  await openSection('health');await page.evaluate(()=>{formMode='health';render();});
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='health'&&formMode===null);
- await page.locator('#globalChatShortcut').click();await page.locator('#globalChatDialog').waitFor({state:'visible'});
- await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>!document.getElementById('globalChatDialog').open);assert.equal(await page.evaluate(()=>tab),'health');
+ assert.equal(await page.locator('#globalChatShortcut,#globalChatDialog').count(),0,'Public chat must be absent from Android');
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
  // Return to the first history entry, then one Back must keep the app open.
  while(await page.evaluate(()=>petCareNavigation.getState().depth)>0){const before=await page.evaluate(()=>petCareNavigation.getState().depth);await page.evaluate(()=>petCareNavigation.back());await page.waitForFunction(n=>petCareNavigation.getState().depth<n,before);}
  await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>document.getElementById('toast').textContent.includes('Press Back again'));
  assert.match((await device.shell('pidof com.petcare.companion')).toString().trim(),/^\d+$/);
- console.log('PASS physical Android Back key: previous tab, close form, close chat first, root exit protection.');
+ console.log('PASS physical Android Back key: previous tab, close form, public chat absence, root exit protection.');
 
  for(const tab of tabs){await openSection(tab);assert.ok((await page.locator('#content').innerText()).trim());}
  assert.equal(await page.locator('#footerNote a').count(),1);
