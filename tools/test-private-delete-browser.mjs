@@ -10,6 +10,7 @@ try{
  await page.evaluate(async()=>{
   data=seed();data.pets=[{id:'remove-me',name:'Luna',type:'Dog'},{id:'keep-me',name:'Milo',type:'Cat'}];
   for(const k of Object.keys(data))if(k!=='pets')data[k]=[{id:k+'-remove',petId:'remove-me'},{id:k+'-keep',petId:'keep-me'}];
+  data.routineDone.push({id:'done-without-pet-id',reminderId:'reminders-remove',date:today()});
   activePet='remove-me';save();
   await galleryTx('readwrite',s=>{s.put({id:'g-remove',petId:'remove-me',type:'image/png',name:'Luna',blob:new Blob(['removed'],{type:'image/png'})});s.put({id:'g-keep',petId:'keep-me',type:'image/png',name:'Milo',blob:new Blob(['kept'],{type:'image/png'})});});
   await petCareMemories.addMany([{id:'m-remove',petId:'remove-me',title:'Luna',text:'private',date:today(),media:[]},{id:'m-keep',petId:'keep-me',title:'Milo',text:'private',date:today(),media:[]}]);worldSave([{id:'w-remove',petId:'remove-me'},{id:'w-keep',petId:'keep-me'}]);

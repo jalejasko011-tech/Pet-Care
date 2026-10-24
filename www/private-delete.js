@@ -29,7 +29,8 @@
   if(window.petCareRecords.isBlocked()||!data.pets.some(p=>p.id===id))return false;
   if(!confirm(t('Trajno obrisati ovog ljubimca, njegovu lokalnu evidenciju, Galeriju, Uspomene i privatne nacrte? Izvezene kopije i zasebna porodična grupa na serveru ostaju. Pre brisanja sačuvajte kopiju ako vam treba.','Permanently delete this pet, its local records, Gallery, Memories and private drafts? Exported backups and the separate shared family on the server remain. Back up first if needed.')))return false;
   try{localStorage.setItem(key,JSON.stringify({v:1,petId:id}));}catch{toast(t('Brisanje nije pokrenuto. Proverite prostor i pristup memoriji.','Deletion did not start. Check storage space and access.'));return false;}
-  data={...data,...Object.fromEntries(Object.entries(data).filter(([,v])=>Array.isArray(v)).map(([k,v])=>[k,v.filter(x=>k==='pets'?x.id!==id:x.petId!==id)]))};
+  const removedReminders=new Set(data.reminders.filter(x=>x.petId===id).map(x=>x.id));
+  data={...data,...Object.fromEntries(Object.entries(data).filter(([,v])=>Array.isArray(v)).map(([k,v])=>[k,v.filter(x=>k==='pets'?x.id!==id:x.petId!==id&&(k!=='routineDone'||!removedReminders.has(x.reminderId)))]))};
   if(!save()){try{localStorage.removeItem(key);}catch{}render();return false;}
   if(activePet===id)activePet=data.pets[0]?.id||null;
   render();return resume();
