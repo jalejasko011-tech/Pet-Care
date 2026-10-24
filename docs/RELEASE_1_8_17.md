@@ -6,6 +6,8 @@ Deleting a pet now removes its records across every local collection, Gallery, M
 
 Existing-account sign-in no longer applies the new-account password-length requirement. New accounts still require at least 12 characters. Public chat, paid moderation, media upload, remote push, subscriptions and advertising remain inactive. No production Firebase rule change is required; the tested family-only rules are unchanged.
 
+The optional undeployed Functions lockfile updates body-parser 2.3.0 to 2.4.0 for GHSA-27r3-jxmh-p828; the dependency audit reports no remaining vulnerabilities. This does not deploy or activate server services.
+
 Required checks: web syntax/record/reminder/backup/privacy tests; mobile-browser failure/reload/account-link cases; verified family recovery and outsider denial; Android 36 native/offline/reboot checks; dependency audit; signed APK/AAB package/source comparison. Final evidence is recorded in ACTIVATION_1_8_17_SR.md after completion.
 
 This does not constitute owner Play registration, completed Console declarations, actual closed testing, a human translation review, production account-deletion handling or Google approval.
