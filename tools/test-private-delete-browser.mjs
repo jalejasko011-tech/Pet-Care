@@ -15,6 +15,7 @@ try{
   await petCareMemories.addMany([{id:'m-remove',petId:'remove-me',title:'Luna',text:'private',date:today(),media:[]},{id:'m-keep',petId:'keep-me',title:'Milo',text:'private',date:today(),media:[]}]);worldSave([{id:'w-remove',petId:'remove-me'},{id:'w-keep',petId:'keep-me'}]);
   window.realSet=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===KEY)throw new DOMException('Full','QuotaExceededError');return realSet.call(this,k,v);};
  });
+ const aborted=await page.evaluate(async()=>{try{await galleryTx('readwrite',s=>{s.put({id:'must-not-commit',petId:'keep-me'});throw Error('Abort fixture');});}catch{}return !(await galleryAll()).some(x=>x.id==='must-not-commit');});assert.equal(aborted,true,'Thrown gallery callback must abort its earlier writes');
  assert.equal(await page.evaluate(()=>deletePet('remove-me')),false);assert.equal(await page.evaluate(()=>data.pets.length),2);assert.equal(await page.evaluate(()=>petCarePrivateDelete.isPending()),false);assert.equal(await page.evaluate(async()=>(await galleryAll()).length),2);
  await page.evaluate(()=>{Storage.prototype.setItem=realSet;window.realRemove=petCareMemories.removePet;petCareMemories.removePet=async()=>{throw Error('Interrupted media cleanup');};});
  assert.equal(await page.evaluate(()=>deletePet('remove-me')),false);assert.equal(await page.evaluate(()=>petCarePrivateDelete.isPending()),true);
