@@ -32,7 +32,7 @@ try {
   await wait(3000);
  }
  assert.ok(delivered,'No reminder after reboot, first unlock, relock and forced Doze without reopening app');
- console.log('PASS Android reminder restored after actual reboot, first unlock and relock; delivered during forced Doze without opening Pet Care. Physical Huawei test remains pending.');
+ console.log('PASS Android reminder restored after actual reboot, first unlock and relock; delivered during forced Doze without opening Pet Care. Physical-device and OEM evidence is recorded separately from this emulator test.');
 } finally {
  try{adb('shell','dumpsys','deviceidle','unforce');adb('shell','dumpsys','battery','reset');}catch{}
  if(device)await device.close();

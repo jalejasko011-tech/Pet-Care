@@ -35,3 +35,17 @@ U IARC i sadržaju navesti zatvoreno deljenje korisničkog teksta i spoljne inte
 ## Šta se unosi kasnije
 
 Stvarni Play nalog i identitet, država/distribucija, autentičan pristup za pregled, izabrane starosne grupe, konačna Data Safety prijava, stvarni testeri i rezultati njihovog korišćenja. Google pregled i proizvodni pristup nisu obavljeni automatizovanim CI testovima.
+
+## Ostale Console deklaracije
+
+Pregledati i Health apps declaration prema stvarnim ponuđenim stavkama. Aplikacija vodi evidenciju zdravlja i ishrane životinja, nema Health Connect, ne obrađuje dijagnostičke senzore i ne daje dijagnozu ili doziranje terapije. Ne označavati automatski kategorije za ljudsko zdravlje ili „nema zdravstvenih funkcija“ bez odgovarajućeg pregleda pitanja i opisa namene. Ovo je organizator za ljubimce i ne zamenjuje veterinara.
+
+## Potpisivanje i prelazak sa direktnog APK-a na Play
+
+Postojeći sertifikat direktnog APK-a je SHA256 `e8cdb78355aa5a08d5327dd07c050b92168e8afef6c4aa2d3c8c7f25c5736990`. Novi APK je proveren istim potpisom i može da ažurira prethodni direktni APK bez deinstalacije.
+
+Pri prvom Play App Signing podešavanju pregledati izbor app signing key-a. Ako je potrebno da se postojeća direktna instalacija ažurira Play izdanjem bez deinstalacije, app signing key koji Play koristi za dostavu mora odgovarati postojećem sertifikatu ili podržanoj rotaciji; upload key sam po sebi nije dovoljan. Ne potvrđivati izbor novog Google-generated app signing key-a uz obećanje nastavka direktnih instalacija istim potpisom.
+
+Za korišćenje postojećeg ključa pratiti namenski Play postupak za bezbedan šifrovan izvoz/PEPK iz vlasnikovog originalnog keystore-a. Privatni ključ i lozinke ne objavljivati u repozitorijumu, opisu ili razgovoru. Ne izvoziti ključ pre stvarnog Console zahteva i provere tačnog projekta. Ako se ipak koristi drugi delivery ključ, unapred planirati ručnu kopiju/prenos i jasno obavestiti korisnika o ograničenju nadogradnje. Pre deinstalacije sačuvati ZIP izvan podataka aplikacije.
+
+Izvor: https://support.google.com/googleplay/android-developer/answer/9842756?hl=en

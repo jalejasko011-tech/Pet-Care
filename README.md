@@ -2,11 +2,13 @@
 
 Android pet-care organizer with private device records, meal reminders, Gallery, Memories and optional adult-authenticated family care. Signed releases are built by `.github/workflows/release.yml`; a public download is published only after quality checks pass at the same commit. Google Play publication is separate and has not been completed.
 
+The 1.8.17 review also completes durable local pet/media deletion, family-ID recovery and a prominent account-deletion resource. Current owner/Play worksheets are `docs/PLAY_CONSOLE_ANSWERS_1_8_17_SR.md`, `docs/ACCEPTANCE_1_8_17_SR.md` and `docs/OWNER_ACCOUNT_DELETION_SR.md`.
+
 ## Downloads and readiness
 
-Use the repository's [Releases page](https://github.com/jalejasko011-tech/Pet-Care/releases). The 1.8.16 update uses package `com.petcare.companion`, versionCode 27 and the existing signing key. Install an update over the prior direct APK to retain app data; do not uninstall without a backup. Each release includes APK, alternative ZIP, checksums and a Play preparation ZIP containing the signed AAB and store materials.
+Use the repository's [Releases page](https://github.com/jalejasko011-tech/Pet-Care/releases). The 1.8.17 update uses package `com.petcare.companion`, versionCode 28 and the existing signing key. Install an update over the prior direct APK to retain app data; do not uninstall without a backup. Each release includes APK, alternative ZIP, checksums and a Play preparation ZIP containing the signed AAB and store materials.
 
-`docs/ACTIVATION_1_8_16_SR.md` and `docs/RELEASE_1_8_STATUS.md` record exact completion and remaining external gates. Physical-device tests, owner Play account/identity/declarations and Google review are not replaced by CI. Never bypass Play Protect.
+`docs/ACTIVATION_1_8_17_SR.md` and `docs/RELEASE_1_8_STATUS.md` record exact completion and remaining external gates. Physical-device tests, owner Play account/identity/declarations and Google review are not replaced by CI. Never bypass Play Protect.
 
 ## Implemented
 
@@ -16,7 +18,7 @@ Use the repository's [Releases page](https://github.com/jalejasko011-tech/Pet-Ca
 - Complete unencrypted ZIP backup/merge restore including records, both media collections, drafts and preferences; validation and a durable recovery journal protect interrupted restores. Displayed size limits apply.
 - App backgrounds, text size, sound/vibration settings and private support diagnostics.
 - Five primary navigation choices with a grouped More menu and shared Android Back/browser history.
-- Public chat is removed in 1.8.16. Family care retains verified adult sign-in, reusable invitation codes, private reports, local blocking and owner controls. Historical chat deletion requests remain available through the privacy contact.
+- Public chat has been removed since 1.8.16. Family care retains verified adult sign-in, reusable invitation codes, private reports, local blocking and owner controls. Historical chat deletion requests remain available through the privacy contact.
 - Expanded Serbian/English UI. Other selectable languages are partial and explicitly beta.
 
 ## Prepared cloud features

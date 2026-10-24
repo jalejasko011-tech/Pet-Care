@@ -10,6 +10,6 @@ The optional undeployed Functions lockfile updates body-parser 2.3.0 to 2.4.0 fo
 
 Android automatic cloud/device-transfer backup is disabled for private app data and verified against the installed package flags. Explicit app exports and family-ID recovery remain available; existing provider copies are not erased by an update.
 
-Required checks: web syntax/record/reminder/backup/privacy tests; mobile-browser failure/reload/account-link cases; verified family recovery and outsider denial; Android 36 native/offline/reboot checks; dependency audit; signed APK/AAB package/source comparison. Final evidence is recorded in ACTIVATION_1_8_17_SR.md after completion.
+Validation passed: PR quality 40084746436 and exact release-source quality 40085323707, all jobs; signed release/publish 40085323721 and Pages 40085323476. APK/AAB cryptographic signatures, all 41 source assets and compiled native privacy/permission settings were independently verified. Evidence and scoped SDK audit findings are in ACTIVATION_1_8_17_SR.md.
 
 This does not constitute owner Play registration, completed Console declarations, actual closed testing, a human translation review, production account-deletion handling or Google approval.
