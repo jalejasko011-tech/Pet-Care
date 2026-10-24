@@ -12,7 +12,7 @@
   box.append(n('p',t('Ne objavljujte adresu, telefon, školu, lokaciju ili druge privatne podatke. Porodične zapise vide članovi vaše grupe.','Do not share addresses, phone numbers, schools, locations or other private information. Family records are visible to members of your group.')));
   const form=n('form'),email=n('input'),password=n('input'),ack=n('input'),info=n('p');info.id='adultAccessStatus';info.setAttribute('role','status');
   email.id='adultEmail';email.type='email';email.autocomplete='username';email.required=true;email.value=auth.currentUser?.email||'';
-  password.id='adultPassword';password.type='password';password.autocomplete='current-password';password.required=true;password.minLength=12;
+  password.id='adultPassword';password.type='password';password.autocomplete='current-password';password.required=true;
   for(const [input,label]of [[email,t('Email odrasle osobe','Adult email')],[password,t('Lozinka odrasle osobe','Adult password')]]){const l=n('label',label);l.htmlFor=input.id;form.append(l,input);}
   ack.id='adultAcknowledgement';ack.type='checkbox';ack.required=true;ack.style.width='auto';const label=n('label');label.append(ack,document.createTextNode(t(' Ja sam odrasla osoba, upravljam povezivanjem i prihvatam pravila: bez privatnih podataka, pretnji, uznemiravanja, nezakonitog sadržaja i spama.',' I am an adult, control this connection and accept the rules: no private information, threats, harassment, illegal content or spam.')));form.append(label);const policy=n('a',t('Pravila i privatnost deljenja','Sharing rules and privacy'));policy.href='privacy.html';policy.target='_blank';policy.rel='noopener noreferrer';form.append(policy);
   const button=(id,label,fn)=>{const b=n('button',label);b.id=id;b.type='button';b.className='btn secondary';b.onclick=fn;form.append(b);return b;};
@@ -37,6 +37,7 @@
   const submit=button('adultSignIn',t('Poveži','Connect'),()=>run(login));submit.type='submit';submit.onclick=null;form.onsubmit=e=>{e.preventDefault();run(login);};
   button('adultCreate',t('Napravi nalog / sačuvaj identitet','Create account / preserve identity'),()=>run(async()=>{
    if(!form.reportValidity())return;
+   if(password.value.length<12){info.textContent=t('Nova lozinka mora imati najmanje 12 znakova.','A new password must contain at least 12 characters.');return;}
    if(auth.currentUser&&!auth.currentUser.isAnonymous)throw Error('ALREADY_REGISTERED');
    const user=auth.currentUser?.isAnonymous?(await api.linkWithCredential(auth.currentUser,credential())).user:(await api.createUserWithEmailAndPassword(auth,email.value.trim(),password.value)).user;
    password.value='';await api.sendEmailVerification(user);info.textContent=t('Nalog je sačuvan. Poslata je potvrda emaila. Potvrdite email, ponovo unesite lozinku i povežite se.','Account saved. Verification email sent. Verify your email, enter your password again and connect.');
@@ -45,7 +46,7 @@
   button('adultReset',t('Zaboravljena lozinka','Reset password'),()=>run(async()=>{if(!email.reportValidity())return;await api.sendPasswordResetEmail(auth,email.value.trim());info.textContent=t('Ako nalog postoji, proverite email za vraćanje lozinke.','If the account exists, check your email for reset instructions.');}));
   button('adultCancel',t('Nazad u aplikaciju','Back to app'),()=>finish(null));
   dialog.addEventListener('cancel',e=>{e.preventDefault();finish(null);});dialog.addEventListener('close',()=>finish(null));
-  box.append(form,info);dialog.append(box);document.body.append(dialog);dialog.showModal();(email.value?password:email).focus();
+  const deletion=n('a',t('Zatraži brisanje naloga i podataka','Request account and data deletion'));deletion.href='delete-account.html';box.append(form,info,deletion);dialog.append(box);document.body.append(dialog);dialog.showModal();(email.value?password:email).focus();
   try{const user=await result;if(!user)throw Error('ADULT_ACCESS_CANCELLED');return user;}finally{pending=false;}
  }
  window.petCareAdult=Object.freeze({authorize});

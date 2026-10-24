@@ -21,8 +21,8 @@ try{
  const url=`http://127.0.0.1:${server.address().port}/`;
  for(const page of pages){page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.type()==='prompt'?d.accept('Please review this family entry'):d.accept());await page.goto(url);await page.selectOption('#languageSelect','en');}
  await owner.locator('[data-action=addpet]').click();await owner.locator('#petForm [name=name]').fill('Family browser pet');await owner.locator('#petForm button').last().click();
- async function family(page,name){const account=await adultAccount(name.replaceAll(' ','-'));await page.evaluate(()=>petCareUI.open('family'));await page.locator('#familyConnect').click();await onlineLogin(page,account.email);await page.locator('#familyPersonName').waitFor({timeout:45000});await page.locator('#familyPersonName').fill(name);}
- await family(owner,'Caregiver A');await owner.locator('#familyName').fill('Our shared pet');await owner.locator('#sharedFamilyCreate button').click();
+ async function family(page,name){const account=await adultAccount(name.replaceAll(' ','-'));await page.evaluate(()=>petCareUI.open('family'));await page.locator('#familyConnect').click();await onlineLogin(page,account.email);await page.locator('#familyPersonName').waitFor({timeout:45000});await page.locator('#familyPersonName').fill(name);return account.email;}
+ const ownerEmail=await family(owner,'Caregiver A');await owner.locator('#familyName').fill('Our shared pet');await owner.locator('#sharedFamilyCreate button').click();
  await owner.locator('#sharedPetName').filter({hasText:'Family browser pet'}).waitFor({timeout:30000});
  await owner.locator('#familyNewInvite').click();const code=await owner.locator('#familyInviteCode').innerText();assert.match(code,/^[A-Z2-9]{4}(?:-[A-Z2-9]{4}){3}$/);
  for(const [page,name] of [[alice,'Caregiver B'],[bob,'Caregiver C']]){await family(page,name);await page.locator('#familyInviteInput').fill(code);await page.locator('#sharedFamilyJoin button').click();await page.locator('#sharedPetName').filter({hasText:'Family browser pet'}).waitFor({timeout:30000});}
@@ -48,6 +48,15 @@ try{
  await owner.locator('#familyNewInvite').click();const alternateCode=await owner.locator('#familyInviteCode').innerText();await owner.locator('#familyNewInvite').click();
  const aliceUid=await alice.evaluate(()=>petCareSharedFamily.status().uid);await owner.locator(`[data-remove-member="${aliceUid}"]`).click();await alice.locator('#sharedPetName').waitFor({state:'detached',timeout:30000});await owner.locator('[data-revoke-invite]').waitFor({state:'detached'});
  await alice.locator('#familyInviteInput').fill(alternateCode);await alice.locator('#sharedFamilyJoin button').click();await alice.locator('#familyShareStatus').filter({hasText:/code expired|server did not confirm/}).waitFor();
+ // An ID restores existing membership after device storage loss, without granting new access.
+ const recoveryId=await owner.evaluate(()=>petCareSharedFamily.status().selected);
+ const isolated=await owner.evaluate(()=>petCareSharedFamily.create('Recovery isolation',{name:'Other pet',type:'Dog',breed:'',sex:'',birth:''},'Caregiver A'));
+ const bobBefore=await bob.evaluate(()=>petCareSharedFamily.status().selected);
+ const denied=await bob.evaluate(async id=>{try{await petCareSharedFamily.recover(id);return false;}catch(e){return e.code==='permission-denied';}},isolated);assert.equal(denied,true);assert.equal(await bob.evaluate(()=>petCareSharedFamily.status().selected),bobBefore);
+ await owner.evaluate(id=>petCareSharedFamily.erase(id),isolated);
+ await owner.evaluate(()=>localStorage.removeItem('petcare_shared_family_links_v1'));await owner.reload();await owner.evaluate(()=>petCareUI.open('family'));await owner.locator('#familyConnect').click();await onlineLogin(owner,ownerEmail);await owner.locator('#familyRecoverForm').waitFor();assert.equal(await owner.locator('#sharedPetName').count(),0);
+ await owner.locator('#familyRecoveryId').fill(recoveryId);await owner.locator('#familyRecoverForm button').click();await owner.locator('#sharedPetName').waitFor();assert.equal(await owner.locator('#familyRecoveryCode').innerText(),recoveryId);
+ console.log('PASS verified account recovers family after lost device links; family ID cannot admit an outsider.');
  // Resume a paused deletion and remove old entries beyond the 100-row feed.
  const familyId=await owner.evaluate(()=>petCareSharedFamily.status().selected),ownerUid=await owner.evaluate(()=>petCareSharedFamily.status().uid);
  const seed=admin.batch();for(let i=0;i<103;i++)seed.set(admin.doc(`petFamilies/${familyId}/entries/old-${i}`),{kind:'note',text:'Old diary '+i,authorId:ownerUid,authorName:'Caregiver A',createdAt:new Date()});await seed.commit();
