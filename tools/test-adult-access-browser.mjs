@@ -36,6 +36,7 @@ try{
  await page.locator('#adultVerify').click();await page.getByText('Verification email sent.',{exact:true}).waitFor();
  await page.evaluate(()=>auth.currentUser.emailVerified=true);await fill('WrongPassword42');await page.locator('#adultSignIn').click();await page.getByText(/Access was not confirmed/).waitFor();assert.equal(await page.evaluate(()=>result),'pending');
  await fill();await page.locator('#adultSignIn').click();await page.waitForFunction(()=>result==='test-adult');assert.equal(await page.locator('input[type=password]').count(),0);
+ await page.evaluate(()=>start());await fill('short7');await page.locator('#adultSignIn').click();await page.waitForFunction(()=>result==='test-adult');
  // Persisted auth never opens online access without entering the adult password again.
  await page.evaluate(()=>start());await page.locator('#adultPassword').waitFor();assert.equal(await page.locator('#adultPassword').inputValue(),'');await page.locator('#adultCancel').click();await page.waitForFunction(()=>result==='cancelled');
  // Preserve an existing anonymous family owner's UID when upgrading the account.

@@ -1,61 +1,35 @@
-## Potvrda korisnikove konzole — 23. oktobar 2026. u 19:51
+# Play Store — aktuelna provera 1.8.17 (28), 24. oktobar 2026.
 
-Snimak `Screenshot 2026-10-23 195106.png` prikazuje aktivnu, zvezdicom označenu reviziju od danas u 19:51 po vremenu konzole. Vidljivi početak odgovara testiranom fajlu `firebase/production-no-public-chat.rules`: potvrđen email/password uslov, pet blokova `allow read, write: if false` za chatProfiles, globalMessages, chatReports, moderationAudit i moderators, pa početak familyOwner funkcije. Prethodna revizija je juče u 17:07.
+Paket `com.petcare.companion`, Android target API 36. Aktuelno izdanje uklanja javni chat i zadržava dobrovoljnu porodičnu brigu. Prethodna izdanja i nalazi su u verzionisanim RELEASE/ACTIVATION dokumentima; ne primenjivati njihove stare chat/moderator preduslove.
 
-**Potvrđena je objava revizije sa vidljivim zabranama javnog chata.** Snimak ne obuhvata ceo tekst: potpuno byte-exact poređenje aktivnih pravila, provera svih preklapajućih allow uslova i produkcijski test prijavljenog klijenta još nisu urađeni. Ne predstavljati ovu potvrdu kao potpunu Firebase reviziju. Testirani lokalni kandidat i svi porodični/emulatorski testovi ostaju isti. Fotografija od 19:43 prikazuje Spark plan i No cost ($0/month); nije uključena nova naplata ili plaćeni backend.
+## Tehnički obuhvat
 
-Pristup kroz zvanični dodatak i kontrolisani preglednik i dalje nije potvrđen. Istorijski podaci nisu obrisani. Izvor aplikacije, APK/AAB i prethodno provereni potpisi nisu menjani.
+- Privatna evidencija, 24 upakovana jezika, izbor rase, numerički podsetnici, lokalni mediji, kopije i direktna navigacija.
+- Brisanje ljubimca obuhvata sve povezane lokalne kolekcije i medije, sa nastavkom posle prekida i bez lažne potvrde pri punoj memoriji.
+- Istaknuti zahtev za brisanje Auth naloga i povezanih serverskih podataka: Podešavanja, Porodična briga i ekran prijave; javni resurs `www/delete-account.html`.
+- Porodični ID vraća već postojeći pristup istom nalogu na drugom uređaju. Ne daje pravo novom članu. Kod za poziv i ID za oporavak imaju različite svrhe.
+- Javni chat i moderatorski ekran nemaju vezu sa SDK-om; plaćeni backend, oglasi, pretplate, automatska moderacija i push nisu aktivirani.
+- Alarm posle restarta stvarnog telefona vlasnik je potvrdio 23. oktobra. Ne tražiti ponavljanje bez novog razloga.
 
----
+## Dokazi i granice
 
-## Prethodno zabeležen nalaz
+Pogledati `ACTIVATION_1_8_17_SR.md` za provereni izvor, CI, potpise i fajlove. Snimak korisnikove konzole od 23. oktobra 19:51 potvrđuje novu aktivnu reviziju sa vidljivim zabranama chata; to nije potpuno poređenje svih pravila ili test prijavljenog produkcijskog klijenta. Plan Spark je vidljiv na korisnikovom snimku. Novi rules fajl za 1.8.17 nije potreban.
 
-# Aktuelno — 1.8.16 (27), bez javnog chata
+## Radnje vlasnika i stvarni Play test
 
-23. oktobar 2026: vlasnik je odložio javni chat kako bi izbegao njegove troškove i operativnu moderaciju. Chat, njegovi push/mediji i moderatorska prijava uklonjeni su iz ovog izdanja. Automatsku moderaciju ne aktivirati, Blaze ne uključivati. Porodična briga, potvrđen email/lozinka, prijava/blokiranje članova i kontrola vlasnika ostaju.
+1. Proveriti ceo objavljeni tekst `firebase/production-no-public-chat.rules` i izvršiti porodični test u produkciji potvrđenim pravim nalozima. Ne vraćati stari root preview.
+2. Potvrditi podršku i stvarno postupanje po zahtevima za brisanje. Stranica je put do zahteva; nije automatsko brisanje Admin naloga. Ne brisati nalog pre obrade njegovih članstava, zapisa, prijava, istorijskog chata i porodica čiji je vlasnik.
+3. Završiti Play nalog/identitet/ugovor i naknadu od 25 USD ako još nisu završeni. Ne postoji potvrda da je registracija već obavljena.
+4. Uneti stvarne Console odgovore prema `PLAY_CONSOLE_ANSWERS_1_8_17_SR.md` i `GOOGLE_PLAY_DATA_SAFETY_REVIEW.md`, uključujući ciljnu publiku i porodični korisnički sadržaj. Ne birati sve uzraste automatski i ne menjati vlasnikovu publiku bez dogovora.
+5. Interni test: instalacija preko Play-a, ulazak bez datuma/koda, čuvanje i kopija, porodično povezivanje/oporavak/prijava/blokiranje/brisanje, zahtev za brisanje naloga, dostupnost pravila privatnosti i osnovni pregled jezika.
+6. Ako je nalog novi lični nalog: najmanje 12 stvarnih testera neprekidno prijavljenih 14 dana, zatim zahtev za produkcijski pristup. CI i APK van Play-a ne zamenjuju ovaj postupak.
+7. Google pregled i odobrenje. Ne tvrditi da javna objava može odmah dok navedeno nije potvrđeno.
 
-Serverski kandidat: `firebase/production-no-public-chat.rules`. Objavljivanje u produkciji još nije potvrđeno jer je Firebase konzola odjavljena. Do tada starije instalacije mogu imati pristup prethodnom chatu. Raniji podaci nisu obrisani; zahtevi za brisanje ostaju preko `jalejasko011@gmail.com`, uz potvrdu vlasništva. Ne slati lozinke. Brisanje Auth naloga može prekinuti pristup porodici.
+## Primarni izvori
 
-Data Safety: email/identifikator za dobrovoljni porodični nalog, osnovni deljeni profil ljubimca, naziv porodice, imena/identifikatori članova, dnevnik brige i privatne prijave i dalje se obrađuju na Firebase-u. Privatna evidencija i mediji ostaju lokalni dok ih korisnik sam ne izveze/podeli. Odsustvo javnog chata ne znači odsustvo svih korisničkih sadržaja niti odobrenje za sve uzraste. Konačnu publiku i stvarne izjave vlasnik proverava u Play Console.
-
-Ostaju: objavljivanje/provera serverskih pravila, Play nalog/identitet/ugovor i jednokratna naknada od 25 USD, interni test i uslovni zatvoreni test za novi lični nalog (12 stvarnih testera 14 neprekidnih dana), zahtev za produkciju i Google pregled. Vlasnik je već potvrdio alarme na telefonu posle restarta; ne tražiti ponavljanje bez novog problema. Detalji ovog izdanja: `docs/RELEASE_1_8_16.md`.
-
----
-## Istorijska dokumentacija pre uklanjanja javnog chata
-
-Sledeći tekst opisuje ranije izdanje; njegove chat funkcije i preduslovi nisu aktuelan plan.
-
-# Play Store — izdanje 1.8.15 (26)
-
-23. oktobar 2026. Paket `com.petcare.companion`, target API 36. Web izvor i potpisani APK/AAB su objavljeni i provereni postojećim sertifikatom. Potvrde: `ACTIVATION_1_8_15_SR.md`. Ovo nije Play registracija, popunjen Console upitnik ili Google odobrenje.
-
-## Završene tehničke izmene
-
-- Ispravljeno lažno čuvanje pri punoj memoriji, validacija lokalne evidencije/uvoza i oporavak nečitljivog originala bez otkazivanja postojećih alarma. Detalji: `RELEASE_1_8_15.md`.
-
-- Direktan ulazak u lokalnu aplikaciju bez koda i korisničkog datuma rođenja; jednostavniji unos datuma/vremena podsetnika.
-- Vidljiva kontrola preciznih alarma, stvarni status granted/denied i jasno obaveštenje o približnom rasporedu; bez lažnog obećanja precizne isporuke.
-- Porodična briga u glavnoj navigaciji; desne kontrole prikaza i podešavanja.
-- Online povezivanje odrasle osobe potvrđenim emailom i ponovnim unosom lozinke. Serverska pravila odbijaju anonimne/nepotvrđene naloge.
-- Privatne porodične prijave zapisa/članova, lokalno blokiranje autora, opoziv svih tekućih pozivnica pri uklanjanju člana i brisanje prijava uz porodicu.
-- Zaštita HTML atributa od oblikovanih Firestore identifikatora; regresioni test bez izvršavanja umetnutog HTML-a.
-- Serverski zaštićene moderatorske uloge, neizmenjiva evidencija i testovi prijave, uklanjanja, zabrane i vraćanja pristupa u emulatoru.
-- Odvojeno brisanje chat profila i zahtev za potpuno brisanje email naloga/povezanih podataka. Politika i javna stranica za brisanje ažurirane.
-
-Aktuelne ispravke i provere su u `RELEASE_1_8_15.md`; prethodna Firebase aktivacija je u `ACTIVATION_1_8_14_SR.md`. Aktivna produkcijska pravila određuje `firebase/ACTIVE_RULES.md`; širi korenski preview se ne objavljuje.
-
-## Potvrda vlasnika — 23. oktobar 2026.
-
-Vlasnik je potvrdio da alarmi rade i posle restarta telefona. Test podsetnika/restarta je prošao prema njegovoj proveri; raniji neuspešan rezultat je istorijski.
-
-## Pre javne Play objave
-
-1. Vlasnik lično pravi i potvrđuje pravi moderatorski Firebase nalog. Administrator dodeljuje njegovu ulogu, zatim se proveravaju stvarna prijava, uklanjanje, zabrana, podrška i obrada zahteva za brisanje. Izmišljeni emulator nalog nije ljudski moderator.
-2. Vlasnik registruje Play nalog, potvrđuje identitet i prihvata ugovor/plaćanje. Jednokratna naknada je 25 USD; finansijske i ugovorne radnje ne obavlja agent.
-3. Proveriti stvarnu ciljnu publiku, kontrolu društvenih funkcija, sadržaj, privatnost i Data safety prema `GOOGLE_PLAY_DATA_SAFETY_REVIEW.md`. Nema tvrdnje da potvrda emaila dokazuje uzrast ili roditeljstvo. Nema automatskog izbora svih uzrasta.
-4. Pripremiti interni test. Ako se na novi lični nalog primenjuje uslov za produkcijski pristup, sprovesti zatvoreni test sa najmanje 12 stvarnih kontinuirano prijavljenih testera tokom 14 dana, pa podneti zahtev za pristup produkciji.
-5. Vlasnik proverava i šalje konkretnu Console prijavu i izdanje. Google odlučuje o odobrenju. Ranija istorijska dokumenta i CI nisu dokaz ispunjenih ličnih ili vremenskih uslova.
-
-Mediji i pozadinski chat push ostaju neaktivni u ovom izdanju. Ne unositi ih u listing kao uključene funkcije i ne uključivati naplatu/provizionisanje bez posebne odluke vlasnika.
-
-Izvori: https://support.google.com/googleplay/android-developer/answer/6112435 ; https://support.google.com/googleplay/android-developer/answer/14151465 ; https://support.google.com/googleplay/android-developer/answer/9893335 ; https://support.google.com/googleplay/android-developer/answer/9876937 ; https://support.google.com/googleplay/android-developer/answer/13327111
+- https://support.google.com/googleplay/android-developer/answer/6112435?hl=en
+- https://support.google.com/googleplay/android-developer/answer/14151465?hl=en
+- https://support.google.com/googleplay/android-developer/answer/13327111?hl=en
+- https://support.google.com/googleplay/android-developer/answer/9893335?hl=en
+- https://support.google.com/googleplay/android-developer/answer/10787469?hl=en
+- https://support.google.com/googleplay/android-developer/answer/11926878?hl=en
