@@ -42,6 +42,14 @@ manifest=manifest.replace('</application>',`<meta-data android:name="firebase_da
         <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/petcare_notification" />
         </application>`);
+// Private records and auth sessions move only through explicit app export/recovery.
+for(const [name,value] of [['allowBackup','false'],['fullBackupContent','false'],['dataExtractionRules','@xml/petcare_data_extraction_rules']]){
+ const attribute=new RegExp('android:'+name+'="[^\"]*"');
+ manifest=attribute.test(manifest)?manifest.replace(attribute,'android:'+name+'="'+value+'"'):manifest.replace('<application','<application android:'+name+'="'+value+'"');
+}
+mkdirSync('android/app/src/main/res/xml',{recursive:true});
+const exclusions=['root','file','database','sharedpref','external'].map(domain=>`<exclude domain="${domain}" path="."/>`).join('');
+writeFileSync('android/app/src/main/res/xml/petcare_data_extraction_rules.xml',`<?xml version="1.0" encoding="utf-8"?><data-extraction-rules><cloud-backup>${exclusions}</cloud-backup><device-transfer>${exclusions}</device-transfer></data-extraction-rules>`);
 writeFileSync(manifestPath,manifest);
 mkdirSync('android/app/src/main/res/drawable',{recursive:true});
 writeFileSync('android/app/src/main/res/drawable/petcare_notification.xml',`<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"><path android:fillColor="#FFFFFFFF" android:pathData="M12,10 C8,10 4,15 5,19 C6,22 9,20 12,20 C15,20 18,22 19,19 C20,15 16,10 12,10 M5,6 a2.5,3 0,1 0,0.1 0 M10,3 a2.5,3 0,1 0,0.1 0 M16,3 a2.5,3 0,1 0,0.1 0 M20,7 a2,3 0,1 0,0.1 0"/></vector>`);

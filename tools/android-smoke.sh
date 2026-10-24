@@ -51,6 +51,9 @@ fi
 if grep -E 'android.permission.(READ_SMS|RECEIVE_SMS|READ_CONTACTS|READ_CALL_LOG|QUERY_ALL_PACKAGES|REQUEST_INSTALL_PACKAGES)' android-test-evidence/package.txt; then
   echo 'Unexpected sensitive permission'; exit 1
 fi
+if grep -q 'ALLOW_BACKUP' android-test-evidence/package.txt; then
+  echo 'Automatic Android backup must be disabled for private app data'; exit 1
+fi
 echo 'PASS: test APK installed, process running and Pet Care World visible on Android 36 emulator.'
 echo 'This does not verify Play Protect, release signing, physical device behavior or reminder delivery.'
 

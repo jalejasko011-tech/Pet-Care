@@ -12,6 +12,8 @@ Ovo je inventar implementiranog ponašanja za vlasnika, ne poslat ili odobren Pl
 | Privatni profili/zdravlje ljubimca, alarmi, Galerija, Uspomene i nacrti | Lokalno, dok korisnik izričito ne izveze/podeli ili izabere osnovni deljeni profil | Organizacija brige i kopije; ne tretirati zdravlje životinje automatski kao zdravstveni profil čoveka |
 | Istorijski chat podaci | Raniji server podaci nisu automatski obrisani uklanjanjem funkcije; nova aplikacija ih ne čita/piše | Vlasnik obrađuje proverene zahteve za brisanje; ne navoditi da ranijih podataka nema bez provere |
 
+Android automatski cloud backup i sistemski device-transfer isključeni su u 1.8.17. Ručne kopije i njihov prenos su korisnički izbor. Ranije sistemske kopije nisu automatski obrisane ažuriranjem.
+
 ## Unos u Console
 
 - Aplikacija ima dobrovoljnu online obradu podataka i kreiranje naloga: ne birati „nikakvi podaci se ne prikupljaju“ samo zato što je osnovna evidencija lokalna.
