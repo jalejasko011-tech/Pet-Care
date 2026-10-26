@@ -25,7 +25,7 @@ try {
  await page.locator('#nav > button[data-tab="family"]').click();assert.equal(await page.locator('#familyConnect').isVisible(),true);assert.equal(await page.locator('#nav > button[data-tab="family"]').getAttribute('aria-current'),'page');await device.shell('input keyevent KEYCODE_BACK');await page.waitForFunction(()=>tab==='home');
  const tabs=await page.locator('#nav [data-tab]').evaluateAll(bs=>bs.map(b=>b.dataset.tab));
  await page.locator('[data-action="addpet"]').click();
- await page.locator('#petForm [name=name]').fill('Android test pet');
+ await page.getByLabel('Name *',{exact:true}).fill('Android test pet');
  await page.locator('#petAgeYears').fill('2');await page.locator('#petAgeMonths').fill('3');
  await page.locator('#petForm button').last().click();
  assert.equal(await page.evaluate(()=>data.pets.length),1);
