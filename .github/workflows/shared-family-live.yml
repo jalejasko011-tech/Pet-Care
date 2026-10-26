@@ -1,28 +1,16 @@
-name: Shared family production acceptance
+name: Firebase production public-access check
 on:
   workflow_dispatch:
-  push:
-    branches: [feature/shared-pet-family]
-    paths:
-      - tools/test-shared-family-live.mjs
-      - .github/workflows/shared-family-live.yml
 permissions:
   contents: read
-concurrency:
-  group: petcare-family-production-acceptance
-  cancel-in-progress: false
 jobs:
-  live-family:
+  public-access:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save playwright
-      - run: npx playwright install --with-deps chromium
-      - name: Verify production sharing with disposable fictional families
-        env:
-          PETCARE_LIVE_FAMILY: pet-care-world
-        run: node tools/test-shared-family-live.mjs
+      - name: Verify unauthenticated reads are denied without writing production data
+        run: node tools/check-firebase-public-access.mjs

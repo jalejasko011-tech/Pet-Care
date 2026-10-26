@@ -1,4 +1,7 @@
 // Explicit production acceptance using disposable fictional families only.
+// Retired: this historical runner predates verified-adult access. It must not
+// create anonymous production identities or claim to test the current app.
+throw Error('Historical anonymous-family runner retired. Use docs/PRODUCTION_FAMILY_ACCEPTANCE_1_8_19_SR.md with verified adult accounts.');
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
