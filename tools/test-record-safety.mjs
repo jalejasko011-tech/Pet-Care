@@ -8,6 +8,7 @@ function setup(raw=null){
  const stored=new Map(raw===null?[]:[['petcare_data_v1',raw]]),messages=[];let quota=false,writes=0,renders=0,native=0;
  const form={dataset:{},elements:{photo:{files:[]}},querySelector:()=>({disabled:false}),values:{id:'',name:'Luna',type:'Pas',kg:'5'}};
  const c={URL,Date,Math,Blob,setTimeout,console:{error(){},warn(){}},localStorage:{getItem:k=>stored.get(k)??null,setItem(k,v){if(quota)throw Object.assign(Error('Full'),{name:'QuotaExceededError'});writes++;stored.set(k,v);}},document:{getElementById:id=>id==='petForm'?form:null},window:{petCareNative:{sync:async()=>{native++;}}},toast:s=>messages.push(s),render(){renders++;},FormData:class{constructor(f){return new Map(Object.entries(f.values));}}};
+ c.window.petCareAge={wire(){},prepare:()=>true,clean:o=>o};
  runInNewContext(helper,c);c.window.petCareRecords.recovery=()=>{};runInNewContext(core+wire,c);
  return {c,stored,form,messages,quota:v=>quota=v,counts:()=>({writes,renders,native}),eval:s=>runInNewContext(s,c)};
 }

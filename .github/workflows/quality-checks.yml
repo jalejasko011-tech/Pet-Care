@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Check web app
-        run: python tools/build-locales.py && git diff --exit-code -- www/locale-data.js && npm run check:web && node tools/test-record-safety.mjs && node tools/test-startup-privacy.mjs && node tools/test-family-policy.mjs && node tools/test-reminder-reliability.mjs && node tools/test-backup-codec.mjs && node tools/test-push-policy.mjs
+        run: python tools/build-locales.py && git diff --exit-code -- www/locale-data.js && npm run check:web && node tools/test-record-safety.mjs && node tools/test-pet-age.mjs && node tools/test-startup-privacy.mjs && node tools/test-family-policy.mjs && node tools/test-reminder-reliability.mjs && node tools/test-backup-codec.mjs && node tools/test-push-policy.mjs
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high && npm --prefix functions ci && npm --prefix functions audit --omit=dev --audit-level=moderate && node tools/test-functions-config.mjs
       - name: Install browser test runtime
@@ -29,7 +29,7 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
       - name: Test user flows in mobile browser
-        run: node tools/test-family-browser.mjs && node tools/test-browser.mjs && node tools/test-record-safety-browser.mjs && node tools/test-private-delete-browser.mjs && node tools/test-reminder-date-time.mjs && node tools/test-reminder-access.mjs && node tools/test-locales.mjs
+        run: node tools/test-pet-age-browser.mjs && node tools/test-family-browser.mjs && node tools/test-browser.mjs && node tools/test-record-safety-browser.mjs && node tools/test-private-delete-browser.mjs && node tools/test-reminder-date-time.mjs && node tools/test-reminder-access.mjs && node tools/test-locales.mjs
       - name: Preserve mobile appearance preview
         if: always()
         uses: actions/upload-artifact@v4

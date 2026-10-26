@@ -3,7 +3,7 @@
  'use strict';
  const collections=['pets','health','weights','logs','food','costs','reminders','bonding','sos','family','training','events','routineDone','feedings','feedingPlans','adoptionSaved','communityReports'];
  const id=/^[A-Za-z0-9_-]{1,100}$/;
- const dates=new Set(['date','birth','nextDate']),numbers=new Set(['kg','amount','duration','minutes','distanceKm','gapHours','at']);
+ const dates=new Set(['date','birth','nextDate','ageAsOf']),numbers=new Set(['kg','amount','duration','minutes','distanceKm','gapHours','at']);
  const stringFields=new Set(['name','type','breed','sex','chip','passport','title','category','notes','note','vetName','phone','clinic','allergies','medical','mood','appetite','stool','activity','caregiver','kind','repeat','place','details','created','progress','country','city','contact','url','photo','source']);
  const image=/^data:image\/(jpeg|png|webp|gif|bmp|avif|heic|heif);base64,[A-Za-z0-9+/=]+$/;
  const seed=()=>Object.fromEntries(collections.map(k=>[k,[]]));
@@ -24,6 +24,7 @@
      if(dates.has(field)&&v!==''&&!calendar(v))throw Error('Invalid calendar date');
      if(field==='time'&&v!==''&&(typeof v!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(v)))throw Error('Invalid time');
      if(numbers.has(field)&&(typeof v!=='string'&&typeof v!=='number'||v!==''&&(!Number.isFinite(Number(v))||Number(v)<0)))throw Error('Invalid number');
+     if(field==='ageTotalMonths'&&(!Number.isInteger(v)||v<0||v>11999))throw Error('Invalid pet age');
      if(field==='photo'&&v&&!image.test(v))throw Error('Invalid profile photo');
      if(field==='url'&&v){let u;try{u=new URL(v);}catch{}if(!u||!['https:','http:'].includes(u.protocol))throw Error('Invalid saved link');}
     }
