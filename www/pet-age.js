@@ -6,6 +6,7 @@
  function shifted(d,months){const first=new Date(d.getFullYear(),d.getMonth()+months,1,12);first.setDate(Math.min(d.getDate(),new Date(first.getFullYear(),first.getMonth()+1,0).getDate()));return first;}
  function elapsed(from,to){if(to<from)return 0;let n=(to.getFullYear()-from.getFullYear())*12+to.getMonth()-from.getMonth();if(shifted(from,n)>to)n--;return Math.max(0,n);}
  function total(p,now=new Date()){
+  now=new Date(now.getFullYear(),now.getMonth(),now.getDate(),12);
   const birth=parse(p?.birth);if(birth)return birth>now?null:elapsed(birth,now);
   const ref=parse(p?.ageAsOf);if(!ref||!Number.isInteger(p?.ageTotalMonths)||p.ageTotalMonths<0||p.ageTotalMonths>11999)return null;
   return p.ageTotalMonths+elapsed(ref,now);

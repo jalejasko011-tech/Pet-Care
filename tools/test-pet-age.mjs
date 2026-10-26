@@ -10,6 +10,8 @@ assert.equal(a.total({birth:'2024-01-31'},d('2024-02-29')),1);
 assert.equal(a.total({birth:'2024-02-29'},d('2025-02-28')),12);
 assert.equal(a.total({birth:'2030-01-01'},d('2026-10-26')),null);
 assert.equal(a.total({},d('2026-10-26')),null);
+assert.equal(a.total({birth:'2026-10-26'},new Date(2026,9,26,1)),0);
+assert.equal(a.total({ageTotalMonths:1,ageAsOf:'2026-09-26'},new Date(2026,9,26,1)),2);
 assert.equal(a.total({ageTotalMonths:27,ageAsOf:'2026-10-26'},d('2026-11-25')),27);
 assert.equal(a.total({ageTotalMonths:27,ageAsOf:'2026-10-26'},d('2026-11-26')),28);
 assert.equal(a.total({ageTotalMonths:0,ageAsOf:'2026-10-26'},d('2026-10-26')),0);
