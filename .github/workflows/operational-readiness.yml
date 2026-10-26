@@ -6,6 +6,7 @@ on:
     paths:
       - 'tools/test-account-deletion-rehearsal.mjs'
       - '.github/workflows/operational-readiness.yml'
+      - 'firebase.ops-test.json'
 permissions:
   contents: read
 jobs:
@@ -24,4 +25,4 @@ jobs:
       - name: Install isolated emulator tools
         run: npm install --no-save firebase-admin@14.5.0 firebase-tools@14
       - name: Rehearse deletion without credentials or production access
-        run: npx firebase emulators:exec --config firebase.no-chat.json --only auth,firestore --project demo-petcare-ops 'node tools/test-account-deletion-rehearsal.mjs'
+        run: npx firebase emulators:exec --config firebase.ops-test.json --only auth,firestore --project demo-petcare-ops 'node tools/test-account-deletion-rehearsal.mjs'
