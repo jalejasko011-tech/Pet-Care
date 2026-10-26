@@ -59,3 +59,7 @@ Email/Password je uključen, passwordless email-link isključen, email enumerati
 Spark / No cost ($0/month) potvrđen je u konzoli. Storage ekran traži nadogradnju na Blaze; nadogradnja nije pokrenuta. Ne obećavati aktivno serversko skladištenje medija ili push.
 
 Osam produkcijskih kolekcija odbija neprijavljeni REST pristup sa 403 PERMISSION_DENIED. Rules playground vraća Simulated read denied za globalMessages uz simulirani potvrđeni password identitet. Ovo nisu realni korisnički podaci, niti dokaz da su dva prava telefona povezana. Taj prihvatni test ostaje u PRODUCTION_FAMILY_ACCEPTANCE_1_8_20_SR.md.
+
+## Trenutni korak registracije
+
+U pripremi je odabran lični tok (može se vratiti nazad pre završetka), a promenljiv javni developer name upisan je kao Pet Care World. Prijava je stigla do Link a payments profile to verify your identity. Nisu birani/kreirani payments profil, unošeni pravno ime/adresa/kartica, prihvaćeni završni ugovori ili naplaćena naknada. Vlasnik treba da proveri tip naloga i nastavi taj lični deo.

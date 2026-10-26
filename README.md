@@ -1,12 +1,6 @@
-## Priprema 1.8.20 (31) — praktičnost i pristupačnost
+## Aktuelno — 1.8.20 (31), 26. oktobar 2026.
 
-Ispravlja veze između naziva polja i kontrola, povećava površine za dodir i sređuje preostale EN poruke. Završetak se potvrđuje tek odgovarajućim CI i potpisanim izdanjem. Firebase provera od 26.10 i uputstva su u docs/FIREBASE_REVIEW_2026_10_26_SR.md i docs/START_PLAY_TEST_1_8_20_SR.md. Play nalog još zahteva registraciju vlasnika.
-
-## Aktuelno — 1.8.19 (30), 26. oktobar 2026.
-
-Potpisano izdanje: https://github.com/jalejasko011-tech/Pet-Care/releases/tag/v1.8.19 . Aplikacija ima direktan dan/mesec/godina unos rođenja i odvojene godine/mesece. Javni chat nije uključen. Firebase cela aktivna pravila su neposredno poređena, Spark je potvrđen, nova lozinka na serveru zahteva 12 znakova uz isključen forced sign-in upgrade. Izolovana proba brisanja naloga je prošla; stvarno porodično prihvatanje i obrada zahteva ostaju posebni koraci.
-
-Trenutni plan i Play granice: docs/RELEASE_1_8_STATUS.md, docs/PLAY_CONSOLE_ANSWERS_1_8_19_SR.md, docs/ACCEPTANCE_1_8_19_SR.md i docs/TESTER_GUIDE_1_8_19_SR.md. Play Console je još na registraciji; nema opt-in linka ili Google odobrenja.
+Web, Firebase rules i Android/restart CI 40367272490 i potpisani build/publish 40367272553 su prošli. Direktan unos rođenja/starosti, imenovana polja, veće kontrole i čitljiviji tekst. Javni chat uklonjen. Direktna Firebase provera završena; stvarni porodični test i Play registracija još čekaju. Plan: docs/START_PLAY_TEST_1_8_20_SR.md; dokazi i granice: docs/RELEASE_1_8_STATUS.md.
 
 ---
 
@@ -14,13 +8,13 @@ Trenutni plan i Play granice: docs/RELEASE_1_8_STATUS.md, docs/PLAY_CONSOLE_ANSW
 
 Android pet-care organizer with private device records, meal reminders, Gallery, Memories and optional adult-authenticated family care. Signed releases are built by `.github/workflows/release.yml`; a public download is published only after quality checks pass at the same commit. Google Play publication is separate and has not been completed.
 
-The 1.8.17 review also completes durable local pet/media deletion, family-ID recovery and a prominent account-deletion resource. Current owner/Play worksheets are `docs/PLAY_CONSOLE_ANSWERS_1_8_17_SR.md`, `docs/ACCEPTANCE_1_8_17_SR.md` and `docs/OWNER_ACCOUNT_DELETION_SR.md`.
+Current worksheets: `docs/START_PLAY_TEST_1_8_20_SR.md`, `docs/ACCEPTANCE_1_8_20_SR.md` and `docs/OWNER_ACCOUNT_DELETION_SR.md`.
 
 ## Downloads and readiness
 
-Use the repository's [Releases page](https://github.com/jalejasko011-tech/Pet-Care/releases). The 1.8.17 update uses package `com.petcare.companion`, versionCode 28 and the existing signing key. Install an update over the prior direct APK to retain app data; do not uninstall without a backup. Each release includes APK, alternative ZIP, checksums and a Play preparation ZIP containing the signed AAB and store materials.
+Use the repository's [Releases page](https://github.com/jalejasko011-tech/Pet-Care/releases). The 1.8.20 update uses package `com.petcare.companion`, versionCode 31 and the existing signing key. Install an update over the prior direct APK to retain app data; do not uninstall without a backup. Each release includes APK, alternative ZIP, checksums and a Play preparation ZIP containing the signed AAB and store materials.
 
-`docs/ACTIVATION_1_8_17_SR.md` and `docs/RELEASE_1_8_STATUS.md` record exact completion and remaining external gates. Physical-device tests, owner Play account/identity/declarations and Google review are not replaced by CI. Never bypass Play Protect.
+`docs/RELEASE_1_8_STATUS.md` record exact completion and remaining external gates. Physical-device tests, owner Play account/identity/declarations and Google review are not replaced by CI. Never bypass Play Protect.
 
 ## Implemented
 
@@ -35,7 +29,7 @@ Use the repository's [Releases page](https://github.com/jalejasko011-tech/Pet-Ca
 
 ## Prepared cloud features
 
-Public chat, its push registration and moderator sign-in are retired. No Blaze upgrade or Functions deployment is part of this release. The family-only Firestore candidate is `firebase/production-no-public-chat.rules`; the owner’s Console screenshot confirms a new active revision with the expected public-chat denial blocks at 19:51 on 23 October. Full-text comparison and an authenticated production-client test remain unverified because the screenshot shows only the beginning. Do not deploy root preview rules or revive automatic moderation PR #29. Historical activation documents are not the current plan.
+Public chat, its push registration and moderator sign-in are retired. No Blaze upgrade or Functions deployment is part of this release. The family-only Firestore candidate is `firebase/production-no-public-chat.rules`; direct Console review on 26 October confirmed the entire active 23 October 19:51 revision matches the tested candidate after trailing-whitespace normalization. Spark is confirmed; password minimum 12 is enforced. Actual two-person production family acceptance remains pending. Do not deploy root preview rules or revive automatic moderation PR #29. Historical activation documents are not the current plan.
 
 Pet records remain on device. Community posts and family lists are local drafts/lists, not a shared social feed or synchronized family account. Shop/vet/AI links open external services. Integrated purchases, advertising, paid Premium and embedded AI are not active; they are optional future work, not requirements to use the organizer.
 

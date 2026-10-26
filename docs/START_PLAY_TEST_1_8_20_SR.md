@@ -4,7 +4,7 @@ Ovo je pripremljen paket za vlasnika. Nije otvoren Play test, potvrđen nalog, i
 
 ## Gotovo
 
-- Potpisani AAB, paket com.petcare.companion, versionCode 31, target API 36. Izvor i završne CI provere biće navedeni uz provereno izdanje v1.8.20. Prethodna 1.8.19 provera je prošla; ne označavati novi build kao uspešan pre njegovog završetka.
+- Potpisani AAB, paket com.petcare.companion, versionCode 31, target API 36. Objavljeno v1.8.20 iz d0e858f6170fcb23c00b3ad274df3911b2536b95; quality CI 40367272490 i potpisani build/publish 40367272553 prošli. Nezavisno su provereni potpisi i 43 upakovana web fajla.
 - Opisi EN/SR, ikona, feature slika i četiri stvarna Android emulator snimka sa izmišljenim probnim sadržajem. Nisu dokaz testiranja stvarnih korisnika.
 - Neposredna Firebase provera celih aktivnih pravila, Spark plana i Auth konfiguracije. Server za nove lozinke sada traži minimum 12 znakova, bez Force upgrade on sign-in. Detalji u FIREBASE_REVIEW_2026_10_26_SR.md.
 - Izolovana proba brisanja Auth naloga i povezanih podataka prošla je u emulatorima (40362563676), uz očuvanje nepovezanog naloga. Nije brisan produkcijski nalog ili stvarna porodica.
@@ -35,3 +35,7 @@ Osnovni lokalni ulazak ostaje bez koda i datuma korisnika. Dostupnost mlađima n
 - https://support.google.com/googleplay/android-developer/answer/9893335?hl=en
 - https://support.google.com/googleplay/android-developer/answer/10787469?hl=en
 - https://firebase.google.com/docs/auth/web/password-auth
+
+## Trenutni korak registracije
+
+U pripremi je odabran lični tok (može se vratiti nazad pre završetka), a promenljiv javni developer name upisan je kao Pet Care World. Prijava je stigla do Link a payments profile to verify your identity. Nisu birani/kreirani payments profil, unošeni pravno ime/adresa/kartica, prihvaćeni završni ugovori ili naplaćena naknada. Vlasnik treba da proveri tip naloga i nastavi taj lični deo.

@@ -1,6 +1,6 @@
 # Stvarno prihvatno testiranje — 1.8.20 (31)
 
-Ovo je pripremljen plan za fizičke uređaje/Play i produkcijski Firebase. Prazno polje nije uspešan test. Automatizovani CI nalazi su u ACTIVATION_1_8_17_SR.md; ne upisivati izmišljene uređaje, naloge, testere ili rezultate.
+Ovo je pripremljen plan za fizičke uređaje/Play i produkcijski Firebase. Prazno polje nije uspešan test. Automatizovani CI 40367272490 (web, pravila, Android/restart) i potpisani build 40367272553 prošli su za izvor d0e858f6170fcb23c00b3ad274df3911b2536b95; ne upisivati izmišljene uređaje, naloge, testere ili rezultate.
 
 | Tok | Provera | Stvarni rezultat / uređaj |
 | --- | --- | --- |
@@ -24,4 +24,4 @@ Ako Play zahteva 12 testera/14 dana, svi moraju biti stvarni i neprekidno prijav
 
 ## Datum i starost ljubimca
 
-U 1.8.20 proveriti direktan unos dana, meseca i godine, računanje starosti, alternativne godine/mesece i zadržavanje prethodnog datuma. Prethodni 1.8.19 browser/Android testovi su prošli; novi 1.8.20 build zahteva sopstveni završni CI; vlasnik je dokazao fizičku instalaciju 1.8.17, ne još sve prihvatne tokove 1.8.20.
+U 1.8.20 proveriti direktan unos dana, meseca i godine, računanje starosti, alternativne godine/mesece i zadržavanje prethodnog datuma. 1.8.20 browser/Android testovi su prošli; vlasnik je dokazao fizičku instalaciju 1.8.17, ne još sve prihvatne tokove 1.8.20.
