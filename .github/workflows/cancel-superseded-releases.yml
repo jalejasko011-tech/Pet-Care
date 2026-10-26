@@ -1,0 +1,36 @@
+name: Cancel superseded automatic release builds
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'www/**'
+      - 'package.json'
+      - 'tools/configure-android.mjs'
+      - '.github/workflows/release.yml'
+      - '.github/workflows/cancel-superseded-releases.yml'
+permissions:
+  contents: read
+  actions: write
+jobs:
+  supersede:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Preserve only the latest main automatic release candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          repo=os.environ['GITHUB_REPOSITORY']; current=os.environ['GITHUB_SHA']
+          def api(path): return json.loads(subprocess.check_output(['gh','api',path]))
+          # An older guard must never cancel a newer main build.
+          if api(f'repos/{repo}/git/ref/heads/main')['object']['sha'] != current:
+              raise SystemExit(0)
+          runs=api(f'repos/{repo}/actions/workflows/release.yml/runs?branch=main&event=push&per_page=30')['workflow_runs']
+          for run in runs:
+              if run['head_sha']==current or run['event']!='push' or run['status']=='completed': continue
+              result=subprocess.run(['gh','api','--method','POST',f'repos/{repo}/actions/runs/{run["id"]}/cancel'],capture_output=True,text=True)
+              if result.returncode and '(HTTP 409)' not in result.stderr: raise SystemExit(result.stderr)
+              print(f'Superseded automatic release run {run["id"]}; existing published releases and manual runs are preserved.')
+          PY

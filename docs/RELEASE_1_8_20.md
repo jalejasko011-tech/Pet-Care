@@ -1,6 +1,6 @@
 # Pet Care World 1.8.20 (31)
 
-Improve everyday form use before closed testing. Visible field captions now have native label/control associations after rendering and dynamic updates, so screen readers and label clicks identify the correct inputs. Primary buttons and form controls have a minimum 48px height; header settings/language/family controls retain their alignment. The birth-year caption is shorter so day/month/year controls align more clearly on narrow screens. Fix two Serbian fallback messages appearing in the English pet-list interface.
+Improve everyday form use before closed testing. Visible field captions now have native label/control associations after rendering and dynamic updates, so screen readers and label clicks identify the correct inputs. Primary buttons and form controls have a minimum 48px height; header settings/language/family controls retain their alignment. The birth-year caption is shorter so day/month/year controls align more clearly on narrow screens. Increase secondary-text contrast for small help text. Fix two Serbian fallback messages appearing in the English pet-list interface.
 
 Creating a pet still needs only a name and species; birth date, age, chip, passport, weight and photo remain optional. Years/months and direct day/month/year entry remain available, with existing records preserved. No public chat, billing upgrade or paid backend is activated.
 
