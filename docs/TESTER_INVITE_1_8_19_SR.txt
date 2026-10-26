@@ -1,0 +1,7 @@
+Poziv za testiranje aplikacije Pet Care World
+
+Tražim testere koji će probati aplikaciju za evidenciju i brigu o ljubimcima, redovno je koristiti i javiti šta treba popraviti. Aplikacija je besplatna; javni chat nije uključen.
+
+Kada zatvoreni Play test bude otvoren, poslaću njegov pravi link. Potrebno je ostati uključen u test najmanje 14 uzastopnih dana. Uputstvo sa konkretnim zadacima dobićete uz link. Nemojte slati svoje lozinke ili privatne podatke o drugim osobama.
+
+Ovo je pripremljen tekst poziva. Još nije poslat i ne sadrži izmišljen Play link.

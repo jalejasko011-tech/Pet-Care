@@ -1,4 +1,4 @@
-# Data Safety — radni odgovori za 1.8.17 (28)
+# Data Safety — radni odgovori za 1.8.20 (31)
 
 Ovo je inventar implementiranog ponašanja za vlasnika, ne poslat ili odobren Play Console upitnik. Izjave moraju odgovarati i aplikaciji i stvarnom radu Firebase projekta/podrške.
 
@@ -22,12 +22,14 @@ Android automatski cloud backup i sistemski device-transfer isključeni su u 1.8
 - Za „shared“ odvojeno primeniti Google definiciju i izuzetke za obradu dobavljača/uslugu i korisnički pokrenuto deljenje; ne obećavati univerzalan odgovor bez pregleda stvarnog pružaoca i konfiguracije.
 - Prenos online funkcija koristi HTTPS/TLS. Ne tvrditi end-to-end enkripciju; lokalne i izvezene kopije nisu šifrovane ovom aplikacijom.
 - Prikupljanje za porodicu je opciono; lokalna evidencija radi bez naloga. Podrška obrađuje zahtev za brisanje uz potvrdu vlasništva. Vlasnik mora ispuniti stvarni postupak, uključujući povezane zapise; samo brisanje Auth UID-a nije dovoljno.
-- Javna stranica: https://jalejasko011-tech.github.io/Pet-Care/www/delete-account.html ; privatnost: https://jalejasko011-tech.github.io/Pet-Care/www/privacy.html . URL-ove proveriti nakon objave 1.8.17.
+- Javna stranica: https://jalejasko011-tech.github.io/Pet-Care/www/delete-account.html ; privatnost: https://jalejasko011-tech.github.io/Pet-Care/www/privacy.html . URL-ove provereni kao javno dostupni za 1.8.19.
 
 Firebase JS Auth/Firestore SDK učitava se tek pri izričitom porodičnom povezivanju. Android paket ima native push bridge, ali registracija tokena i automatsko prikupljanje su isključeni. Android SDK dokumentacija ne sme se bez razlike predstaviti kao potpuna JS SDK deklaracija; završno uporediti konkretne biblioteke i pružaočeve tehničke podatke.
 
-## Izvori, provereni 24. oktobra 2026.
+## Izvori, provereni 26. oktobra 2026.
 
 - https://support.google.com/googleplay/android-developer/answer/10787469?hl=en
 - https://support.google.com/googleplay/android-developer/answer/13327111?hl=en
 - https://firebase.google.com/docs/android/play-data-disclosure
+
+Starost ljubimca (godine/meseci sa referentnim datumom) i datum rođenja životinje čuvaju se lokalno i u korisničkom izvozu. Osnovni datum rođenja ljubimca može se izričito podeliti kroz postojeći porodični profil. To nije datum rođenja korisnika i nije mehanizam provere uzrasta.

@@ -1,3 +1,19 @@
+# Direktna provera konzole — 26. oktobar 2026.
+
+Pristup je uspešno potvrđen Google prijavom vlasnika. Aktivna zvezdicom označena revizija ostaje **23. oktobar 2026. u 19:51 po vremenu konzole**. Nije objavljena nova Rules revizija.
+
+Kopiran je ceo tekst iz aktivnog Rules editora: 9.981 znak, uključujući dodatne praznine na kraju. Nakon uklanjanja samo završnih belina i dodavanja jednog završnog novog reda, SHA-256 je **fc18d041949e36917f2b03474dfa65c67c5d0736edc1095fc3f502aa780097d7**, jednak celom testiranom fajlu `production-no-public-chat.rules`. Nije korišćen širi root preview.
+
+Produkcijski REST bez prijave: osam kolekcija vraća 403 PERMISSION_DENIED / Missing or insufficient permissions. Rules playground sa simuliranim potvrđenim password identitetom: globalMessages read denied. Simulacija nije stvarna Auth prijava niti end-to-end porodični test.
+
+Auth: Email/Password uključen, passwordless email-link isključen, email enumeration zaštita uključena. Minimum nove lozinke promenjen je sa 6 na **12**, Require enforcement, Force upgrade on sign-in **isključen**; maksimum 4096. Anonymous provajder ostaje uključen radi istorijskog pristupa, ali nova aplikacija ne stvara anonimne naloge i oni ne ispunjavaju family signedIn pravilo.
+
+Spark / No cost ($0/month) potvrđen je neposredno. Storage traži Blaze nadogradnju; nije nadograđen. Podaci/nalozi nisu brisani, postojeće porodice nisu menjane. Stvarni višekorisnički porodični test i stvaran zahtev za brisanje ostaju otvoreni.
+
+Prethodni nalazi ispod predstavljaju istoriju i više nisu dokaz da puni Rules tekst nije poređen.
+
+---
+
 # Firestore pravila — javni chat uklonjen
 
 ## Potvrda korisnikove konzole — 23. oktobar 2026. u 19:51

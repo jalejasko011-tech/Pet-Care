@@ -1,3 +1,15 @@
+## Priprema 1.8.20 (31) — praktičnost i pristupačnost
+
+Ispravlja veze između naziva polja i kontrola, povećava površine za dodir i sređuje preostale EN poruke. Završetak se potvrđuje tek odgovarajućim CI i potpisanim izdanjem. Firebase provera od 26.10 i uputstva su u docs/FIREBASE_REVIEW_2026_10_26_SR.md i docs/START_PLAY_TEST_1_8_20_SR.md. Play nalog još zahteva registraciju vlasnika.
+
+## Aktuelno — 1.8.19 (30), 26. oktobar 2026.
+
+Potpisano izdanje: https://github.com/jalejasko011-tech/Pet-Care/releases/tag/v1.8.19 . Aplikacija ima direktan dan/mesec/godina unos rođenja i odvojene godine/mesece. Javni chat nije uključen. Firebase cela aktivna pravila su neposredno poređena, Spark je potvrđen, nova lozinka na serveru zahteva 12 znakova uz isključen forced sign-in upgrade. Izolovana proba brisanja naloga je prošla; stvarno porodično prihvatanje i obrada zahteva ostaju posebni koraci.
+
+Trenutni plan i Play granice: docs/RELEASE_1_8_STATUS.md, docs/PLAY_CONSOLE_ANSWERS_1_8_19_SR.md, docs/ACCEPTANCE_1_8_19_SR.md i docs/TESTER_GUIDE_1_8_19_SR.md. Play Console je još na registraciji; nema opt-in linka ili Google odobrenja.
+
+---
+
 # Pet Care World
 
 Android pet-care organizer with private device records, meal reminders, Gallery, Memories and optional adult-authenticated family care. Signed releases are built by `.github/workflows/release.yml`; a public download is published only after quality checks pass at the same commit. Google Play publication is separate and has not been completed.

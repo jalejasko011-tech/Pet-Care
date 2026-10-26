@@ -12,4 +12,20 @@ Putanja korisnika: Podešavanja/Porodična briga/Prijava → zahtev za brisanje 
 
 Lokalni profili, Galerija, Uspomene, nacrti, korisnikovi izvozi i tuđe već preuzete kopije nisu dostupni administratoru kroz Firebase. Korisnik briše svoje lokalne podatke/kopije zasebno. Ažuriranje ne uklanja ranije sistemske kopije pružaoca usluge.
 
-Postupak prvo proveriti stvarnim namenskim probnim nalogom i probnim podacima. Nije potvrđeno da je vlasnik već izvršio takvu operativnu proveru.
+## Potvrđena izdvojena proba — 26. oktobar 2026.
+
+`tools/test-account-deletion-rehearsal.mjs` prošao je u lokalnim Auth/Firestore emulatorima, projekat `demo-petcare-ops`, CI 40362563676. Provereni su Auth nalog, cela sopstvena porodica uključujući ugnježdene zapise bez roditeljskog dokumenta, sopstveno članstvo/zapisi/prijave u tuđoj porodici, pozivnice, istorijski chat/push i očuvanje drugog naloga i nepovezanih zapisa. Skripta odbija rad bez oba lokalna emulatora i nije produkcijski alat za masovno brisanje.
+
+Ova proba ne potvrđuje da je primljen i rešen stvaran zahtev za brisanje. To ostaje operativni prihvatni korak vlasnika. Nije aktiviran plaćeni automatski servis.
+
+## Dodatne kontrole pri stvarnoj obradi
+
+Pre brisanja utvrditi vlasništvo i tačan UID; privremeno onemogućiti ciljni nalog i opozvati refresh tokene. To samo po sebi ne poništava odmah već izdate ID tokene u svim servisima: sačekati njihovo isticanje (tipično do jednog sata), ili koristiti prethodno testiranu serversku blokadu za taj UID, pre završnog popisa/brisanja. Ne tvrditi da je korisnik odmah izgubio sve mogućnosti upisa samo zato što je Auth nalog disabled.
+
+Po dogovoru sa vlasnikom zahteva pauzirati porodice koje on poseduje, ukloniti njihove pozivnice i potom obraditi podkolekcije. U tuđim porodicama sačuvati nepovezane naloge i zapise, ali pregledati prijave koje referenciraju njegov članski UID ili obrisane zapise, kao i tekstualne razloge koji mogu sadržati lične podatke. U tuđim pozivnicama očistiti povezani `lastJoined` identifikator bez automatskog brisanja tuđe pozivnice.
+
+Pregledati istorijske `chatPushSubscriptions/{uid}` podkolekcije i `moderators/{uid}` ako postoje. Za moderationAudit (`actorId`, `targetId`) utvrditi povezane podatke i konkretan opravdan period zadržavanja; ne zadržavati ih neograničeno po podrazumevanoj pretpostavci. Uklanjanje Firestore roditelja običnim delete pozivom ne uklanja samo po sebi podkolekcije.
+
+Posle obrade ponoviti ciljane provere povezanih puteva, potvrditi Auth uklanjanje i tek tada poslati stvarnu potvrdu. Ako deo ostane nerešen, ne navoditi da je brisanje potpuno. Lokalni mediji, izvozi i tuđe preuzete kopije ostaju zaseban opseg.
+
+Izvori: https://firebase.google.com/docs/auth/admin/manage-users ; https://firebase.google.com/docs/auth/admin/manage-sessions ; https://firebase.google.com/docs/firestore/manage-data/delete-data
