@@ -20,4 +20,10 @@ assert.throws(()=>records.validate({pets:[{id:'p',name:'Luna',ageTotalMonths:-1}
 assert.throws(()=>records.validate({pets:[{id:'p',name:'Luna',ageTotalMonths:1.5}]}));
 assert.throws(()=>records.validate({pets:[{id:'p',name:'Luna',ageAsOf:'2026-02-30'}]}));
 records.validate({pets:[{id:'p',name:'Luna',birth:'',ageTotalMonths:27,ageAsOf:'2026-10-26'}]});
-console.log('PASS pet age: calendar anniversaries, leap years, unknown/newborn age, advancing estimates and backup validation.');
+assert.equal(a.birthValue('29','2','2024','2026-10-26'),'2024-02-29');
+assert.equal(a.birthValue('29','2','2023','2026-10-26'),null);
+assert.equal(a.birthValue('31','4','2020','2026-10-26'),null);
+assert.equal(a.birthValue('27','10','2026','2026-10-26'),null);
+assert.equal(a.birthValue('','','','2026-10-26'),'');
+assert.equal(a.birthValue('1','','2020','2026-10-26'),null);
+console.log('PASS direct birth dates and pet age: calendar anniversaries, leap years, unknown/newborn age, advancing estimates and backup validation.');
