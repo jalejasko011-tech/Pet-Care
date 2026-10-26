@@ -31,10 +31,11 @@ try {
  assert.equal(await page.evaluate(()=>data.pets.length),1);
  await page.evaluate(()=>editPet(data.pets[0].id));
  await page.locator('#petForm [name=name]').fill('Android edited pet');
+ await page.selectOption('#petAgeMode','birth');await page.locator('#petBirthDay').fill('15');await page.selectOption('#petBirthMonth','6');await page.locator('#petBirthYear').fill('2020');
  await page.locator('#petForm button').last().click();
  await page.reload();
  assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
- assert.equal(await page.evaluate(()=>data.pets[0].ageTotalMonths),27);assert.equal(await page.evaluate(()=>data.pets[0].birth),'');
+ assert.equal(await page.evaluate(()=>data.pets[0].ageTotalMonths),undefined);assert.equal(await page.evaluate(()=>data.pets[0].birth),'2020-06-15');
  assert.equal(await page.evaluate(()=>petCareNavigation.ready),true,'Native Android Back listener missing');
  await openSection('diagnostics');await page.waitForFunction(()=>document.getElementById('reminderAccess')?.dataset.permission==='granted');assert.equal(await page.locator('[data-alarm-allow]').isVisible(),false);
  await openSection('home');await page.locator('#settingsShortcut').click();await page.locator('#settingsMemories').click();await page.locator('#memoryForm').waitFor();
@@ -70,7 +71,7 @@ try {
  try{
   await page.reload();await page.locator('#content').waitFor();await unlockAdult(page);
   assert.equal(await page.evaluate(()=>data.pets[0].name),'Android edited pet');
- assert.equal(await page.evaluate(()=>data.pets[0].ageTotalMonths),27);assert.equal(await page.evaluate(()=>data.pets[0].birth),'');
+ assert.equal(await page.evaluate(()=>data.pets[0].ageTotalMonths),undefined);assert.equal(await page.evaluate(()=>data.pets[0].birth),'2020-06-15');
   const backup=await page.evaluate(async()=>{await petCareBackup.ready;const built=await petCareBackup.build(),fs=window.Capacitor.Plugins.Filesystem;const base64=await new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.readAsDataURL(new Blob([built.bytes]));});await fs.writeFile({path:'petcare-backup-test.zip',data:base64,directory:'CACHE'});const file=await fs.readFile({path:'petcare-backup-test.zip',directory:'CACHE'}),bytes=Uint8Array.from(atob(file.data),c=>c.charCodeAt(0));const parsed=petCareBackup.parse(bytes);await fs.deleteFile({path:'petcare-backup-test.zip',directory:'CACHE'});return {same:bytes.length===built.bytes.length,pets:parsed.data.pets.length,memories:parsed.memories.length};});
   assert.deepEqual(backup,{same:true,pets:1,memories:1});
   console.log('PASS offline Android reload, native Filesystem complete-backup roundtrip and private-memory persistence.');
